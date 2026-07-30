@@ -1,32 +1,44 @@
 .dialog {
   border: none;
-  border-radius: var(--radius-lg);
-  padding: var(--space-4);
-  max-width: 480px;
-  width: calc(100vw - 48px);
-  max-height: calc(100vh - 96px);
+  padding: 0;
+  margin: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   background: var(--color-surface);
   color: var(--color-text);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
 }
 
 .dialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
 
+.screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}
+
 .title {
   font-size: var(--font-size-lg);
   font-weight: 800;
   margin-bottom: var(--space-3);
+  flex-shrink: 0;
 }
 
 .content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  max-height: 55vh;
-  overflow-y: auto;
-  margin-bottom: var(--space-4);
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
 }
 
 .section {
@@ -38,11 +50,12 @@
 .sectionHeading {
   font-weight: 700;
   color: var(--color-primary);
+  font-size: var(--font-size-lg);
 }
 
 .line {
   font-size: var(--font-size-base);
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .note {
@@ -50,13 +63,45 @@
   color: var(--color-text-muted);
 }
 
+.footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.incrementButton {
+  min-height: 88px;
+  border-radius: var(--radius-lg);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.incrementCount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.incrementHint {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
 .closeButton {
   width: 100%;
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: var(--color-text);
   font-size: var(--font-size-base);
   font-weight: 700;
 }

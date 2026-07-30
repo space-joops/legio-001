@@ -8,10 +8,18 @@ import styles from "./PrayerTextDialog.module.css";
 interface PrayerTextDialogProps {
   title: string;
   entry: PrayerTextEntry | null;
+  count: number;
+  onIncrement: () => void;
   onClose: () => void;
 }
 
-export function PrayerTextDialog({ title, entry, onClose }: PrayerTextDialogProps) {
+export function PrayerTextDialog({
+  title,
+  entry,
+  count,
+  onIncrement,
+  onClose,
+}: PrayerTextDialogProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
   const open = Boolean(entry);
@@ -33,7 +41,7 @@ export function PrayerTextDialog({ title, entry, onClose }: PrayerTextDialogProp
       }}
     >
       {entry && (
-        <>
+        <div className={styles.screen}>
           <h2 className={styles.title}>{title}</h2>
           <div className={styles.content}>
             {entry.sections.map((section, i) => (
@@ -50,10 +58,21 @@ export function PrayerTextDialog({ title, entry, onClose }: PrayerTextDialogProp
             ))}
             {entry.note && <p className={styles.note}>{entry.note}</p>}
           </div>
-          <button type="button" className={styles.closeButton} onClick={onClose}>
-            {t("common.close")}
-          </button>
-        </>
+          <div className={styles.footer}>
+            <button
+              type="button"
+              className={styles.incrementButton}
+              onClick={onIncrement}
+              aria-label={`${title} ${t("counters.tapToRecord")}`}
+            >
+              <span className={styles.incrementCount}>{count}</span>
+              <span className={styles.incrementHint}>{t("counters.tapToRecord")}</span>
+            </button>
+            <button type="button" className={styles.closeButton} onClick={onClose}>
+              {t("common.close")}
+            </button>
+          </div>
+        </div>
       )}
     </dialog>
   );

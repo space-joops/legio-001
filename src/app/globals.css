@@ -14,10 +14,12 @@
   --min-tap-target: 56px;
   --bottom-nav-height: 76px;
 
-  --font-size-base: 19px;
-  --font-size-lg: 24px;
-  --font-size-xl: 30px;
-  --font-size-sm: 16px;
+  /* rem, relative to the 16px html root, so the font-scale setting below (which changes
+     the html root font-size) scales these together with any other rem-based sizing. */
+  --font-size-base: 1.1875rem;
+  --font-size-lg: 1.5rem;
+  --font-size-xl: 1.875rem;
+  --font-size-sm: 1rem;
 
   --radius-md: 14px;
   --radius-lg: 20px;
@@ -63,6 +65,18 @@ html {
   height: 100%;
 }
 
+/* User-selectable text size (Settings > 글자 크기). Changing the root font-size scales
+   every rem-based size in the app together, including the tokens above. */
+html[data-font-scale="small"] {
+  font-size: 93.75%;
+}
+html[data-font-scale="large"] {
+  font-size: 112.5%;
+}
+html[data-font-scale="xlarge"] {
+  font-size: 125%;
+}
+
 body {
   min-height: 100%;
   margin: 0;
@@ -75,6 +89,13 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* User-selectable typeface (Settings > 폰트). --font-nanum is set on <html> by next/font
+   in layout.tsx; the fallback stack matches body's default so text never blanks out. */
+html[data-font-family="nanum"] body {
+  font-family: var(--font-nanum), "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
+    sans-serif;
 }
 
 h1,

@@ -1,6 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import { Nanum_Gothic } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+
+// Nanum Gothic's Google Fonts metadata only exposes a "latin" subset name in
+// next/font's typings, but the underlying font file is a single CJK-inclusive
+// file (Korean fonts aren't split into separate per-script subsets the way
+// Latin-script families are), so Korean glyphs render correctly regardless.
+const nanumGothic = Nanum_Gothic({
+  subsets: ["latin"],
+  weight: ["400", "700", "800"],
+  variable: "--font-nanum",
+  display: "swap",
+});
 
 const SITE_NAME = "레지오 마리애 주간 활동 보고";
 const SITE_DESCRIPTION =
@@ -47,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={nanumGothic.variable}>
       <body>
         <Providers>{children}</Providers>
       </body>
