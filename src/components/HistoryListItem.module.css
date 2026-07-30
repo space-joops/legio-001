@@ -24,20 +24,8 @@
   padding: 0 var(--space-1);
 }
 
-.details {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
 .date {
-  font-size: var(--font-size-sm);
+  flex: 1;
+  font-size: var(--font-size-base);
   color: var(--color-text-muted);
-}
-
-.total {
-  font-size: var(--font-size-lg);
-  font-weight: 800;
 }

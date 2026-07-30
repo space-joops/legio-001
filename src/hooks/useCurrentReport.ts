@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createNewReport } from "@/lib/reportUtils";
 import { storage } from "@/lib/storage";
-import type { PrayerItemKey, WeeklyReport } from "@/lib/types";
+import type { PrayerItemKey, Profile, WeeklyReport } from "@/lib/types";
 import { useLocalStorageReady } from "./useLocalStorageReady";
 
 export function useCurrentReport() {
@@ -21,8 +21,8 @@ export function useCurrentReport() {
   }, []);
 
   const startWeek = useCallback(
-    (sessionNumber: number, meetingDateTime: string, memberName: string) => {
-      const next = createNewReport(sessionNumber, meetingDateTime, memberName);
+    (sessionNumber: number, meetingDateTime: string, profile: Profile) => {
+      const next = createNewReport(sessionNumber, meetingDateTime, profile);
       persist(next);
       return next;
     },

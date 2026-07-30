@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { ReportSummary } from "@/components/ReportSummary";
 import { ShareButton } from "@/components/ShareButton";
@@ -9,13 +9,18 @@ import { useCurrentReport } from "@/hooks/useCurrentReport";
 import { useHistory } from "@/hooks/useHistory";
 import { useTranslation } from "@/i18n/useTranslation";
 import { formatShareText } from "@/lib/reportUtils";
+import type { PrayerCounts, PrayerItemKey } from "@/lib/types";
+import styles from "./page.module.css";
 
 function ReportPageContent() {
   const { t, language } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const { ready: historyReady, findById } = useHistory();
+  const { ready: historyReady, findById, updateReportCounts } = useHistory();
   const { ready: currentReady, report: currentReport } = useCurrentReport();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [draftCounts, setDraftCounts] = useState<PrayerCounts | null>(null);
 
   if (!historyReady || !currentReady) return null;
 
@@ -26,10 +31,53 @@ function ReportPageContent() {
     return <p>{t("report.notFound")}</p>;
   }
 
+  const startEditing = () => {
+    setDraftCounts(report.counts);
+    setIsEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setDraftCounts(null);
+    setIsEditing(false);
+  };
+
+  const saveEditing = () => {
+    if (draftCounts) updateReportCounts(report.id, draftCounts);
+    setDraftCounts(null);
+    setIsEditing(false);
+  };
+
+  const handleDraftChange = (key: PrayerItemKey, value: number) => {
+    setDraftCounts((prev) => (prev ? { ...prev, [key]: value } : prev));
+  };
+
   return (
     <>
-      <ReportSummary report={report} />
-      <ShareButton title={t("app.shortName")} text={formatShareText(report, language)} />
+      <ReportSummary
+        report={report}
+        editable={isEditing}
+        draftCounts={draftCounts ?? undefined}
+        onDraftChange={handleDraftChange}
+      />
+      {isEditing ? (
+        <div className={styles.editActions}>
+          <button type="button" className={styles.cancelButton} onClick={cancelEditing}>
+            {t("common.cancel")}
+          </button>
+          <button type="button" className={styles.saveButton} onClick={saveEditing}>
+            {t("common.save")}
+          </button>
+        </div>
+      ) : (
+        <>
+          {fromHistory && (
+            <button type="button" className={styles.editButton} onClick={startEditing}>
+              {t("common.edit")}
+            </button>
+          )}
+          <ShareButton title={t("app.shortName")} text={formatShareText(report, language)} />
+        </>
+      )}
     </>
   );
 }

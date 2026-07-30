@@ -29,12 +29,18 @@ function writeJson<T>(key: string, value: T): void {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
-export const DEFAULT_PROFILE: Profile = { name: "" };
+export const DEFAULT_PROFILE: Profile = {
+  name: "",
+  baptismalName: "",
+  praesidiumName: "",
+  parishName: "",
+};
 export const DEFAULT_SETTINGS: Settings = { language: "ko" };
 
 export const storage = {
   getProfile(): Profile {
-    return readJson(KEYS.profile, DEFAULT_PROFILE);
+    // Merge with defaults so profiles saved before a field existed don't come back `undefined`.
+    return { ...DEFAULT_PROFILE, ...readJson<Partial<Profile>>(KEYS.profile, {}) };
   },
   setProfile(profile: Profile): void {
     writeJson(KEYS.profile, profile);
