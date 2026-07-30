@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import { OnboardingGate } from "@/components/OnboardingGate";
 import { ToastProvider } from "@/components/ToastProvider";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 
@@ -15,7 +16,9 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <LanguageProvider>
-      <ToastProvider>{children}</ToastProvider>
+      <ToastProvider>
+        <OnboardingGate>{children}</OnboardingGate>
+      </ToastProvider>
     </LanguageProvider>
   );
 }

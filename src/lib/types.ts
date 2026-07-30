@@ -15,6 +15,10 @@ export interface WeeklyReport {
   sessionNumber: number;
   meetingDateTime: string;
   memberName: string;
+  // Optional: reports submitted before these fields existed won't have them.
+  baptismalName?: string;
+  praesidiumName?: string;
+  parishName?: string;
   counts: PrayerCounts;
   status: ReportStatus;
   createdAt: string;
@@ -24,6 +28,9 @@ export interface WeeklyReport {
 
 export interface Profile {
   name: string;
+  baptismalName: string;
+  praesidiumName: string;
+  parishName: string;
 }
 
 export type Language = "ko" | "en";

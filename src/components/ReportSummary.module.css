@@ -63,3 +63,15 @@
   font-size: var(--font-size-lg);
   color: var(--color-primary);
 }
+
+.countInput {
+  width: 84px;
+  min-height: 48px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-primary);
+  background: var(--color-background);
+  color: var(--color-text);
+  text-align: center;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+}

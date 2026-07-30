@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { sortHistory } from "@/lib/reportUtils";
 import { storage } from "@/lib/storage";
-import type { WeeklyReport } from "@/lib/types";
+import type { PrayerCounts, WeeklyReport } from "@/lib/types";
 import { useLocalStorageReady } from "./useLocalStorageReady";
 
 export function useHistory() {
@@ -24,5 +24,17 @@ export function useHistory() {
     [history]
   );
 
-  return { ready, history, refresh, findById };
+  const updateReportCounts = useCallback((id: string, counts: PrayerCounts) => {
+    setHistory((prev) => {
+      const next = sortHistory(
+        prev.map((r) =>
+          r.id === id ? { ...r, counts, updatedAt: new Date().toISOString() } : r
+        )
+      );
+      storage.setHistory(next);
+      return next;
+    });
+  }, []);
+
+  return { ready, history, refresh, findById, updateReportCounts };
 }

@@ -1,12 +1,12 @@
 import { dictionaries } from "@/i18n/dictionaries";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
-import type { Language, WeeklyReport } from "./types";
+import type { Language, Profile, WeeklyReport } from "./types";
 
 export function createNewReport(
   sessionNumber: number,
   meetingDateTime: string,
-  memberName: string
+  profile: Profile
 ): WeeklyReport {
   const now = new Date().toISOString();
   return {
@@ -14,7 +14,10 @@ export function createNewReport(
     schemaVersion: 1,
     sessionNumber,
     meetingDateTime,
-    memberName,
+    memberName: profile.name,
+    baptismalName: profile.baptismalName,
+    praesidiumName: profile.praesidiumName,
+    parishName: profile.parishName,
     counts: { ...EMPTY_COUNTS },
     status: "in_progress",
     createdAt: now,

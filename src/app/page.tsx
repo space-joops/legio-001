@@ -46,7 +46,14 @@ export default function HomePage() {
     } else {
       const nextSession = (history[0]?.sessionNumber ?? 0) + 1;
       setSessionNumber(String(nextSession));
-      setMeetingDateTime(toDateTimeLocalValue(new Date()));
+      if (history[0]?.meetingDateTime) {
+        // Weekly meetings recur on the same day/time, so default to one week after the last one.
+        const base = new Date(history[0].meetingDateTime);
+        base.setDate(base.getDate() + 7);
+        setMeetingDateTime(toDateTimeLocalValue(base));
+      } else {
+        setMeetingDateTime(toDateTimeLocalValue(new Date()));
+      }
     }
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [ready, report, history]);
@@ -59,7 +66,7 @@ export default function HomePage() {
     const num = Number.parseInt(sessionNumber, 10);
     if (!Number.isFinite(num) || !meetingDateTime) return;
     const profile = storage.getProfile();
-    startWeek(num, meetingDateTime, profile.name);
+    startWeek(num, meetingDateTime, profile);
   };
 
   const handleUpdate = () => {

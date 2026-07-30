@@ -9,24 +9,26 @@ import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
 import { downloadExportedData, resetAllData } from "@/lib/exportData";
-import { storage } from "@/lib/storage";
+import { storage, DEFAULT_PROFILE } from "@/lib/storage";
+import type { Profile } from "@/lib/types";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const ready = useLocalStorageReady();
-  const [name, setName] = useState("");
+  const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [resetOpen, setResetOpen] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
-    if (ready) setName(storage.getProfile().name);
+    if (ready) setProfile(storage.getProfile());
   }, [ready]);
 
-  const handleNameChange = (value: string) => {
-    setName(value);
-    storage.setProfile({ name: value });
+  const handleProfileChange = (field: keyof Profile, value: string) => {
+    const next = { ...profile, [field]: value };
+    setProfile(next);
+    storage.setProfile(next);
   };
 
   const handleReset = () => {
@@ -44,9 +46,39 @@ export default function SettingsPage() {
           <input
             type="text"
             className={styles.input}
-            value={name}
+            value={profile.name}
             placeholder={t("settings.namePlaceholder")}
-            onChange={(e) => handleNameChange(e.target.value)}
+            onChange={(e) => handleProfileChange("name", e.target.value)}
+          />
+        </label>
+        <label className={styles.field}>
+          <span className={styles.label}>{t("settings.baptismalNameLabel")}</span>
+          <input
+            type="text"
+            className={styles.input}
+            value={profile.baptismalName}
+            placeholder={t("settings.baptismalNamePlaceholder")}
+            onChange={(e) => handleProfileChange("baptismalName", e.target.value)}
+          />
+        </label>
+        <label className={styles.field}>
+          <span className={styles.label}>{t("settings.praesidiumNameLabel")}</span>
+          <input
+            type="text"
+            className={styles.input}
+            value={profile.praesidiumName}
+            placeholder={t("settings.praesidiumNamePlaceholder")}
+            onChange={(e) => handleProfileChange("praesidiumName", e.target.value)}
+          />
+        </label>
+        <label className={styles.field}>
+          <span className={styles.label}>{t("settings.parishNameLabel")}</span>
+          <input
+            type="text"
+            className={styles.input}
+            value={profile.parishName}
+            placeholder={t("settings.parishNamePlaceholder")}
+            onChange={(e) => handleProfileChange("parishName", e.target.value)}
           />
         </label>
       </section>

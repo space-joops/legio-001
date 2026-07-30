@@ -1,11 +1,24 @@
 import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { formatMeetingDateTime, formatSessionLabel } from "@/lib/reportUtils";
-import type { WeeklyReport } from "@/lib/types";
+import type { PrayerCounts, PrayerItemKey, WeeklyReport } from "@/lib/types";
 import styles from "./ReportSummary.module.css";
 
-export function ReportSummary({ report }: { report: WeeklyReport }) {
+interface ReportSummaryProps {
+  report: WeeklyReport;
+  editable?: boolean;
+  draftCounts?: PrayerCounts;
+  onDraftChange?: (key: PrayerItemKey, value: number) => void;
+}
+
+export function ReportSummary({
+  report,
+  editable = false,
+  draftCounts,
+  onDraftChange,
+}: ReportSummaryProps) {
   const { t, language } = useTranslation();
+  const counts = editable && draftCounts ? draftCounts : report.counts;
 
   return (
     <div className={styles.card}>
@@ -27,10 +40,25 @@ export function ReportSummary({ report }: { report: WeeklyReport }) {
         {PRAYER_ITEMS.map((item) => (
           <li key={item.key} className={styles.listItem}>
             <span>{t(item.labelKey)}</span>
-            <span className={styles.count}>
-              {report.counts[item.key]}
-              {item.unitLabelKey ? t(item.unitLabelKey) : ""}
-            </span>
+            {editable ? (
+              <input
+                type="number"
+                inputMode="numeric"
+                min={0}
+                className={styles.countInput}
+                value={counts[item.key]}
+                aria-label={t(item.labelKey)}
+                onChange={(e) => {
+                  const parsed = Number.parseInt(e.target.value, 10);
+                  onDraftChange?.(item.key, Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
+                }}
+              />
+            ) : (
+              <span className={styles.count}>
+                {counts[item.key]}
+                {item.unitLabelKey ? t(item.unitLabelKey) : ""}
+              </span>
+            )}
           </li>
         ))}
       </ul>
