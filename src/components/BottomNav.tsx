@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/i18n/useTranslation";
-import { HistoryIcon, HomeIcon, SettingsIcon } from "./icons/NavIcons";
+import { CalendarIcon, HistoryIcon, HomeIcon, SettingsIcon } from "./icons/NavIcons";
 import styles from "./BottomNav.module.css";
 
 export function BottomNav() {
@@ -13,6 +13,7 @@ export function BottomNav() {
   const items = [
     { href: "/", label: t("nav.home"), Icon: HomeIcon },
     { href: "/history", label: t("nav.history"), Icon: HistoryIcon },
+    { href: "/schedule", label: t("nav.schedule"), Icon: CalendarIcon },
     { href: "/settings", label: t("nav.settings"), Icon: SettingsIcon },
   ];
 

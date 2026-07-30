@@ -99,6 +99,7 @@
 
 .numberInput {
   flex: 1;
+  min-width: 0;
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);
   border: 2px solid var(--color-primary);

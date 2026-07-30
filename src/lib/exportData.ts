@@ -9,6 +9,7 @@ export function buildExportedData(): ExportedData {
     profile: storage.getProfile(),
     history: storage.getHistory(),
     currentReport: storage.getCurrentReport(),
+    schedule: storage.getSchedule(),
   };
 }
 
