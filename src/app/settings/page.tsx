@@ -7,10 +7,12 @@ import { FontScaleToggle } from "@/components/FontScaleToggle";
 import { InstallPromptButton } from "@/components/InstallPromptButton";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { PageShell } from "@/components/PageShell";
+import { ShareButton } from "@/components/ShareButton";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
 import { downloadExportedData, resetAllData } from "@/lib/exportData";
+import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
 import styles from "./page.module.css";
@@ -98,6 +100,16 @@ export default function SettingsPage() {
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.fontFamilyLabel")}</span>
         <FontFamilyToggle />
+      </section>
+
+      <section className={styles.section}>
+        <span className={styles.label}>{t("settings.shareApp")}</span>
+        <p className={styles.description}>{t("settings.shareAppDescription")}</p>
+        <ShareButton
+          title={t("app.shortName")}
+          text={t("settings.shareAppText")}
+          url={`${SITE_URL}/?ref=app_share`}
+        />
       </section>
 
       <section className={styles.section}>

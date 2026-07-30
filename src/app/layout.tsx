@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Nanum_Gothic } from "next/font/google";
 import "./globals.css";
+import { SITE_URL } from "@/lib/site";
 import { Providers } from "./providers";
 
 // Nanum Gothic's Google Fonts metadata only exposes a "latin" subset name in
@@ -19,7 +20,7 @@ const SITE_DESCRIPTION =
   "레지오 마리애 단원을 위한 주간 기도 활동 기록 및 보고 앱 / A weekly prayer activity tracker for Legion of Mary members.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(SITE_URL),
   title: SITE_NAME,
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,

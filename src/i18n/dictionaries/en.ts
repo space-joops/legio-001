@@ -86,6 +86,9 @@ export const en = {
     installDescription: "Install to your home screen for easier access.",
     installIosHint: "On iOS, tap the Share button then 'Add to Home Screen'.",
     installed: "Already installed.",
+    shareApp: "Share this app",
+    shareAppDescription: "Introduce this app to other members.",
+    shareAppText: "Try the Legion of Mary Weekly Report app with me!",
     exportData: "Export data",
     exportDescription: "Save your activity records to a file.",
     resetData: "Reset data",
@@ -101,5 +104,12 @@ export const en = {
     confirm: "Confirm",
     edit: "Edit",
     close: "Close",
+  },
+  inAppBrowser: {
+    message:
+      "In-app browsers like KakaoTalk, Naver, or Instagram may block app installation. Choose \"Open in Safari\" or \"Open in browser\" from the menu, or copy the link below and paste it into Safari/Chrome.",
+    copyLink: "Copy link",
+    linkCopied: "Link copied.",
+    dismiss: "Dismiss",
   },
 } satisfies typeof ko;

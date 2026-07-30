@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { DisplayPreferencesProvider } from "@/components/DisplayPreferencesProvider";
+import { InAppBrowserNotice } from "@/components/InAppBrowserNotice";
 import { OnboardingGate } from "@/components/OnboardingGate";
 import { ToastProvider } from "@/components/ToastProvider";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <LanguageProvider>
       <DisplayPreferencesProvider>
         <ToastProvider>
+          <InAppBrowserNotice />
           <OnboardingGate>{children}</OnboardingGate>
         </ToastProvider>
       </DisplayPreferencesProvider>

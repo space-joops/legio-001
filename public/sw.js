@@ -1,14 +1,39 @@
-const CACHE_NAME = "legio-shell-v1";
-const PRECACHE_URLS = [
+const CACHE_NAME = "legio-shell-v2";
+const FALLBACK_PRECACHE_URLS = [
   "/",
   "/manifest.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
 ];
 
+async function precacheAll(cache, urls) {
+  await Promise.all(
+    urls.map(async (url) => {
+      try {
+        const response = await fetch(url, { cache: "reload" });
+        if (response.ok) await cache.put(url, response);
+      } catch {
+        // Skip URLs that fail to fetch instead of aborting the whole install.
+      }
+    })
+  );
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      // The full-site manifest is generated at build time (scripts/generate-precache-manifest.mjs)
+      // so the app works fully offline right after install, not just the app shell. Fall back to
+      // the minimal list if it's missing (e.g. local dev, which has no postbuild step).
+      try {
+        const res = await fetch("/precache-manifest.json", { cache: "reload" });
+        const urls = res.ok ? await res.json() : FALLBACK_PRECACHE_URLS;
+        await precacheAll(cache, urls);
+      } catch {
+        await precacheAll(cache, FALLBACK_PRECACHE_URLS);
+      }
+    })()
   );
   self.skipWaiting();
 });
@@ -31,12 +56,18 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Navigations always go to the network so each route (home, history,
-  // report, settings) renders its own correct page. We only fall back to
-  // the cached app shell when the network request actually fails (offline).
+  // Navigations: try the network first so content stays fresh, but since the whole
+  // site is precached, fall back to the exact cached route when offline (and only
+  // fall back further to the shell if that specific route was never cached).
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match("/").then((res) => res || Response.error()))
+      fetch(request).catch(
+        () =>
+          caches
+            .match(request)
+            .then((res) => res || caches.match("/"))
+            .then((res) => res || Response.error())
+      )
     );
     return;
   }

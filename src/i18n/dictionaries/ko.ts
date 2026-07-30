@@ -84,6 +84,9 @@ export const ko = {
     installDescription: "홈 화면에 앱처럼 설치해서 더 편하게 사용하세요.",
     installIosHint: "iOS에서는 공유 버튼을 누른 뒤 '홈 화면에 추가'를 선택하세요.",
     installed: "이미 설치되어 있습니다.",
+    shareApp: "앱 공유하기",
+    shareAppDescription: "다른 단원에게 이 앱을 소개해 보세요.",
+    shareAppText: "레지오 마리애 주간 활동 보고 앱을 함께 써보세요!",
     exportData: "데이터 내보내기",
     exportDescription: "내 활동 기록을 파일로 저장합니다.",
     resetData: "데이터 초기화",
@@ -99,5 +102,12 @@ export const ko = {
     confirm: "확인",
     edit: "수정",
     close: "닫기",
+  },
+  inAppBrowser: {
+    message:
+      "카카오톡·네이버·인스타그램 등 인앱 브라우저에서는 앱 설치가 제한될 수 있습니다. 메뉴에서 'Safari로 열기' 또는 '다른 브라우저로 열기'를 선택하거나, 아래 버튼으로 링크를 복사해 Safari/Chrome에 붙여넣어 열어주세요.",
+    copyLink: "링크 복사",
+    linkCopied: "링크가 복사되었습니다.",
+    dismiss: "닫기",
   },
 };
