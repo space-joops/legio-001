@@ -54,6 +54,81 @@ export interface ScheduleEvent {
   notifiedAt?: string; // ISO; set once the reminder has been shown, to avoid duplicates
 }
 
+export type OfficerRole = "president" | "vicePresident" | "secretary" | "treasurer";
+
+export interface OfficerEntry {
+  role: OfficerRole;
+  name: string;
+  baptismalName: string;
+  appointedDate: string; // ISO date
+  note: string;
+}
+
+export interface MemberCounts {
+  activeMale: number;
+  activeFemale: number;
+  praetorium: number;
+  auxiliaryMale: number;
+  auxiliaryFemale: number;
+  adjutorium: number;
+}
+
+export interface PraesidiumRoster {
+  councilAffiliation: string;
+  spiritualDirectorName: string;
+  spiritualDirectorBaptismalName: string;
+  officers: OfficerEntry[];
+  memberCounts: MemberCounts;
+}
+
+export interface AgendaItem {
+  id: string;
+  status: "실시" | "계획";
+  title: string;
+  organizer: string;
+  dateTime: string;
+  location: string;
+  attendanceNote: string;
+}
+
+export interface MonthlyReport {
+  id: string;
+  yearMonth: string; // "2026-06"
+  sessionRangeStart: number;
+  sessionRangeEnd: number;
+  meetingWeekday: string;
+  meetingTime: string;
+  meetingLocation: string;
+  attendance: {
+    officersPresent: number;
+    officersTotal: number;
+    membersPresent: number;
+    membersTotal: number;
+  };
+  roster: PraesidiumRoster;
+  memberCountsPrevMonth: MemberCounts;
+  memberCountsThisMonth: MemberCounts;
+  memberCountsIncrease: MemberCounts;
+  memberCountsDecrease: MemberCounts;
+  agendaItems: AgendaItem[];
+  treasury: {
+    broughtForward: number;
+    income: number;
+    expense: number;
+    balance: number;
+    expenseBreakdown: string;
+  };
+  prayerCounts: PrayerCounts;
+  dioceseInstructions: string;
+  parishInstructions: string;
+  councilInstructions: string;
+  activitySummary: string;
+  cumulativeEvangelization: string;
+  otherNotes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ExportedData {
   exportedAt: string;
   dataSchemaVersion: number;
@@ -61,4 +136,6 @@ export interface ExportedData {
   history: WeeklyReport[];
   currentReport: WeeklyReport | null;
   schedule: ScheduleEvent[];
+  roster: PraesidiumRoster;
+  monthlyReports: MonthlyReport[];
 }

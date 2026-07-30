@@ -15,7 +15,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <LanguageProvider>
       <DisplayPreferencesProvider>
         <ToastProvider>
-          <div className={styles.noticeStack}>
+          <div className={styles.noticeStack} data-app-chrome>
             <InAppBrowserNotice />
             <UpdateAvailableNotice />
           </div>
