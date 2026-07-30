@@ -45,10 +45,20 @@ export interface Settings {
   fontFamily: FontFamily;
 }
 
+export interface ScheduleEvent {
+  id: string;
+  title: string;
+  dateTime: string; // ISO
+  reminderMinutesBefore: number;
+  createdAt: string;
+  notifiedAt?: string; // ISO; set once the reminder has been shown, to avoid duplicates
+}
+
 export interface ExportedData {
   exportedAt: string;
   dataSchemaVersion: number;
   profile: Profile;
   history: WeeklyReport[];
   currentReport: WeeklyReport | null;
+  schedule: ScheduleEvent[];
 }

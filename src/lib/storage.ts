@@ -1,11 +1,12 @@
 import { DATA_SCHEMA_VERSION } from "./constants";
-import type { Language, Profile, Settings, WeeklyReport } from "./types";
+import type { Language, Profile, ScheduleEvent, Settings, WeeklyReport } from "./types";
 
 const KEYS = {
   profile: "legioMariae.profile",
   settings: "legioMariae.settings",
   currentReport: "legioMariae.currentReport",
   history: "legioMariae.history",
+  schedule: "legioMariae.schedule",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
 } as const;
 
@@ -76,6 +77,13 @@ export const storage = {
   },
   setHistory(history: WeeklyReport[]): void {
     writeJson(KEYS.history, history);
+  },
+
+  getSchedule(): ScheduleEvent[] {
+    return readJson<ScheduleEvent[]>(KEYS.schedule, []);
+  },
+  setSchedule(schedule: ScheduleEvent[]): void {
+    writeJson(KEYS.schedule, schedule);
   },
 
   ensureSchemaVersion(): void {

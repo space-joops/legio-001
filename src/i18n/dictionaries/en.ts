@@ -8,6 +8,7 @@ export const en = {
   nav: {
     home: "Home",
     history: "History",
+    schedule: "Schedule",
     settings: "Settings",
   },
   counters: {
@@ -104,6 +105,7 @@ export const en = {
     confirm: "Confirm",
     edit: "Edit",
     close: "Close",
+    delete: "Delete",
   },
   inAppBrowser: {
     message:
@@ -111,5 +113,30 @@ export const en = {
     copyLink: "Copy link",
     linkCopied: "Link copied.",
     dismiss: "Dismiss",
+  },
+  update: {
+    available: "A new version is available.",
+    action: "Update",
+  },
+  schedule: {
+    title: "Schedule",
+    addTitle: "Add a new event",
+    titleLabel: "Event name",
+    titlePlaceholder: "e.g. Weekly meeting, praesidium gathering",
+    dateTimeLabel: "Date & time",
+    reminderLabel: "Reminder",
+    reminder10: "10 minutes before",
+    reminder30: "30 minutes before",
+    reminder60: "1 hour before",
+    reminder180: "3 hours before",
+    reminder1440: "1 day before",
+    add: "Add",
+    empty: "No events yet.",
+    notificationHint: "Reminders only ring while this app is open.",
+    notificationPermissionButton: "Turn on notifications",
+    notificationPermissionDenied: "Notification permission is blocked in your browser settings.",
+    deleteConfirmTitle: "Delete this event?",
+    deleteConfirmBody: "This cannot be undone.",
+    notifyTitle: "Legio Schedule Reminder",
   },
 } satisfies typeof ko;

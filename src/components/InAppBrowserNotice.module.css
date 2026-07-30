@@ -1,7 +1,4 @@
 .banner {
-  position: sticky;
-  top: 0;
-  z-index: 40;
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);

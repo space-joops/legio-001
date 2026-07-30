@@ -35,7 +35,13 @@ self.addEventListener("install", (event) => {
       }
     })()
   );
-  self.skipWaiting();
+  // Deliberately no self.skipWaiting() here: a new worker installs and then
+  // waits so the app can prompt the user (UpdateAvailableNotice) instead of
+  // silently swapping out code under an open tab.
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {

@@ -6,6 +6,7 @@ export const ko = {
   nav: {
     home: "홈",
     history: "기록",
+    schedule: "일정",
     settings: "설정",
   },
   counters: {
@@ -102,6 +103,7 @@ export const ko = {
     confirm: "확인",
     edit: "수정",
     close: "닫기",
+    delete: "삭제",
   },
   inAppBrowser: {
     message:
@@ -109,5 +111,30 @@ export const ko = {
     copyLink: "링크 복사",
     linkCopied: "링크가 복사되었습니다.",
     dismiss: "닫기",
+  },
+  update: {
+    available: "새 버전이 있습니다.",
+    action: "업데이트",
+  },
+  schedule: {
+    title: "일정",
+    addTitle: "새 일정 등록",
+    titleLabel: "일정 이름",
+    titlePlaceholder: "예: 정기 주회, 반상회",
+    dateTimeLabel: "일시",
+    reminderLabel: "사전 알림",
+    reminder10: "10분 전",
+    reminder30: "30분 전",
+    reminder60: "1시간 전",
+    reminder180: "3시간 전",
+    reminder1440: "1일 전",
+    add: "추가하기",
+    empty: "등록된 일정이 없습니다.",
+    notificationHint: "알림은 이 앱을 열어두었을 때만 울립니다.",
+    notificationPermissionButton: "알림 켜기",
+    notificationPermissionDenied: "브라우저 설정에서 알림 권한이 차단되어 있습니다.",
+    deleteConfirmTitle: "이 일정을 삭제할까요?",
+    deleteConfirmBody: "삭제하면 되돌릴 수 없습니다.",
+    notifyTitle: "레지오 일정 알림",
   },
 };
