@@ -1,0 +1,110 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.headerIcon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.unit {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.tapArea {
+  width: 100%;
+  min-height: 96px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tapArea:active {
+  background: var(--color-primary-strong);
+}
+
+.count {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.minusButton {
+  min-width: var(--min-tap-target);
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.linkButton {
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+.numericRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.numberInput {
+  flex: 1;
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-primary);
+  background: var(--color-surface);
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 0 var(--space-2);
+}
+
+.applyButton {
+  min-width: var(--min-tap-target);
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 700;
+  font-size: var(--font-size-base);
+}

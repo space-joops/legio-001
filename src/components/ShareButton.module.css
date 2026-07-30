@@ -1,0 +1,9 @@
+.button {
+  min-height: 64px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+}

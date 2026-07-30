@@ -1,0 +1,81 @@
+import { ko } from "./ko";
+
+export const en = {
+  app: {
+    name: "Legion of Mary Weekly Report",
+    shortName: "Legio Report",
+  },
+  nav: {
+    home: "Home",
+    history: "History",
+    settings: "Settings",
+  },
+  counters: {
+    weekdayMass: "Weekday Mass",
+    priestPrayer: "Prayer for the Priest",
+    chainPrayer: "Chain Prayer",
+    rosaryDecades: "Rosary",
+    aspirations: "Aspirations",
+    unitDecade: "decades",
+    tapToRecord: "Tap to record",
+    directInput: "Enter number",
+    counterView: "Back to counter",
+    apply: "Apply",
+    minus: "Minus",
+  },
+  week: {
+    sessionNumber: "Session",
+    sessionNumberUnit: "session",
+    sessionNumberPlaceholder: "e.g. 3",
+    meetingDateTime: "Meeting date & time",
+    startWeek: "Start this week",
+    editWeek: "Edit session info",
+    noActiveWeek: "No active week yet. Please start a new week.",
+  },
+  home: {
+    title: "This week's activity",
+    submit: "Submit weekly report",
+    submitConfirmTitle: "Submit this week's report?",
+    submitConfirmBody:
+      "Submitting will close this week's record and add it to your history. The next session starts automatically.",
+  },
+  history: {
+    title: "Activity history",
+    empty: "No submitted reports yet.",
+  },
+  report: {
+    title: "Weekly Activity Report",
+    memberLabel: "Member",
+    meetingLabel: "Meeting",
+    share: "Share",
+    shareCopied: "Report copied to clipboard.",
+    backToHistory: "Back to history",
+    notFound: "This report could not be found.",
+  },
+  settings: {
+    title: "Settings",
+    nameLabel: "Name",
+    namePlaceholder: "Enter member name",
+    languageLabel: "Language",
+    languageKo: "한국어",
+    languageEn: "English",
+    install: "Install app",
+    installDescription: "Install to your home screen for easier access.",
+    installIosHint: "On iOS, tap the Share button then 'Add to Home Screen'.",
+    installed: "Already installed.",
+    exportData: "Export data",
+    exportDescription: "Save your activity records to a file.",
+    resetData: "Reset data",
+    resetDescription: "Delete all records and start fresh.",
+    resetConfirmTitle: "Reset everything?",
+    resetConfirmBody:
+      "All activity records and settings will be deleted. This cannot be undone.",
+    resetDone: "Data has been reset.",
+  },
+  common: {
+    save: "Save",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    edit: "Edit",
+  },
+} satisfies typeof ko;

@@ -1,0 +1,16 @@
+.button {
+  min-height: var(--min-tap-target);
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.hint,
+.installed {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
