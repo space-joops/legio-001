@@ -1,0 +1,57 @@
+.dialog {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  max-width: 420px;
+  width: calc(100vw - 48px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+}
+
+.body {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cancelButton,
+.confirmButton {
+  flex: 1;
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.cancelButton {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.confirmButton {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.confirmButton.danger {
+  background: var(--color-danger);
+  color: var(--color-danger-contrast);
+}

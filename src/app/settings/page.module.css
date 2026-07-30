@@ -1,0 +1,54 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.label {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.input {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.secondaryButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.dangerButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
