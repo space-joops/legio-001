@@ -35,7 +35,11 @@ export const DEFAULT_PROFILE: Profile = {
   praesidiumName: "",
   parishName: "",
 };
-export const DEFAULT_SETTINGS: Settings = { language: "ko" };
+export const DEFAULT_SETTINGS: Settings = {
+  language: "ko",
+  fontScale: "medium",
+  fontFamily: "system",
+};
 
 export const storage = {
   getProfile(): Profile {
@@ -47,7 +51,8 @@ export const storage = {
   },
 
   getSettings(): Settings {
-    return readJson(KEYS.settings, DEFAULT_SETTINGS);
+    // Merge with defaults so settings saved before a field existed don't come back `undefined`.
+    return { ...DEFAULT_SETTINGS, ...readJson<Partial<Settings>>(KEYS.settings, {}) };
   },
   setSettings(settings: Settings): void {
     writeJson(KEYS.settings, settings);

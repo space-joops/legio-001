@@ -1,0 +1,31 @@
+"use client";
+
+import { useDisplayPreferences } from "./DisplayPreferencesProvider";
+import { useTranslation } from "@/i18n/useTranslation";
+import styles from "./FontFamilyToggle.module.css";
+
+export function FontFamilyToggle() {
+  const { fontFamily, setFontFamily } = useDisplayPreferences();
+  const { t } = useTranslation();
+
+  return (
+    <div className={styles.group} role="group" aria-label={t("settings.fontFamilyLabel")}>
+      <button
+        type="button"
+        className={`${styles.option} ${fontFamily === "system" ? styles.active : ""}`}
+        onClick={() => setFontFamily("system")}
+        aria-pressed={fontFamily === "system"}
+      >
+        {t("settings.fontFamilySystem")}
+      </button>
+      <button
+        type="button"
+        className={`${styles.option} ${fontFamily === "nanum" ? styles.active : ""}`}
+        onClick={() => setFontFamily("nanum")}
+        aria-pressed={fontFamily === "nanum"}
+      >
+        {t("settings.fontFamilyNanum")}
+      </button>
+    </div>
+  );
+}

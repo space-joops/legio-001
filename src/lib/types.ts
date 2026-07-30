@@ -36,8 +36,13 @@ export interface Profile {
 
 export type Language = "ko" | "en";
 
+export type FontScale = "small" | "medium" | "large" | "xlarge";
+export type FontFamily = "system" | "nanum";
+
 export interface Settings {
   language: Language;
+  fontScale: FontScale;
+  fontFamily: FontFamily;
 }
 
 export interface ExportedData {

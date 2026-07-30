@@ -62,6 +62,8 @@ export function CounterGrid({
       <PrayerTextDialog
         title={viewingItem ? t(viewingItem.labelKey) : ""}
         entry={viewingEntry}
+        count={viewingKey ? counts[viewingKey] : 0}
+        onIncrement={() => viewingKey && onIncrement(viewingKey)}
         onClose={() => setViewingKey(null)}
       />
     </div>

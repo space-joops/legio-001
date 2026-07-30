@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import { DisplayPreferencesProvider } from "@/components/DisplayPreferencesProvider";
 import { OnboardingGate } from "@/components/OnboardingGate";
 import { ToastProvider } from "@/components/ToastProvider";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -16,9 +17,11 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <LanguageProvider>
-      <ToastProvider>
-        <OnboardingGate>{children}</OnboardingGate>
-      </ToastProvider>
+      <DisplayPreferencesProvider>
+        <ToastProvider>
+          <OnboardingGate>{children}</OnboardingGate>
+        </ToastProvider>
+      </DisplayPreferencesProvider>
     </LanguageProvider>
   );
 }
