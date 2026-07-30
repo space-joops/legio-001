@@ -68,5 +68,8 @@ export function formatShareText(report: WeeklyReport, language: Language): strin
     const unit = item.key === "rosaryDecades" ? dict.counters.unitDecade : "";
     return `${dict.counters[item.key]}: ${report.counts[item.key]}${unit}`;
   });
-  return [title, dateLine, nameLine, "", ...lines].join("\n");
+  const noteLines = report.activityNote?.trim()
+    ? ["", `${dict.report.activityNoteLabel}: ${report.activityNote.trim()}`]
+    : [];
+  return [title, dateLine, nameLine, "", ...lines, ...noteLines].join("\n");
 }

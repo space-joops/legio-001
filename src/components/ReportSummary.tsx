@@ -9,6 +9,8 @@ interface ReportSummaryProps {
   editable?: boolean;
   draftCounts?: PrayerCounts;
   onDraftChange?: (key: PrayerItemKey, value: number) => void;
+  draftNote?: string;
+  onNoteChange?: (value: string) => void;
 }
 
 export function ReportSummary({
@@ -16,9 +18,12 @@ export function ReportSummary({
   editable = false,
   draftCounts,
   onDraftChange,
+  draftNote,
+  onNoteChange,
 }: ReportSummaryProps) {
   const { t, language } = useTranslation();
   const counts = editable && draftCounts ? draftCounts : report.counts;
+  const note = editable ? draftNote ?? "" : report.activityNote ?? "";
 
   return (
     <div className={styles.card}>
@@ -62,6 +67,24 @@ export function ReportSummary({
           </li>
         ))}
       </ul>
+      {editable ? (
+        <label className={styles.noteField}>
+          <span className={styles.noteLabel}>{t("report.activityNoteLabel")}</span>
+          <textarea
+            className={styles.noteInput}
+            rows={4}
+            value={note}
+            onChange={(e) => onNoteChange?.(e.target.value)}
+          />
+        </label>
+      ) : (
+        note && (
+          <div className={styles.noteField}>
+            <span className={styles.noteLabel}>{t("report.activityNoteLabel")}</span>
+            <p className={styles.noteText}>{note}</p>
+          </div>
+        )
+      )}
     </div>
   );
 }

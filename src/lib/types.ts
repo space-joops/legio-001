@@ -19,6 +19,7 @@ export interface WeeklyReport {
   baptismalName?: string;
   praesidiumName?: string;
   parishName?: string;
+  activityNote?: string;
   counts: PrayerCounts;
   status: ReportStatus;
   createdAt: string;

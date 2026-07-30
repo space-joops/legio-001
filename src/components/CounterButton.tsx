@@ -12,6 +12,7 @@ interface CounterButtonProps {
   onIncrement: () => void;
   onDecrement: () => void;
   onSetValue: (value: number) => void;
+  onShowText?: () => void;
 }
 
 export function CounterButton({
@@ -22,6 +23,7 @@ export function CounterButton({
   onIncrement,
   onDecrement,
   onSetValue,
+  onShowText,
 }: CounterButtonProps) {
   const { t } = useTranslation();
   const [numericMode, setNumericMode] = useState(false);
@@ -44,6 +46,11 @@ export function CounterButton({
         <span className={styles.headerIcon}>{icon}</span>
         <span>{label}</span>
         {unitLabel && <span className={styles.unit}>({unitLabel})</span>}
+        {onShowText && (
+          <button type="button" className={styles.textLink} onClick={onShowText}>
+            {t("counters.viewPrayerText")}
+          </button>
+        )}
       </div>
 
       {!numericMode ? (

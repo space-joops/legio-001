@@ -16,11 +16,12 @@ function ReportPageContent() {
   const { t, language } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const { ready: historyReady, findById, updateReportCounts } = useHistory();
+  const { ready: historyReady, findById, updateReportEntry } = useHistory();
   const { ready: currentReady, report: currentReport } = useCurrentReport();
 
   const [isEditing, setIsEditing] = useState(false);
   const [draftCounts, setDraftCounts] = useState<PrayerCounts | null>(null);
+  const [draftNote, setDraftNote] = useState("");
 
   if (!historyReady || !currentReady) return null;
 
@@ -33,6 +34,7 @@ function ReportPageContent() {
 
   const startEditing = () => {
     setDraftCounts(report.counts);
+    setDraftNote(report.activityNote ?? "");
     setIsEditing(true);
   };
 
@@ -42,7 +44,7 @@ function ReportPageContent() {
   };
 
   const saveEditing = () => {
-    if (draftCounts) updateReportCounts(report.id, draftCounts);
+    if (draftCounts) updateReportEntry(report.id, draftCounts, draftNote);
     setDraftCounts(null);
     setIsEditing(false);
   };
@@ -58,6 +60,8 @@ function ReportPageContent() {
         editable={isEditing}
         draftCounts={draftCounts ?? undefined}
         onDraftChange={handleDraftChange}
+        draftNote={draftNote}
+        onNoteChange={setDraftNote}
       />
       {isEditing ? (
         <div className={styles.editActions}>

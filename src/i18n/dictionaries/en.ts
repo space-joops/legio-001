@@ -22,6 +22,7 @@ export const en = {
     counterView: "Back to counter",
     apply: "Apply",
     minus: "Minus",
+    viewPrayerText: "View prayer text",
   },
   week: {
     sessionNumber: "Session",
@@ -38,6 +39,8 @@ export const en = {
     submitConfirmTitle: "Submit this week's report?",
     submitConfirmBody:
       "Submitting will close this week's record and add it to your history. The next session starts automatically.",
+    activityNoteLabel: "Activity notes",
+    activityNotePlaceholder: "Write freely about visits, special notes, or anything else from this week.",
   },
   history: {
     title: "Activity history",
@@ -47,6 +50,7 @@ export const en = {
     title: "Weekly Activity Report",
     memberLabel: "Member",
     meetingLabel: "Meeting",
+    activityNoteLabel: "Activity notes",
     share: "Share",
     shareCopied: "Report copied to clipboard.",
     backToHistory: "Back to history",
@@ -88,5 +92,6 @@ export const en = {
     cancel: "Cancel",
     confirm: "Confirm",
     edit: "Edit",
+    close: "Close",
   },
 } satisfies typeof ko;
