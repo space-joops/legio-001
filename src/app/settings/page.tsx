@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FontFamilyToggle } from "@/components/FontFamilyToggle";
@@ -116,6 +117,14 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.install")}</span>
         <p className={styles.description}>{t("settings.installDescription")}</p>
         <InstallPromptButton />
+      </section>
+
+      <section className={styles.section}>
+        <span className={styles.label}>{t("settings.secretaryLink")}</span>
+        <p className={styles.description}>{t("settings.secretaryLinkDescription")}</p>
+        <Link href="/secretary" className={styles.secondaryButton}>
+          {t("settings.secretaryLink")}
+        </Link>
       </section>
 
       <section className={styles.section}>

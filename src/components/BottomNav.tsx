@@ -18,7 +18,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className={styles.nav} aria-label={t("nav.home")}>
+    <nav className={styles.nav} aria-label={t("nav.home")} data-app-chrome>
       {items.map(({ href, label, Icon }) => {
         const isActive =
           href === "/" ? pathname === "/" : pathname.startsWith(href);

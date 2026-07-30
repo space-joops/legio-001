@@ -1,3 +1,8 @@
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 .section {
   display: flex;
   flex-direction: column;
@@ -6,6 +11,12 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-base);
+  font-weight: 700;
 }
 
 .field {
@@ -26,11 +37,22 @@
 
 .input {
   min-height: var(--min-tap-target);
+  min-width: 0;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background: var(--color-background);
   padding: 0 var(--space-3);
   font-size: var(--font-size-base);
+}
+
+.primaryButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--font-size-base);
+  font-weight: 700;
 }
 
 .secondaryButton {
@@ -47,12 +69,46 @@
   text-decoration: none;
 }
 
-.dangerButton {
+.empty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  text-align: center;
+  padding: var(--space-5) 0;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.itemLink {
+  flex: 1;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.deleteButton {
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-danger);
   background: transparent;
   color: var(--color-danger);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-3);
 }

@@ -1,5 +1,13 @@
 import { DATA_SCHEMA_VERSION } from "./constants";
-import type { Language, Profile, ScheduleEvent, Settings, WeeklyReport } from "./types";
+import type {
+  Language,
+  MonthlyReport,
+  PraesidiumRoster,
+  Profile,
+  ScheduleEvent,
+  Settings,
+  WeeklyReport,
+} from "./types";
 
 const KEYS = {
   profile: "legioMariae.profile",
@@ -7,6 +15,8 @@ const KEYS = {
   currentReport: "legioMariae.currentReport",
   history: "legioMariae.history",
   schedule: "legioMariae.schedule",
+  praesidiumRoster: "legioMariae.praesidiumRoster",
+  monthlyReports: "legioMariae.monthlyReports",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
 } as const;
 
@@ -40,6 +50,25 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "ko",
   fontScale: "medium",
   fontFamily: "system",
+};
+export const DEFAULT_ROSTER: PraesidiumRoster = {
+  councilAffiliation: "",
+  spiritualDirectorName: "",
+  spiritualDirectorBaptismalName: "",
+  officers: [
+    { role: "president", name: "", baptismalName: "", appointedDate: "", note: "" },
+    { role: "vicePresident", name: "", baptismalName: "", appointedDate: "", note: "" },
+    { role: "secretary", name: "", baptismalName: "", appointedDate: "", note: "" },
+    { role: "treasurer", name: "", baptismalName: "", appointedDate: "", note: "" },
+  ],
+  memberCounts: {
+    activeMale: 0,
+    activeFemale: 0,
+    praetorium: 0,
+    auxiliaryMale: 0,
+    auxiliaryFemale: 0,
+    adjutorium: 0,
+  },
 };
 
 export const storage = {
@@ -84,6 +113,20 @@ export const storage = {
   },
   setSchedule(schedule: ScheduleEvent[]): void {
     writeJson(KEYS.schedule, schedule);
+  },
+
+  getRoster(): PraesidiumRoster {
+    return { ...DEFAULT_ROSTER, ...readJson<Partial<PraesidiumRoster>>(KEYS.praesidiumRoster, {}) };
+  },
+  setRoster(roster: PraesidiumRoster): void {
+    writeJson(KEYS.praesidiumRoster, roster);
+  },
+
+  getMonthlyReports(): MonthlyReport[] {
+    return readJson<MonthlyReport[]>(KEYS.monthlyReports, []);
+  },
+  setMonthlyReports(reports: MonthlyReport[]): void {
+    writeJson(KEYS.monthlyReports, reports);
   },
 
   ensureSchemaVersion(): void {

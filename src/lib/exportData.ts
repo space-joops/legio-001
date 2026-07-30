@@ -10,6 +10,8 @@ export function buildExportedData(): ExportedData {
     history: storage.getHistory(),
     currentReport: storage.getCurrentReport(),
     schedule: storage.getSchedule(),
+    roster: storage.getRoster(),
+    monthlyReports: storage.getMonthlyReports(),
   };
 }
 
