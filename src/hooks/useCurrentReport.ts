@@ -68,6 +68,18 @@ export function useCurrentReport() {
     [report, persist]
   );
 
+  const setActivityNote = useCallback(
+    (value: string) => {
+      if (!report) return;
+      persist({
+        ...report,
+        activityNote: value,
+        updatedAt: new Date().toISOString(),
+      });
+    },
+    [report, persist]
+  );
+
   const submit = useCallback((): WeeklyReport | null => {
     if (!report) return null;
     const now = new Date().toISOString();
@@ -93,6 +105,7 @@ export function useCurrentReport() {
     updateSessionInfo,
     incrementCount,
     setCount,
+    setActivityNote,
     submit,
     discard,
   };

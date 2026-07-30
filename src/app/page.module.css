@@ -32,3 +32,20 @@
   font-size: var(--font-size-lg);
   font-weight: 800;
 }
+
+.noteField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.noteInput {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  padding: var(--space-3);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}

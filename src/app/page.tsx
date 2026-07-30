@@ -27,6 +27,7 @@ export default function HomePage() {
     updateSessionInfo,
     incrementCount,
     setCount,
+    setActivityNote,
     submit,
   } = useCurrentReport();
   const { history } = useHistory();
@@ -34,6 +35,15 @@ export default function HomePage() {
   const [editing, setEditing] = useState(false);
   const [sessionNumber, setSessionNumber] = useState("");
   const [meetingDateTime, setMeetingDateTime] = useState("");
+  const [noteDraft, setNoteDraft] = useState("");
+
+  useEffect(() => {
+    // Seeds the note draft from the active report whenever a (different) report becomes active,
+    // without clobbering in-progress typing on every unrelated report update (e.g. a counter tap).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNoteDraft(report?.activityNote ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report?.id]);
 
   useEffect(() => {
     if (!ready) return;
@@ -124,6 +134,18 @@ export default function HomePage() {
             onDecrement={(key) => incrementCount(key, -1)}
             onSetValue={(key, value) => setCount(key, value)}
           />
+          <label className={styles.noteField}>
+            <span className={styles.sectionTitle}>{t("home.activityNoteLabel")}</span>
+            <textarea
+              className={styles.noteInput}
+              rows={5}
+              value={noteDraft}
+              placeholder={t("home.activityNotePlaceholder")}
+              onChange={(e) => setNoteDraft(e.target.value)}
+              onBlur={() => setActivityNote(noteDraft)}
+            />
+          </label>
+
           <SubmitReportButton onConfirmSubmit={handleSubmit} />
         </>
       )}

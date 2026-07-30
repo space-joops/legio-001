@@ -29,6 +29,18 @@
   font-size: var(--font-size-sm);
 }
 
+.textLink {
+  margin-left: auto;
+  min-height: 48px;
+  padding: 0 var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  text-decoration: underline;
+}
+
 .tapArea {
   width: 100%;
   min-height: 96px;

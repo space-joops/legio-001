@@ -24,17 +24,22 @@ export function useHistory() {
     [history]
   );
 
-  const updateReportCounts = useCallback((id: string, counts: PrayerCounts) => {
-    setHistory((prev) => {
-      const next = sortHistory(
-        prev.map((r) =>
-          r.id === id ? { ...r, counts, updatedAt: new Date().toISOString() } : r
-        )
-      );
-      storage.setHistory(next);
-      return next;
-    });
-  }, []);
+  const updateReportEntry = useCallback(
+    (id: string, counts: PrayerCounts, activityNote: string) => {
+      setHistory((prev) => {
+        const next = sortHistory(
+          prev.map((r) =>
+            r.id === id
+              ? { ...r, counts, activityNote, updatedAt: new Date().toISOString() }
+              : r
+          )
+        );
+        storage.setHistory(next);
+        return next;
+      });
+    },
+    []
+  );
 
-  return { ready, history, refresh, findById, updateReportCounts };
+  return { ready, history, refresh, findById, updateReportEntry };
 }

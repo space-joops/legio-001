@@ -20,6 +20,7 @@ export const ko = {
     counterView: "카운터로 보기",
     apply: "확인",
     minus: "빼기",
+    viewPrayerText: "기도문 보기",
   },
   week: {
     sessionNumber: "회차",
@@ -36,6 +37,8 @@ export const ko = {
     submitConfirmTitle: "주간 보고를 제출할까요?",
     submitConfirmBody:
       "제출하면 이번 주 기록이 마감되고 기록 목록에 추가됩니다. 다음 회차가 자동으로 시작됩니다.",
+    activityNoteLabel: "활동 사항",
+    activityNotePlaceholder: "방문, 특이사항 등 이번 주 활동을 자유롭게 적어 주세요.",
   },
   history: {
     title: "지난 활동 기록",
@@ -45,6 +48,7 @@ export const ko = {
     title: "주간 활동 보고",
     memberLabel: "단원",
     meetingLabel: "주회 일시",
+    activityNoteLabel: "활동 사항",
     share: "공유하기",
     shareCopied: "보고 내용이 복사되었습니다.",
     backToHistory: "기록으로 돌아가기",
@@ -86,5 +90,6 @@ export const ko = {
     cancel: "취소",
     confirm: "확인",
     edit: "수정",
+    close: "닫기",
   },
 };
