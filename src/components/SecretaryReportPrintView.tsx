@@ -1,5 +1,5 @@
 import { PRAYER_ITEMS } from "@/lib/constants";
-import { OFFICER_ROLES, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
+import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
 import type { MemberCounts, MonthlyReport } from "@/lib/types";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./SecretaryReportPrintView.module.css";
@@ -44,7 +44,10 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
                   {report.sessionRangeStart} ~ {report.sessionRangeEnd}
                 </td>
                 <th>{t("secretaryReport.meetingWeekdayLabel")}</th>
-                <td>{report.meetingWeekday || "-"}</td>
+                {/* >= 0, not truthiness: Sunday is 0 and used to print as "-". */}
+                <td>
+                  {report.meetingWeekday >= 0 ? t(WEEKDAY_LABEL_KEYS[report.meetingWeekday]) : "-"}
+                </td>
               </tr>
               <tr>
                 <th>{t("secretaryReport.meetingTimeLabel")}</th>

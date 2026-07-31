@@ -41,6 +41,14 @@ export function CounterButton({
     setNumericMode(false);
   };
 
+  // Typed numbers used to be silently dropped unless 확인 was tapped — commit on
+  // blur too, so tapping elsewhere keeps what was typed (empty input keeps the
+  // previous count instead of zeroing it).
+  const commitDraftOnBlur = () => {
+    const parsed = Number.parseInt(draft, 10);
+    if (Number.isFinite(parsed)) onSetValue(Math.max(0, parsed));
+  };
+
   return (
     <div className={styles.card}>
       <div className={styles.headerRow}>
@@ -93,6 +101,7 @@ export function CounterButton({
               min={0}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onBlur={commitDraftOnBlur}
               onFocus={selectOnFocus}
               aria-label={label}
               className={styles.numberInput}

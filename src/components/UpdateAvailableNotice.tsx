@@ -12,7 +12,16 @@ export function UpdateAvailableNotice() {
     if (!("serviceWorker" in navigator)) return;
 
     let reloading = false;
+    // sw.js calls clients.claim(), so controllerchange ALSO fires on the very
+    // first install. Only a change FROM an existing controller is an update
+    // worth reloading for — reloading on first install visibly restarted the
+    // app ~1s in and killed the opening splash (its 3h cooldown was already
+    // stamped, so it never came back).
+    let hadController = Boolean(navigator.serviceWorker.controller);
     const handleControllerChange = () => {
+      const wasControlled = hadController;
+      hadController = true;
+      if (!wasControlled) return;
       if (reloading) return;
       reloading = true;
       window.location.reload();

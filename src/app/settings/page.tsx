@@ -40,24 +40,45 @@ export default function SettingsPage() {
     storage.setProfile(next);
   };
 
+  // The full reload wipes React state, so give the success toast a moment on
+  // screen first — reloading immediately used to swallow it before anyone read it.
+  const reloadAfterToast = () => {
+    window.setTimeout(() => {
+      window.location.href = "/";
+    }, 1500);
+  };
+
+  const clearFileInput = () => {
+    setImportFile(null);
+    // Without this, re-picking the same file fires no change event and the
+    // button appears dead.
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleReset = () => {
     resetAllData();
     setResetOpen(false);
     showToast(t("settings.resetDone"));
-    window.location.href = "/";
+    reloadAfterToast();
   };
 
   const handleImportConfirm = async () => {
     const file = importFile;
-    setImportFile(null);
+    clearFileInput();
     if (!file) return;
     try {
       const data = JSON.parse(await file.text()) as Partial<ExportedData>;
       importExportedData(data);
       showToast(t("settings.importSuccess"));
-      window.location.href = "/";
+      reloadAfterToast();
     } catch {
       showToast(t("settings.importError"));
+    }
+  };
+
+  const handleExport = async () => {
+    if ((await shareOrDownloadExportedData()) === "downloaded") {
+      showToast(t("settings.exportSaved"));
     }
   };
 
@@ -104,6 +125,15 @@ export default function SettingsPage() {
             onChange={(e) => handleProfileChange("parishName", e.target.value)}
           />
         </label>
+        <p className={styles.description}>{t("common.autoSaveNotice")}</p>
+      </section>
+
+      <section className={styles.section}>
+        <span className={styles.label}>{t("settings.secretaryLink")}</span>
+        <p className={styles.description}>{t("settings.secretaryLinkDescription")}</p>
+        <Link href="/secretary" className={styles.secondaryButton}>
+          {t("secretary.open")}
+        </Link>
       </section>
 
       <section className={styles.section}>
@@ -144,21 +174,13 @@ export default function SettingsPage() {
       </section>
 
       <section className={styles.section}>
-        <span className={styles.label}>{t("settings.secretaryLink")}</span>
-        <p className={styles.description}>{t("settings.secretaryLinkDescription")}</p>
-        <Link href="/secretary" className={styles.secondaryButton}>
-          {t("settings.secretaryLink")}
-        </Link>
-      </section>
-
-      <section className={styles.section}>
         <span className={styles.label}>{t("settings.exportData")}</span>
         <p className={styles.description}>{t("settings.exportDescription")}</p>
         <button
           type="button"
           className={styles.secondaryButton}
           onClick={() => {
-            void shareOrDownloadExportedData();
+            void handleExport();
           }}
         >
           {t("settings.exportData")}
@@ -215,7 +237,7 @@ export default function SettingsPage() {
         confirmLabel={t("common.confirm")}
         cancelLabel={t("common.cancel")}
         danger
-        onCancel={() => setImportFile(null)}
+        onCancel={clearFileInput}
         onConfirm={handleImportConfirm}
       />
 

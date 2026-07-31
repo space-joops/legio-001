@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
-import { useToast } from "@/components/ToastProvider";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -77,7 +78,6 @@ function ReportPageContent() {
   const { t, language } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const { showToast } = useToast();
   const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
   const { ready: historyReady } = useHistory();
   const [mode, setMode] = useState<"edit" | "preview">(
@@ -88,6 +88,8 @@ function ReportPageContent() {
     report?.sessionRangeStart ?? 0
   );
   const [activePrayerSession, setActivePrayerSession] = useState(report?.sessionRangeStart ?? 0);
+  const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
+  const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
 
   useEffect(() => {
     const start = report?.sessionRangeStart;
@@ -111,19 +113,7 @@ function ReportPageContent() {
 
   const patch = (p: Partial<MonthlyReport>) => updateReport(report.id, p);
 
-  const handleSessionRangeChange = (
-    field: "sessionRangeStart" | "sessionRangeEnd",
-    value: string
-  ) => {
-    let start = field === "sessionRangeStart" ? toNumber(value) : report.sessionRangeStart;
-    let end = field === "sessionRangeEnd" ? toNumber(value) : report.sessionRangeEnd;
-    if (end - start + 1 > MAX_ATTENDANCE_SESSIONS) {
-      if (field === "sessionRangeStart") {
-        end = start + MAX_ATTENDANCE_SESSIONS - 1;
-      } else {
-        start = end - MAX_ATTENDANCE_SESSIONS + 1;
-      }
-    }
+  const applySessionRange = (start: number, end: number) => {
     const attendanceRoll = resyncAttendanceSessions(report.attendanceRoll, start, end);
     const prayerRoll = resyncPrayerRollSessions(report.prayerRoll, start, end);
     patch({
@@ -133,6 +123,41 @@ function ReportPageContent() {
       prayerRoll,
       attendance: computeAttendanceSummary(attendanceRoll),
     });
+  };
+
+  /** True when a session holds anything the secretary actually entered — an
+      unchecked attendance box or a nonzero prayer count. */
+  const sessionHasUserInput = (n: number) =>
+    report.attendanceRoll.some((record) => record.sessions[n] === false) ||
+    report.prayerRoll.some((entry) => {
+      const counts = entry.sessions[n];
+      return counts ? Object.values(counts).some((v) => v > 0) : false;
+    });
+
+  const handleSessionRangeChange = (
+    field: "sessionRangeStart" | "sessionRangeEnd",
+    value: string
+  ) => {
+    // Clearing the field used to collapse the range to 0 and wipe every
+    // session's data — hold off until an actual number is typed.
+    if (value.trim() === "") return;
+    let start = field === "sessionRangeStart" ? toNumber(value) : report.sessionRangeStart;
+    let end = field === "sessionRangeEnd" ? toNumber(value) : report.sessionRangeEnd;
+    if (end - start + 1 > MAX_ATTENDANCE_SESSIONS) {
+      if (field === "sessionRangeStart") {
+        end = start + MAX_ATTENDANCE_SESSIONS - 1;
+      } else {
+        start = end - MAX_ATTENDANCE_SESSIONS + 1;
+      }
+    }
+    const losesData = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).some(
+      (n) => (n < start || n > end) && sessionHasUserInput(n)
+    );
+    if (losesData) {
+      setPendingRange({ start, end });
+    } else {
+      applySessionRange(start, end);
+    }
   };
 
   const toggleAttendance = (personId: string, sessionNumber: number) => {
@@ -248,7 +273,7 @@ function ReportPageContent() {
   if (mode === "preview") {
     return (
       <>
-        <div className={styles.previewActions}>
+        <div className={styles.previewActions} data-app-chrome>
           <button type="button" className={styles.secondaryButton} onClick={() => setMode("edit")}>
             {t("secretaryReport.edit")}
           </button>
@@ -272,17 +297,14 @@ function ReportPageContent() {
   return (
     <>
       <div className={styles.topActions}>
+        <Link href="/secretary" className={styles.secondaryButton}>
+          {t("secretaryReport.backToList")}
+        </Link>
         <button type="button" className={styles.secondaryButton} onClick={() => setMode("preview")}>
           {t("secretaryReport.preview")}
         </button>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          onClick={() => showToast(t("secretaryReport.saved"))}
-        >
-          {t("common.save")}
-        </button>
       </div>
+      <p className={styles.autoSaveNotice}>{t("common.autoSaveNotice")}</p>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.meetingInfoSection")}</h2>
@@ -360,6 +382,7 @@ function ReportPageContent() {
         </div>
 
         <h3 className={styles.sectionTitle}>{t("secretaryReport.attendanceGridSection")}</h3>
+        <p className={styles.hint}>{t("secretaryReport.attendanceDefaultHint")}</p>
         <SessionTabBar
           sessions={sessionNumbers}
           active={activeAttendanceSession}
@@ -552,7 +575,7 @@ function ReportPageContent() {
             <button
               type="button"
               className={styles.removeButton}
-              onClick={() => removeAgendaItem(item.id)}
+              onClick={() => setRemovingAgendaId(item.id)}
             >
               {t("secretaryReport.agendaRemove")}
             </button>
@@ -737,6 +760,34 @@ function ReportPageContent() {
           />
         </label>
       </section>
+
+      <ConfirmDialog
+        open={pendingRange !== null}
+        title={t("secretaryReport.sessionRangeConfirmTitle")}
+        body={t("secretaryReport.sessionRangeConfirmBody")}
+        confirmLabel={t("common.confirm")}
+        cancelLabel={t("common.cancel")}
+        danger
+        onCancel={() => setPendingRange(null)}
+        onConfirm={() => {
+          if (pendingRange) applySessionRange(pendingRange.start, pendingRange.end);
+          setPendingRange(null);
+        }}
+      />
+
+      <ConfirmDialog
+        open={removingAgendaId !== null}
+        title={t("secretaryReport.agendaRemoveConfirmTitle")}
+        body={t("secretaryReport.agendaRemoveConfirmBody")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        danger
+        onCancel={() => setRemovingAgendaId(null)}
+        onConfirm={() => {
+          if (removingAgendaId) removeAgendaItem(removingAgendaId);
+          setRemovingAgendaId(null);
+        }}
+      />
     </>
   );
 }

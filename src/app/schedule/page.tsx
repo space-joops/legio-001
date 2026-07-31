@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
+import { useToast } from "@/components/ToastProvider";
 import { useSchedule } from "@/hooks/useSchedule";
 import { useTranslation } from "@/i18n/useTranslation";
 import { formatMeetingDateTime, toDateTimeLocalValue } from "@/lib/reportUtils";
@@ -14,7 +15,8 @@ type PermissionState = NotificationPermission | "unsupported";
 
 export default function SchedulePage() {
   const { t, language } = useTranslation();
-  const { ready, events, addEvent, removeEvent } = useSchedule();
+  const { ready, events, pastEvents, addEvent, removeEvent } = useSchedule();
+  const { showToast } = useToast();
 
   const [title, setTitle] = useState("");
   const [dateTime, setDateTime] = useState("");
@@ -39,6 +41,8 @@ export default function SchedulePage() {
     addEvent(title.trim(), dateTime, reminderMinutesBefore);
     setTitle("");
     setDateTime(toDateTimeLocalValue(new Date()));
+    // The new item lands below the fold on phones, so confirm out loud.
+    showToast(t("schedule.added"));
   };
 
   const handleRequestPermission = async () => {
@@ -64,6 +68,7 @@ export default function SchedulePage() {
             type="text"
             className={styles.input}
             value={title}
+            required
             placeholder={t("schedule.titlePlaceholder")}
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -74,6 +79,7 @@ export default function SchedulePage() {
             type="datetime-local"
             className={styles.input}
             value={dateTime}
+            required
             onChange={(e) => setDateTime(e.target.value)}
           />
         </label>
@@ -121,6 +127,31 @@ export default function SchedulePage() {
             </li>
           ))}
         </ul>
+      )}
+
+      {pastEvents.length > 0 && (
+        <>
+          <h2 className={styles.pastTitle}>{t("schedule.pastTitle")}</h2>
+          <ul className={`${styles.list} ${styles.pastList}`}>
+            {pastEvents.map((event) => (
+              <li key={event.id} className={styles.item}>
+                <div>
+                  <p className={styles.itemTitle}>{event.title}</p>
+                  <p className={styles.itemDate}>
+                    {formatMeetingDateTime(event.dateTime, language)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className={styles.deleteButton}
+                  onClick={() => setDeleteTarget(event.id)}
+                >
+                  {t("common.delete")}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <ConfirmDialog

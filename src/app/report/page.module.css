@@ -33,3 +33,27 @@
   background: var(--color-primary);
   color: var(--color-primary-contrast);
 }
+
+.backLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+/* Outlined rather than filled: destructive, but must not compete with Share. */
+.deleteButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}

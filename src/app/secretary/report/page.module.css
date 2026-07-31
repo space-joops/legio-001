@@ -5,6 +5,16 @@
   flex-wrap: wrap;
 }
 
+.topActions > a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.autoSaveNotice {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
 .section {
   display: flex;
   flex-direction: column;

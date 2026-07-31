@@ -50,6 +50,9 @@ export function DisplayPreferencesProvider({ children }: { children: ReactNode }
   const setSplashEnabled = (enabled: boolean) => {
     setSplashEnabledState(enabled);
     storage.setSettings({ ...storage.getSettings(), splashEnabled: enabled });
+    // Re-enabling should be verifiable right away — without this, the 3-hour
+    // cooldown keeps the splash invisible and the toggle looks broken.
+    if (enabled) storage.setLastSplashShownAt(0);
   };
 
   return (
