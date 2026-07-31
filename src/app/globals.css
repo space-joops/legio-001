@@ -117,6 +117,15 @@ button:disabled {
   outline-offset: 2px;
 }
 
+/* A phone held sideways has very little height to spare, so the fixed chrome
+   gives some back. Every consumer of this token (nav height, the space the page
+   reserves for it, the toast offset) follows automatically. */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --bottom-nav-height: 3.25rem;
+  }
+}
+
 /* Wider screens get roomier type: the tokens are rem-based, so the user's own
    text-size setting still multiplies on top of these. */
 @media (min-width: 960px) {

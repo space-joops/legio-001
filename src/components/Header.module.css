@@ -20,6 +20,25 @@
   font-weight: 700;
 }
 
+/* Trim the sticky header when height is scarce. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .header {
+    padding: var(--space-1) 0;
+  }
+
+  .title {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* Mirrors PageShell's breakpoints so the title tracks the content column. */
+@media (min-width: 700px) {
+  .inner.wide {
+    width: 96%;
+    max-width: 1600px;
+  }
+}
+
 @media (min-width: 960px) {
   .inner {
     max-width: 860px;

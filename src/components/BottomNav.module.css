@@ -47,6 +47,16 @@
   flex-shrink: 0;
 }
 
+/* Sideways on a phone: put the icon beside the label instead of above it, so
+   the bar costs roughly half the height. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .item {
+    flex-direction: row;
+    gap: var(--space-1);
+    padding: 4px var(--space-1);
+  }
+}
+
 /* Keep the tabs a compact centred row on a monitor instead of stretching each
    one across a quarter of the screen. */
 @media (min-width: 960px) {
