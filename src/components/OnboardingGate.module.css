@@ -13,7 +13,7 @@
   flex-direction: column;
   gap: var(--space-3);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
@@ -42,7 +42,7 @@
 .input {
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-background);
   padding: 0 var(--space-3);
   font-size: var(--font-size-base);

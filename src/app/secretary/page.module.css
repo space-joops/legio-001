@@ -25,7 +25,7 @@
   flex-direction: column;
   gap: var(--space-2);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
   margin-top: var(--space-4);
@@ -56,7 +56,7 @@
   min-height: var(--min-tap-target);
   min-width: 0;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-background);
   padding: 0 var(--space-3);
   font-size: var(--font-size-base);
@@ -107,7 +107,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }

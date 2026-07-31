@@ -1,13 +1,14 @@
 :root {
-  --color-background: #fbfaf6;
-  --color-surface: #ffffff;
-  --color-surface-alt: #f1efe6;
-  --color-text: #1c1b1a;
-  --color-text-muted: #5a584f;
-  --color-primary: #1d4d8f;
-  --color-primary-strong: #163c70;
-  --color-primary-contrast: #ffffff;
-  --color-border: #ddd9cc;
+  --color-background: #fafaf5;
+  --color-surface: #efe8dc;
+  --color-surface-alt: #e4dac4;
+  --color-text: #4a3a2a;
+  --color-text-muted: #8a7660;
+  --color-primary: #5c7a92;
+  --color-primary-strong: #46606f;
+  --color-primary-contrast: #fafaf5;
+  --color-accent-secondary: #dfa34a;
+  --color-border: #4a3a2a;
   --color-danger: #a3342c;
   --color-danger-contrast: #ffffff;
 
@@ -29,26 +30,6 @@
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 32px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #14161a;
-    --color-surface: #1e2127;
-    --color-surface-alt: #262a31;
-    --color-text: #f2f1ec;
-    --color-text-muted: #b7b4a8;
-    --color-primary: #6ea1e6;
-    --color-primary-strong: #8fb6ec;
-    --color-primary-contrast: #10131a;
-    --color-border: #383c44;
-    --color-danger: #e8837a;
-    --color-danger-contrast: #2a1210;
-  }
-
-  html {
-    color-scheme: dark;
-  }
 }
 
 * {
@@ -86,6 +67,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR",
     "Malgun Gothic", Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--font-size-base);
+  font-weight: 500;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

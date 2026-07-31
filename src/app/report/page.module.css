@@ -1,7 +1,7 @@
 .editButton {
   min-height: var(--min-tap-target);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-surface-alt);
   color: var(--color-text);
   font-size: var(--font-size-base);
@@ -23,7 +23,7 @@
 }
 
 .cancelButton {
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: transparent;
   color: var(--color-text);
 }
