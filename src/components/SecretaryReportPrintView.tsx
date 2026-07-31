@@ -35,96 +35,102 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.meetingInfoSection")}</h2>
-        <table className={styles.table}>
-          <tbody>
-            <tr>
-              <th>{t("week.sessionNumber")}</th>
-              <td>
-                {report.sessionRangeStart} ~ {report.sessionRangeEnd}
-              </td>
-              <th>{t("secretaryReport.meetingWeekdayLabel")}</th>
-              <td>{report.meetingWeekday || "-"}</td>
-            </tr>
-            <tr>
-              <th>{t("secretaryReport.meetingTimeLabel")}</th>
-              <td>{report.meetingTime || "-"}</td>
-              <th>{t("secretaryReport.meetingLocationLabel")}</th>
-              <td>{report.meetingLocation || "-"}</td>
-            </tr>
-            <tr>
-              <th>{t("secretaryReport.attendanceSection")} ({t("secretaryReport.officers")})</th>
-              <td>
-                {report.attendance.officersPresent} / {report.attendance.officersTotal}
-              </td>
-              <th>{t("secretaryReport.attendanceSection")} ({t("secretaryReport.members")})</th>
-              <td>
-                {report.attendance.membersPresent} / {report.attendance.membersTotal}
-              </td>
-            </tr>
-            <tr>
-              <th>{t("secretaryRoster.spiritualDirectorNameLabel")}</th>
-              <td colSpan={3}>
-                {report.roster.spiritualDirectorName} {report.roster.spiritualDirectorBaptismalName}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <tbody>
+              <tr>
+                <th>{t("week.sessionNumber")}</th>
+                <td>
+                  {report.sessionRangeStart} ~ {report.sessionRangeEnd}
+                </td>
+                <th>{t("secretaryReport.meetingWeekdayLabel")}</th>
+                <td>{report.meetingWeekday || "-"}</td>
+              </tr>
+              <tr>
+                <th>{t("secretaryReport.meetingTimeLabel")}</th>
+                <td>{report.meetingTime || "-"}</td>
+                <th>{t("secretaryReport.meetingLocationLabel")}</th>
+                <td>{report.meetingLocation || "-"}</td>
+              </tr>
+              <tr>
+                <th>{t("secretaryReport.attendanceSection")} ({t("secretaryReport.officers")})</th>
+                <td>
+                  {report.attendance.officersPresent} / {report.attendance.officersTotal}
+                </td>
+                <th>{t("secretaryReport.attendanceSection")} ({t("secretaryReport.members")})</th>
+                <td>
+                  {report.attendance.membersPresent} / {report.attendance.membersTotal}
+                </td>
+              </tr>
+              <tr>
+                <th>{t("secretaryRoster.spiritualDirectorNameLabel")}</th>
+                <td colSpan={3}>
+                  {report.roster.spiritualDirectorName} {report.roster.spiritualDirectorBaptismalName}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</h2>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>{t("secretaryRoster.officersSection")}</th>
-              <th>{t("secretaryRoster.nameLabel")}</th>
-              <th>{t("secretaryRoster.baptismalNameLabel")}</th>
-              <th>{t("secretaryRoster.appointedDateLabel")}</th>
-              <th>{t("secretaryRoster.noteLabel")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {OFFICER_ROLES.map((role) => {
-              const officer = report.roster.officers.find((o) => o.role === role);
-              if (!officer) return null;
-              return (
-                <tr key={role}>
-                  <th>{t(`secretaryRoster.roleLabel.${role}`)}</th>
-                  <td>{officer.name}</td>
-                  <td>{officer.baptismalName}</td>
-                  <td>{officer.appointedDate}</td>
-                  <td>{officer.note}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>{t("secretaryRoster.officersSection")}</th>
+                <th>{t("secretaryRoster.nameLabel")}</th>
+                <th>{t("secretaryRoster.baptismalNameLabel")}</th>
+                <th>{t("secretaryRoster.appointedDateLabel")}</th>
+                <th>{t("secretaryRoster.noteLabel")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {OFFICER_ROLES.map((role) => {
+                const officer = report.roster.officers.find((o) => o.role === role);
+                if (!officer) return null;
+                return (
+                  <tr key={role}>
+                    <th>{t(`secretaryRoster.roleLabel.${role}`)}</th>
+                    <td>{officer.name}</td>
+                    <td>{officer.baptismalName}</td>
+                    <td>{officer.appointedDate}</td>
+                    <td>{officer.note}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</h2>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th />
-              <th>{t("secretaryReport.prevMonthLabel")}</th>
-              <th>{t("secretaryReport.thisMonthLabel")}</th>
-              <th>{t("secretaryReport.increaseLabel")}</th>
-              <th>{t("secretaryReport.decreaseLabel")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {MEMBER_COUNT_ROWS.map(({ key, labelKey }) => (
-              <tr key={key}>
-                <th>{t(labelKey)}</th>
-                <td>{report.memberCountsPrevMonth[key]}</td>
-                <td>{report.memberCountsThisMonth[key]}</td>
-                <td>{report.memberCountsIncrease[key]}</td>
-                <td>{report.memberCountsDecrease[key]}</td>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th />
+                <th>{t("secretaryReport.prevMonthLabel")}</th>
+                <th>{t("secretaryReport.thisMonthLabel")}</th>
+                <th>{t("secretaryReport.increaseLabel")}</th>
+                <th>{t("secretaryReport.decreaseLabel")}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {MEMBER_COUNT_ROWS.map(({ key, labelKey }) => (
+                <tr key={key}>
+                  <th>{t(labelKey)}</th>
+                  <td>{report.memberCountsPrevMonth[key]}</td>
+                  <td>{report.memberCountsThisMonth[key]}</td>
+                  <td>{report.memberCountsIncrease[key]}</td>
+                  <td>{report.memberCountsDecrease[key]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className={styles.section}>
@@ -132,75 +138,81 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
         {report.agendaItems.length === 0 ? (
           <p className={styles.empty}>-</p>
         ) : (
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>{t("secretaryReport.agendaStatusLabel")}</th>
-                <th>{t("secretaryReport.agendaTitleLabel")}</th>
-                <th>{t("secretaryReport.agendaOrganizerLabel")}</th>
-                <th>{t("secretaryReport.agendaDateTimeLabel")}</th>
-                <th>{t("secretaryReport.agendaLocationLabel")}</th>
-                <th>{t("secretaryReport.agendaAttendanceNoteLabel")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {report.agendaItems.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.status}</td>
-                  <td>{item.title}</td>
-                  <td>{item.organizer}</td>
-                  <td>{item.dateTime}</td>
-                  <td>{item.location}</td>
-                  <td>{item.attendanceNote}</td>
+          <div className={styles.tableScroll}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>{t("secretaryReport.agendaStatusLabel")}</th>
+                  <th>{t("secretaryReport.agendaTitleLabel")}</th>
+                  <th>{t("secretaryReport.agendaOrganizerLabel")}</th>
+                  <th>{t("secretaryReport.agendaDateTimeLabel")}</th>
+                  <th>{t("secretaryReport.agendaLocationLabel")}</th>
+                  <th>{t("secretaryReport.agendaAttendanceNoteLabel")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {report.agendaItems.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.status}</td>
+                    <td>{item.title}</td>
+                    <td>{item.organizer}</td>
+                    <td>{item.dateTime}</td>
+                    <td>{item.location}</td>
+                    <td>{item.attendanceNote}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
-        <table className={styles.table}>
-          <tbody>
-            <tr>
-              <th>{t("secretaryReport.broughtForwardLabel")}</th>
-              <td>{report.treasury.broughtForward}</td>
-              <th>{t("secretaryReport.incomeLabel")}</th>
-              <td>{report.treasury.income}</td>
-            </tr>
-            <tr>
-              <th>{t("secretaryReport.expenseLabel")}</th>
-              <td>{report.treasury.expense}</td>
-              <th>{t("secretaryReport.balanceLabel")}</th>
-              <td>{report.treasury.balance}</td>
-            </tr>
-            <tr>
-              <th>{t("secretaryReport.expenseBreakdownLabel")}</th>
-              <td colSpan={3}>{report.treasury.expenseBreakdown || "-"}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <tbody>
+              <tr>
+                <th>{t("secretaryReport.broughtForwardLabel")}</th>
+                <td>{report.treasury.broughtForward}</td>
+                <th>{t("secretaryReport.incomeLabel")}</th>
+                <td>{report.treasury.income}</td>
+              </tr>
+              <tr>
+                <th>{t("secretaryReport.expenseLabel")}</th>
+                <td>{report.treasury.expense}</td>
+                <th>{t("secretaryReport.balanceLabel")}</th>
+                <td>{report.treasury.balance}</td>
+              </tr>
+              <tr>
+                <th>{t("secretaryReport.expenseBreakdownLabel")}</th>
+                <td colSpan={3}>{report.treasury.expenseBreakdown || "-"}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.prayerSection")}</h2>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              {PRAYER_ITEMS.map((item) => (
-                <th key={item.key}>{t(item.labelKey)}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {PRAYER_ITEMS.map((item) => (
-                <td key={item.key}>{report.prayerCounts[item.key]}</td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                {PRAYER_ITEMS.map((item) => (
+                  <th key={item.key}>{t(item.labelKey)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {PRAYER_ITEMS.map((item) => (
+                  <td key={item.key}>{report.prayerCounts[item.key]}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className={styles.section}>
