@@ -14,7 +14,7 @@ export function PageShell({
 }) {
   return (
     <>
-      <Header title={title} />
+      <Header title={title} wide={wide} />
       <main className={`${styles.main} ${wide ? styles.wide : ""}`}>{children}</main>
       <BottomNav />
     </>

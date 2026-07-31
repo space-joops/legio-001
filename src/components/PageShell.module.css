@@ -1,7 +1,9 @@
 .main {
   flex: 1;
   padding: var(--space-4);
-  padding-bottom: calc(var(--bottom-nav-height) + var(--space-5));
+  padding-bottom: calc(
+    var(--bottom-nav-height) + env(safe-area-inset-bottom) + var(--space-5)
+  );
   max-width: 560px;
   width: 100%;
   margin: 0 auto;
@@ -11,6 +13,12 @@
 }
 
 @media (min-width: 960px) {
+  /* Without this the member screens stayed a 560px phone column on a desktop
+     monitor, stranding the content between huge empty margins. */
+  .main {
+    max-width: 860px;
+  }
+
   .main.wide {
     width: 80%;
     max-width: 1600px;

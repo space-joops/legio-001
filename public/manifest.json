@@ -5,10 +5,10 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#fbfaf6",
-  "theme_color": "#1d4d8f",
+  "background_color": "#fafaf5",
+  "theme_color": "#fafaf5",
   "lang": "ko",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "icons": [
     {
       "src": "/icons/icon-192.png",

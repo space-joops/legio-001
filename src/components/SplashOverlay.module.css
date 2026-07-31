@@ -1,0 +1,122 @@
+.dialog {
+  border: none;
+  padding: 0;
+  margin: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  background: var(--color-background);
+  color: var(--color-text);
+  animation: fadeIn 400ms ease-out both;
+}
+
+.dialog::backdrop {
+  background: var(--color-background);
+}
+
+/* Declared after .dialog so it wins the equal-specificity tie and replaces the
+   entry animation when the splash starts to leave. */
+.leaving {
+  animation: fadeOut 600ms ease-in both;
+}
+
+.screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.image {
+  flex: 1;
+  min-height: 0;
+  /* Shrink freely on phones, but never scale past the source artwork's own
+     474x718 — a stretched scan just looks soft on a large monitor. */
+  max-width: min(100%, 474px);
+  max-height: 718px;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  animation: riseIn 900ms ease-out both;
+}
+
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+}
+
+.skipButton {
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* A slow, barely-there rise so the image settles into place rather than snapping. */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .leaving,
+  .image {
+    animation: none;
+  }
+}

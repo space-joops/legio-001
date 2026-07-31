@@ -388,8 +388,10 @@ function ReportPageContent() {
                   <td>
                     <input
                       type="checkbox"
+                      className={styles.attendanceCheckbox}
                       checked={record.sessions[activeAttendanceSession] ?? true}
                       onChange={() => toggleAttendance(record.personId, activeAttendanceSession)}
+                      aria-label={`${record.personLabel || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeAttendanceSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
                     />
                   </td>
                 </tr>

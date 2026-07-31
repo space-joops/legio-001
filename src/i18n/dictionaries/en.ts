@@ -83,6 +83,10 @@ export const en = {
     fontFamilyLabel: "Font",
     fontFamilySystem: "Default",
     fontFamilyNanum: "Nanum Gothic",
+    splashLabel: "Opening image",
+    splashDescription: "Briefly show the Legion of Mary image when the app opens.",
+    splashOn: "Show",
+    splashOff: "Hide",
     install: "Install app",
     installDescription: "Install to your home screen for easier access.",
     installIosHint: "On iOS, tap the Share button then 'Add to Home Screen'.",
@@ -127,6 +131,11 @@ export const en = {
   update: {
     available: "A new version is available.",
     action: "Update",
+  },
+  splash: {
+    imageAlt: "Legion of Mary devotional image (the Vexillum)",
+    skip: "Skip",
+    dontShowAgain: "Don't show again",
   },
   schedule: {
     title: "Schedule",

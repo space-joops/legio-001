@@ -43,6 +43,8 @@ export interface Settings {
   language: Language;
   fontScale: FontScale;
   fontFamily: FontFamily;
+  /** Show the Legion of Mary splash image on app open (at most once every few hours). */
+  splashEnabled: boolean;
 }
 
 export interface ScheduleEvent {

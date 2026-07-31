@@ -1,9 +1,12 @@
+/* Warm amber tone marks the secretary-only section. The primary is darker than
+   the obvious #d97706 so white button text clears WCAG AA, and --color-border is
+   deliberately left to inherit the global dark brown: the pale amber it used to
+   be sat at 1.4:1 on white, which made the attendance table's gridlines vanish. */
 .themed {
-  --color-primary: #d97706;
-  --color-primary-strong: #b45309;
+  --color-primary: #b45309;
+  --color-primary-strong: #8a3f07;
   --color-primary-contrast: #ffffff;
   --color-background: #fdf6ec;
   --color-surface: #ffffff;
   --color-surface-alt: #fbebd1;
-  --color-border: #f0d9ad;
 }

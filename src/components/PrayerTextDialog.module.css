@@ -39,6 +39,10 @@
   flex-direction: column;
   gap: var(--space-4);
   padding-bottom: var(--space-3);
+  /* Cap the measure so prayer lines don't run the full width of a monitor. */
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
 .section {
@@ -59,7 +63,7 @@
 }
 
 .note {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--color-text-muted);
 }
 

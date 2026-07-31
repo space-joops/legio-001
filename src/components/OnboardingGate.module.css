@@ -24,7 +24,7 @@
 }
 
 .subtitle {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--color-text-muted);
 }
 

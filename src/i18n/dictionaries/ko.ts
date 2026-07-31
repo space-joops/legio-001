@@ -81,6 +81,10 @@ export const ko = {
     fontFamilyLabel: "폰트",
     fontFamilySystem: "기본 고딕",
     fontFamilyNanum: "나눔고딕",
+    splashLabel: "시작 화면 성화",
+    splashDescription: "앱을 열 때 레지오 마리애 성화를 잠시 보여 줍니다.",
+    splashOn: "보기",
+    splashOff: "보지 않기",
     install: "앱 설치하기",
     installDescription: "홈 화면에 앱처럼 설치해서 더 편하게 사용하세요.",
     installIosHint: "iOS에서는 공유 버튼을 누른 뒤 '홈 화면에 추가'를 선택하세요.",
@@ -125,6 +129,11 @@ export const ko = {
   update: {
     available: "새 버전이 있습니다.",
     action: "업데이트",
+  },
+  splash: {
+    imageAlt: "레지오 마리애 성화 (레지오의 기)",
+    skip: "건너뛰기",
+    dontShowAgain: "다시 보지 않기",
   },
   schedule: {
     title: "일정",
