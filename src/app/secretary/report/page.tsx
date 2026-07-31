@@ -5,6 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
+import { useToast } from "@/components/ToastProvider";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -76,6 +77,7 @@ function ReportPageContent() {
   const { t, language } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const { showToast } = useToast();
   const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
   const { ready: historyReady } = useHistory();
   const [mode, setMode] = useState<"edit" | "preview">(
@@ -272,6 +274,13 @@ function ReportPageContent() {
       <div className={styles.topActions}>
         <button type="button" className={styles.secondaryButton} onClick={() => setMode("preview")}>
           {t("secretaryReport.preview")}
+        </button>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => showToast(t("secretaryReport.saved"))}
+        >
+          {t("common.save")}
         </button>
       </div>
 
@@ -717,10 +726,6 @@ function ReportPageContent() {
           />
         </label>
       </section>
-
-      <button type="button" className={styles.primaryButton} onClick={() => setMode("preview")}>
-        {t("secretaryReport.preview")}
-      </button>
     </>
   );
 }

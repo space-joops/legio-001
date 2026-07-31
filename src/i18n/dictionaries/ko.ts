@@ -105,6 +105,7 @@ export const ko = {
       "가져오기를 진행하면 현재 기기에 저장된 모든 데이터가 가져온 파일 내용으로 덮어써집니다. 이 작업은 되돌릴 수 없습니다.",
     importSuccess: "데이터를 가져왔습니다.",
     importError: "파일을 읽을 수 없습니다. 올바른 내보내기 파일인지 확인해 주세요.",
+    appVersionLabel: "버전",
   },
   common: {
     save: "저장",
@@ -271,6 +272,7 @@ export const ko = {
     cumulativeEvangelizationLabel: "선교실적 누계",
     otherNotesLabel: "기타",
     preview: "미리보기",
+    saved: "저장되었습니다.",
     edit: "수정",
     print: "인쇄 / PDF 저장",
     share: "공유하기",

@@ -15,15 +15,7 @@ export function buildExportedData(): ExportedData {
   };
 }
 
-export function downloadExportedData(): void {
-  const data = buildExportedData();
-  const name = data.profile.name || "unknown";
-  const date = data.exportedAt.slice(0, 10);
-  const filename = `legio-report-${name}-${date}.json`;
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
-    type: "application/json",
-  });
+function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -32,6 +24,30 @@ export function downloadExportedData(): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export async function shareOrDownloadExportedData(): Promise<void> {
+  const data = buildExportedData();
+  const name = data.profile.name || "unknown";
+  const date = data.exportedAt.slice(0, 10);
+  const filename = `legio-report-${name}-${date}.json`;
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+
+  if (typeof navigator !== "undefined" && "canShare" in navigator) {
+    const file = new File([blob], filename, { type: "application/json" });
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: filename });
+        return;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+      }
+    }
+  }
+
+  downloadBlob(blob, filename);
 }
 
 export function importExportedData(data: Partial<ExportedData>): void {
