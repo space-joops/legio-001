@@ -7,7 +7,8 @@
   display: contents;
 }
 
-@media (min-width: 960px) {
+/* 700px so a phone in landscape gets the two-column layout too. */
+@media (min-width: 700px) {
   .topRow {
     display: grid;
     grid-template-columns: 1fr 1fr;

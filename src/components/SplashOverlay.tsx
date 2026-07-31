@@ -17,24 +17,45 @@ type Phase = "hidden" | "visible" | "leaving";
 
 export function SplashOverlay() {
   const { t } = useTranslation();
-  const { splashEnabled, setSplashEnabled, ready } = useDisplayPreferences();
+  const { setSplashEnabled } = useDisplayPreferences();
   const [phase, setPhase] = useState<Phase>("hidden");
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const ref = useRef<HTMLDialogElement>(null);
-  const decided = useRef(false);
+  const phaseRef = useRef<Phase>("hidden");
 
-  // Decide exactly once, and only after preferences have been read from
-  // localStorage — before that `splashEnabled` is still the optimistic default
-  // and we'd show the splash to someone who had turned it off.
   useEffect(() => {
-    if (!ready || decided.current) return;
-    decided.current = true;
-    if (!splashEnabled) return;
-    if (Date.now() - storage.getLastSplashShownAt() < SPLASH_INTERVAL_MS) return;
-    storage.setLastSplashShownAt(Date.now());
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time decision from localStorage, unavailable at render time
-    setPhase("visible");
-  }, [ready, splashEnabled]);
+    phaseRef.current = phase;
+  }, [phase]);
+
+  // Runs on first mount and again whenever the app is brought back to the
+  // foreground, so returning from another app re-greets you — still subject to
+  // the interval, so tabbing away for a moment doesn't trigger it.
+  useEffect(() => {
+    // Read settings straight from storage rather than context: this closure
+    // outlives several renders, and storage is always the current value.
+    const maybeShow = () => {
+      if (phaseRef.current !== "hidden") return;
+      if (!storage.getSettings().splashEnabled) return;
+      if (Date.now() - storage.getLastSplashShownAt() < SPLASH_INTERVAL_MS) return;
+      storage.setLastSplashShownAt(Date.now());
+      setPhase("visible");
+    };
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") maybeShow();
+    };
+    // pageshow covers iOS restoring the page from the back/forward cache,
+    // which doesn't always fire visibilitychange.
+    const handlePageShow = () => maybeShow();
+
+    maybeShow();
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
 
   useEffect(() => {
     if (phase !== "visible") return;

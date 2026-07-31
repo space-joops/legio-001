@@ -12,6 +12,15 @@
   gap: var(--space-4);
 }
 
+/* A phone held sideways lands here (~700-930px). The table-heavy secretary
+   screens should spend that width rather than stay in a 560px column. */
+@media (min-width: 700px) {
+  .main.wide {
+    width: 96%;
+    max-width: 1600px;
+  }
+}
+
 @media (min-width: 960px) {
   /* Without this the member screens stayed a 560px phone column on a desktop
      monitor, stranding the content between huge empty margins. */
