@@ -12,11 +12,14 @@ import { PRAYER_ITEMS } from "@/lib/constants";
 import { generateId } from "@/lib/id";
 import {
   OFFICER_ROLES,
+  computeAttendanceSummary,
   formatMonthlyShareText,
   formatYearMonthLabel,
-  sumPrayerCountsForMonth,
+  resyncAttendanceSessions,
+  sessionRangeNumbers,
+  sumPrayerCountsForSessionRange,
 } from "@/lib/monthlyReportUtils";
-import type { AgendaItem, MemberCounts, MonthlyReport } from "@/lib/types";
+import type { AgendaItem, AttendanceRecord, MemberCounts, MonthlyReport } from "@/lib/types";
 import styles from "./page.module.css";
 
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
@@ -46,7 +49,9 @@ function ReportPageContent() {
   const id = searchParams.get("id");
   const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
   const { ready: historyReady, history } = useHistory();
-  const [mode, setMode] = useState<"edit" | "preview">("edit");
+  const [mode, setMode] = useState<"edit" | "preview">(
+    searchParams.get("mode") === "preview" ? "preview" : "edit"
+  );
 
   if (!reportsReady || !historyReady) return null;
 
@@ -57,8 +62,58 @@ function ReportPageContent() {
 
   const patch = (p: Partial<MonthlyReport>) => updateReport(report.id, p);
 
-  const patchAttendance = (field: keyof MonthlyReport["attendance"], value: string) => {
-    patch({ attendance: { ...report.attendance, [field]: toNumber(value) } });
+  const handleSessionRangeChange = (
+    field: "sessionRangeStart" | "sessionRangeEnd",
+    value: string
+  ) => {
+    const nextReport = { ...report, [field]: toNumber(value) };
+    const attendanceRoll = resyncAttendanceSessions(
+      report.attendanceRoll,
+      nextReport.sessionRangeStart,
+      nextReport.sessionRangeEnd
+    );
+    patch({
+      [field]: toNumber(value),
+      attendanceRoll,
+      attendance: computeAttendanceSummary(attendanceRoll),
+    } as Partial<MonthlyReport>);
+  };
+
+  const toggleAttendance = (personId: string, sessionNumber: number) => {
+    const attendanceRoll = report.attendanceRoll.map((record) =>
+      record.personId === personId
+        ? {
+            ...record,
+            sessions: { ...record.sessions, [sessionNumber]: !record.sessions[sessionNumber] },
+          }
+        : record
+    );
+    patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
+  };
+
+  const patchAttendanceLabel = (personId: string, personLabel: string) => {
+    patch({
+      attendanceRoll: report.attendanceRoll.map((record) =>
+        record.personId === personId ? { ...record, personLabel } : record
+      ),
+    });
+  };
+
+  const addAttendanceRow = () => {
+    const numbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
+    const newRow: AttendanceRecord = {
+      personId: generateId(),
+      personLabel: "",
+      isOfficer: false,
+      sessions: Object.fromEntries(numbers.map((n) => [n, false])),
+    };
+    const attendanceRoll = [...report.attendanceRoll, newRow];
+    patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
+  };
+
+  const removeAttendanceRow = (personId: string) => {
+    const attendanceRoll = report.attendanceRoll.filter((record) => record.personId !== personId);
+    patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
   };
 
   const patchTreasury = (
@@ -111,7 +166,13 @@ function ReportPageContent() {
   };
 
   const autoSumPrayerCounts = () => {
-    patch({ prayerCounts: sumPrayerCountsForMonth(history, report.yearMonth) });
+    patch({
+      prayerCounts: sumPrayerCountsForSessionRange(
+        history,
+        report.sessionRangeStart,
+        report.sessionRangeEnd
+      ),
+    });
   };
 
   const addAgendaItem = () => {
@@ -171,6 +232,7 @@ function ReportPageContent() {
         </button>
       </div>
 
+      <div className={styles.pairRow}>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.meetingInfoSection")}</h2>
         <div className={styles.row}>
@@ -181,7 +243,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.sessionRangeStart}
-              onChange={(e) => patch({ sessionRangeStart: toNumber(e.target.value) })}
+              onChange={(e) => handleSessionRangeChange("sessionRangeStart", e.target.value)}
             />
           </label>
           <label className={styles.field}>
@@ -191,7 +253,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.sessionRangeEnd}
-              onChange={(e) => patch({ sessionRangeEnd: toNumber(e.target.value) })}
+              onChange={(e) => handleSessionRangeChange("sessionRangeEnd", e.target.value)}
             />
           </label>
         </div>
@@ -227,50 +289,72 @@ function ReportPageContent() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.attendanceSection")}</h2>
         <div className={styles.row}>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.officersPresentLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.attendance.officersPresent}
-              onChange={(e) => patchAttendance("officersPresent", e.target.value)}
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.officersTotalLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.attendance.officersTotal}
-              onChange={(e) => patchAttendance("officersTotal", e.target.value)}
-            />
-          </label>
+          <p className={styles.attendanceSummary}>
+            {t("secretaryReport.officersPresentLabel")} {report.attendance.officersPresent}/
+            {report.attendance.officersTotal}
+          </p>
+          <p className={styles.attendanceSummary}>
+            {t("secretaryReport.membersPresentLabel")} {report.attendance.membersPresent}/
+            {report.attendance.membersTotal}
+          </p>
         </div>
-        <div className={styles.row}>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.membersPresentLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.attendance.membersPresent}
-              onChange={(e) => patchAttendance("membersPresent", e.target.value)}
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.membersTotalLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.attendance.membersTotal}
-              onChange={(e) => patchAttendance("membersTotal", e.target.value)}
-            />
-          </label>
+
+        <h3 className={styles.sectionTitle}>{t("secretaryReport.attendanceGridSection")}</h3>
+        <div className={styles.tableScroll}>
+          <table className={styles.attendanceTable}>
+            <thead>
+              <tr>
+                <th>{t("secretaryReport.attendanceRowNamePlaceholder")}</th>
+                {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map((n) => (
+                  <th key={n}>{n}</th>
+                ))}
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {report.attendanceRoll.map((record) => (
+                <tr key={record.personId}>
+                  <td>
+                    <input
+                      type="text"
+                      className={styles.attendanceNameInput}
+                      value={record.personLabel}
+                      placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
+                      onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
+                    />
+                  </td>
+                  {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map(
+                    (n) => (
+                      <td key={n}>
+                        <input
+                          type="checkbox"
+                          checked={record.sessions[n] ?? false}
+                          onChange={() => toggleAttendance(record.personId, n)}
+                        />
+                      </td>
+                    )
+                  )}
+                  <td>
+                    {!record.personId.startsWith("officer:") && (
+                      <button
+                        type="button"
+                        className={styles.removeButton}
+                        onClick={() => removeAttendanceRow(record.personId)}
+                      >
+                        {t("secretaryReport.removeAttendanceRow")}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        <button type="button" className={styles.secondaryButton} onClick={addAttendanceRow}>
+          {t("secretaryReport.addAttendanceRow")}
+        </button>
       </section>
+      </div>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</h2>
@@ -428,6 +512,7 @@ function ReportPageContent() {
         </button>
       </section>
 
+      <div className={styles.pairRow}>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
         <div className={styles.row}>
@@ -507,6 +592,7 @@ function ReportPageContent() {
           ))}
         </div>
       </section>
+      </div>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.instructionsSection")}</h2>
@@ -582,7 +668,7 @@ export default function SecretaryReportPage() {
   const { t } = useTranslation();
 
   return (
-    <PageShell title={t("secretaryReport.title")}>
+    <PageShell title={t("secretaryReport.title")} wide>
       <Suspense fallback={null}>
         <ReportPageContent />
       </Suspense>

@@ -69,6 +69,14 @@ export const DEFAULT_ROSTER: PraesidiumRoster = {
     auxiliaryFemale: 0,
     adjutorium: 0,
   },
+  memberRoster: {
+    activeMale: [],
+    activeFemale: [],
+    praetorium: [],
+    auxiliaryMale: [],
+    auxiliaryFemale: [],
+    adjutorium: [],
+  },
 };
 
 export const storage = {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useToast } from "@/components/ToastProvider";
 import { PageShell } from "@/components/PageShell";
 import { useRoster } from "@/hooks/useRoster";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -16,16 +18,37 @@ const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
 ];
 
+type Draft = Record<keyof MemberCounts, { name: string; baptismalName: string }>;
+
+const EMPTY_DRAFT: Draft = {
+  activeMale: { name: "", baptismalName: "" },
+  activeFemale: { name: "", baptismalName: "" },
+  praetorium: { name: "", baptismalName: "" },
+  auxiliaryMale: { name: "", baptismalName: "" },
+  auxiliaryFemale: { name: "", baptismalName: "" },
+  adjutorium: { name: "", baptismalName: "" },
+};
+
 export default function SecretaryRosterPage() {
   const { t } = useTranslation();
-  const { ready, roster, updateHeader, updateOfficer, updateMemberCounts } = useRoster();
+  const { showToast } = useToast();
+  const { ready, roster, updateHeader, updateOfficer, addMemberEntry, removeMemberEntry } =
+    useRoster();
+  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
 
   if (!ready || !roster) {
-    return <PageShell title={t("secretaryRoster.title")}>{null}</PageShell>;
+    return <PageShell title={t("secretaryRoster.title")} wide>{null}</PageShell>;
   }
 
+  const handleAddMember = (category: keyof MemberCounts) => {
+    const entry = draft[category];
+    if (!entry.name.trim()) return;
+    addMemberEntry(category, entry.name.trim(), entry.baptismalName.trim());
+    setDraft((prev) => ({ ...prev, [category]: { name: "", baptismalName: "" } }));
+  };
+
   return (
-    <PageShell title={t("secretaryRoster.title")}>
+    <PageShell title={t("secretaryRoster.title")} wide>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryRoster.headerSection")}</h2>
         <label className={styles.field}>
@@ -111,23 +134,79 @@ export default function SecretaryRosterPage() {
         })}
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryRoster.memberCountsSection")}</h2>
+      <h2 className={styles.sectionTitle}>{t("secretaryRoster.memberCountsSection")}</h2>
+      <div className={styles.memberGrid}>
         {MEMBER_COUNT_FIELDS.map(({ key, labelKey }) => (
-          <label key={key} className={styles.field}>
-            <span className={styles.label}>{t(labelKey)}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={roster.memberCounts[key]}
-              onChange={(e) =>
-                updateMemberCounts({ [key]: Number.parseInt(e.target.value, 10) || 0 })
-              }
-            />
-          </label>
+          <section key={key} className={styles.section}>
+            <h3 className={styles.memberCategoryTitle}>
+              {t(labelKey)}
+              <span className={styles.memberCount}>
+                {roster.memberCounts[key]}
+                {t("secretaryRoster.memberCountUnit")}
+              </span>
+            </h3>
+            {roster.memberRoster[key].length === 0 ? (
+              <p className={styles.memberListEmpty}>{t("secretaryRoster.memberListEmpty")}</p>
+            ) : (
+              <ul className={styles.memberList}>
+                {roster.memberRoster[key].map((entry) => (
+                  <li key={entry.id} className={styles.memberItem}>
+                    <span className={styles.memberName}>
+                      {entry.name}
+                      {entry.baptismalName ? ` (${entry.baptismalName})` : ""}
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.removeButton}
+                      onClick={() => removeMemberEntry(key, entry.id)}
+                    >
+                      {t("secretaryRoster.removeMember")}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className={styles.addRow}>
+              <input
+                type="text"
+                className={styles.input}
+                placeholder={t("secretaryRoster.memberNamePlaceholder")}
+                value={draft[key].name}
+                onChange={(e) =>
+                  setDraft((prev) => ({ ...prev, [key]: { ...prev[key], name: e.target.value } }))
+                }
+              />
+              <input
+                type="text"
+                className={styles.input}
+                placeholder={t("secretaryRoster.memberBaptismalNamePlaceholder")}
+                value={draft[key].baptismalName}
+                onChange={(e) =>
+                  setDraft((prev) => ({
+                    ...prev,
+                    [key]: { ...prev[key], baptismalName: e.target.value },
+                  }))
+                }
+              />
+              <button
+                type="button"
+                className={styles.addButton}
+                onClick={() => handleAddMember(key)}
+              >
+                {t("secretaryRoster.addMemberButton")}
+              </button>
+            </div>
+          </section>
         ))}
-      </section>
+      </div>
+
+      <button
+        type="button"
+        className={styles.saveButton}
+        onClick={() => showToast(t("secretaryRoster.saved"))}
+      >
+        {t("common.save")}
+      </button>
     </PageShell>
   );
 }

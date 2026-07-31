@@ -33,7 +33,7 @@ export default function SecretaryPage() {
   }, []);
 
   if (!reportsReady || !rosterReady || !roster) {
-    return <PageShell title={t("secretary.title")}>{null}</PageShell>;
+    return <PageShell title={t("secretary.title")} wide>{null}</PageShell>;
   }
 
   const handleCreate = () => {
@@ -47,31 +47,33 @@ export default function SecretaryPage() {
   };
 
   return (
-    <PageShell title={t("secretary.title")}>
+    <PageShell title={t("secretary.title")} wide>
       <p className={styles.subtitle}>{t("secretary.subtitle")}</p>
 
-      <section className={styles.section}>
-        <Link href="/secretary/roster" className={styles.secondaryButton}>
-          {t("secretary.rosterLink")}
-        </Link>
-        <p className={styles.description}>{t("secretary.rosterLinkDescription")}</p>
-      </section>
+      <div className={styles.topRow}>
+        <section className={styles.section}>
+          <Link href="/secretary/roster" className={styles.secondaryButton}>
+            {t("secretary.rosterLink")}
+          </Link>
+          <p className={styles.description}>{t("secretary.rosterLinkDescription")}</p>
+        </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretary.newReportTitle")}</h2>
-        <label className={styles.field}>
-          <span className={styles.label}>{t("secretary.yearMonthLabel")}</span>
-          <input
-            type="month"
-            className={styles.input}
-            value={yearMonth}
-            onChange={(e) => setYearMonth(e.target.value)}
-          />
-        </label>
-        <button type="button" className={styles.primaryButton} onClick={handleCreate}>
-          {t("secretary.create")}
-        </button>
-      </section>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>{t("secretary.newReportTitle")}</h2>
+          <label className={styles.field}>
+            <span className={styles.label}>{t("secretary.yearMonthLabel")}</span>
+            <input
+              type="month"
+              className={styles.input}
+              value={yearMonth}
+              onChange={(e) => setYearMonth(e.target.value)}
+            />
+          </label>
+          <button type="button" className={styles.primaryButton} onClick={handleCreate}>
+            {t("secretary.create")}
+          </button>
+        </section>
+      </div>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretary.listTitle")}</h2>
