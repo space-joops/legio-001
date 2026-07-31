@@ -40,7 +40,7 @@
 }
 
 .cancelButton {
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: transparent;
   color: var(--color-text);
 }

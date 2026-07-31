@@ -1,6 +1,6 @@
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-3);
   display: flex;
@@ -19,7 +19,7 @@
 .headerIcon {
   width: 28px;
   height: 28px;
-  color: var(--color-primary);
+  color: var(--color-accent-secondary);
   flex-shrink: 0;
 }
 
@@ -35,7 +35,7 @@
   padding: 0 var(--space-2);
   border: none;
   background: transparent;
-  color: var(--color-primary);
+  color: var(--color-accent-secondary);
   font-weight: 700;
   font-size: var(--font-size-sm);
   text-decoration: underline;
@@ -74,8 +74,9 @@
   min-width: var(--min-tap-target);
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-accent-secondary);
   background: var(--color-surface-alt);
+  color: var(--color-accent-secondary);
   font-size: 1.75rem;
   font-weight: 700;
   line-height: 1;
@@ -85,9 +86,9 @@
   min-height: var(--min-tap-target);
   padding: 0 var(--space-3);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-accent-secondary);
   background: transparent;
-  color: var(--color-primary);
+  color: var(--color-accent-secondary);
   font-weight: 700;
   font-size: var(--font-size-sm);
 }

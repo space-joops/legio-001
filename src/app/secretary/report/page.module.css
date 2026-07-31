@@ -10,7 +10,7 @@
   flex-direction: column;
   gap: var(--space-3);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
@@ -58,7 +58,7 @@
   min-height: var(--min-tap-target);
   min-width: 0;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-background);
   padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-base);
@@ -72,7 +72,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }
@@ -93,7 +93,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-3);
 }
@@ -147,7 +147,7 @@
   min-height: var(--min-tap-target);
   min-width: var(--min-tap-target);
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-background);
   color: var(--color-text);
   font-size: var(--font-size-base);
@@ -168,7 +168,7 @@
 
 .sessionTable th,
 .sessionTable td {
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   padding: var(--space-1);
   text-align: center;
 }
@@ -182,7 +182,7 @@
   min-height: var(--min-tap-target);
   min-width: 120px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-background);
   padding: 0 var(--space-2);
   font-size: var(--font-size-base);
@@ -197,7 +197,7 @@
   min-height: var(--min-tap-target);
   width: 64px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border);
   background: var(--color-background);
   padding: 0 var(--space-1);
   font-size: var(--font-size-sm);

@@ -2,20 +2,9 @@
   --color-primary: #d97706;
   --color-primary-strong: #b45309;
   --color-primary-contrast: #ffffff;
+  --color-accent-secondary: #d97706;
   --color-background: #fdf6ec;
   --color-surface: #ffffff;
   --color-surface-alt: #fbebd1;
   --color-border: #f0d9ad;
-}
-
-@media (prefers-color-scheme: dark) {
-  .themed {
-    --color-primary: #f59e0b;
-    --color-primary-strong: #fbbf24;
-    --color-primary-contrast: #241a04;
-    --color-background: #241a04;
-    --color-surface: #2e2308;
-    --color-surface-alt: #3a2b0a;
-    --color-border: #5a4413;
-  }
 }
