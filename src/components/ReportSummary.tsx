@@ -1,6 +1,7 @@
 import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { formatMeetingDateTime, formatSessionLabel } from "@/lib/reportUtils";
+import { selectOnFocus } from "@/lib/selectOnFocus";
 import type { PrayerCounts, PrayerItemKey, WeeklyReport } from "@/lib/types";
 import styles from "./ReportSummary.module.css";
 
@@ -53,6 +54,7 @@ export function ReportSummary({
                 className={styles.countInput}
                 value={counts[item.key]}
                 aria-label={t(item.labelKey)}
+                onFocus={selectOnFocus}
                 onChange={(e) => {
                   const parsed = Number.parseInt(e.target.value, 10);
                   onDraftChange?.(item.key, Number.isFinite(parsed) ? Math.max(0, parsed) : 0);

@@ -135,25 +135,46 @@
   font-weight: 700;
 }
 
-.tableScroll {
+.sessionTabs {
+  display: flex;
+  gap: var(--space-1);
   overflow-x: auto;
+  padding-bottom: var(--space-1);
 }
 
-.attendanceTable {
+.sessionTab {
+  flex-shrink: 0;
+  min-height: var(--min-tap-target);
+  min-width: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.sessionTabActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.sessionTable {
   border-collapse: collapse;
   width: 100%;
 }
 
-.attendanceTable th,
-.attendanceTable td {
+.sessionTable th,
+.sessionTable td {
   border: 1px solid var(--color-border);
   padding: var(--space-1);
   text-align: center;
-  white-space: nowrap;
 }
 
-.attendanceTable th:first-child,
-.attendanceTable td:first-child {
+.sessionTable th:first-child,
+.sessionTable td:first-child {
   text-align: left;
 }
 
@@ -170,12 +191,6 @@
 .hint {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
-}
-
-.prayerRollPersonHeader {
-  text-align: left !important;
-  background: var(--color-surface-alt);
-  white-space: normal !important;
 }
 
 .prayerRollInput {

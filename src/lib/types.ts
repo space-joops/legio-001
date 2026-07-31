@@ -120,7 +120,8 @@ export interface MonthlyReport {
   yearMonth: string; // "2026-06"
   sessionRangeStart: number;
   sessionRangeEnd: number;
-  meetingWeekday: string;
+  /** 0 = Sunday ... 6 = Saturday; -1 = not configured yet. */
+  meetingWeekday: number;
   meetingTime: string;
   meetingLocation: string;
   attendance: {

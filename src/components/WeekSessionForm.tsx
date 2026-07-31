@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/useTranslation";
+import { selectOnFocus } from "@/lib/selectOnFocus";
 import styles from "./WeekSessionForm.module.css";
 
 interface WeekSessionFormProps {
@@ -39,6 +40,7 @@ export function WeekSessionForm({
           required
           value={sessionNumber}
           onChange={(e) => onSessionNumberChange(e.target.value)}
+          onFocus={selectOnFocus}
           placeholder={t("week.sessionNumberPlaceholder")}
           className={styles.input}
         />

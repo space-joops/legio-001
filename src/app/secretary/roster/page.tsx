@@ -5,19 +5,9 @@ import { useToast } from "@/components/ToastProvider";
 import { PageShell } from "@/components/PageShell";
 import { useRoster } from "@/hooks/useRoster";
 import { useTranslation } from "@/i18n/useTranslation";
-import { OFFICER_ROLES } from "@/lib/monthlyReportUtils";
+import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS } from "@/lib/monthlyReportUtils";
 import type { MemberCounts } from "@/lib/types";
 import styles from "./page.module.css";
-
-const WEEKDAY_LABEL_KEYS = [
-  "secretaryRoster.weekdaySun",
-  "secretaryRoster.weekdayMon",
-  "secretaryRoster.weekdayTue",
-  "secretaryRoster.weekdayWed",
-  "secretaryRoster.weekdayThu",
-  "secretaryRoster.weekdayFri",
-  "secretaryRoster.weekdaySat",
-] as const;
 
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },

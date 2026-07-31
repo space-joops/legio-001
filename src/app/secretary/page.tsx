@@ -9,7 +9,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useRoster } from "@/hooks/useRoster";
 import { useTranslation } from "@/i18n/useTranslation";
-import { formatYearMonthLabel } from "@/lib/monthlyReportUtils";
+import { addMonthToYearMonth, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
 import styles from "./page.module.css";
 
 function currentYearMonth(): string {
@@ -28,9 +28,10 @@ export default function SecretaryPage() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time default from browser clock
-    setYearMonth(currentYearMonth());
-  }, []);
+    if (!reportsReady) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- default derived from storage-backed reports, not pure render state
+    setYearMonth(reports[0] ? addMonthToYearMonth(reports[0].yearMonth) : currentYearMonth());
+  }, [reportsReady, reports]);
 
   if (!reportsReady || !rosterReady || !roster) {
     return <PageShell title={t("secretary.title")} wide>{null}</PageShell>;
