@@ -381,6 +381,7 @@ function ReportPageContent() {
                       type="text"
                       className={styles.attendanceNameInput}
                       value={record.personLabel}
+                      aria-label={t("secretaryReport.personColumnLabel")}
                       placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
                       onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
                     />
@@ -402,7 +403,9 @@ function ReportPageContent() {
       </section>
 
       <details className={styles.section}>
-        <summary className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</summary>
+        <summary className={styles.sectionSummary}>
+          <h2 className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</h2>
+        </summary>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryRoster.councilAffiliationLabel")}</span>
           <input
@@ -453,7 +456,9 @@ function ReportPageContent() {
       </details>
 
       <details className={styles.section}>
-        <summary className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</summary>
+        <summary className={styles.sectionSummary}>
+          <h2 className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</h2>
+        </summary>
         {MEMBER_COUNT_FIELDS.map(({ key, labelKey }) => (
           <div key={key} className={styles.memberCountRow}>
             <span className={styles.label}>{t(labelKey)}</span>

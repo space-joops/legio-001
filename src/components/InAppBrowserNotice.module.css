@@ -22,7 +22,7 @@
 }
 
 .copyButton {
-  min-height: 44px;
+  min-height: var(--min-tap-target);
   padding: 0 var(--space-2);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-primary);
@@ -34,8 +34,8 @@
 }
 
 .dismissButton {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: var(--min-tap-target);
+  min-width: var(--min-tap-target);
   border: none;
   background: transparent;
   color: var(--color-text-muted);
