@@ -88,6 +88,8 @@ export interface PraesidiumRoster {
   officers: OfficerEntry[];
   memberCounts: MemberCounts;
   memberRoster: MemberRoster;
+  /** 0 = Sunday ... 6 = Saturday; -1 = not configured yet. */
+  regularMeetingWeekday: number;
 }
 
 export interface AgendaItem {
@@ -107,6 +109,12 @@ export interface AttendanceRecord {
   sessions: Record<number, boolean>;
 }
 
+export interface PrayerSessionEntry {
+  personId: string;
+  personLabel: string;
+  sessions: Record<number, PrayerCounts>;
+}
+
 export interface MonthlyReport {
   id: string;
   yearMonth: string; // "2026-06"
@@ -122,6 +130,7 @@ export interface MonthlyReport {
     membersTotal: number;
   };
   attendanceRoll: AttendanceRecord[];
+  prayerRoll: PrayerSessionEntry[];
   roster: PraesidiumRoster;
   memberCountsPrevMonth: MemberCounts;
   memberCountsThisMonth: MemberCounts;

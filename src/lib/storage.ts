@@ -77,6 +77,7 @@ export const DEFAULT_ROSTER: PraesidiumRoster = {
     auxiliaryFemale: [],
     adjutorium: [],
   },
+  regularMeetingWeekday: -1,
 };
 
 export const storage = {

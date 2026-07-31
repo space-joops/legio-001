@@ -167,15 +167,42 @@
   font-size: var(--font-size-base);
 }
 
-.pairRow {
-  display: contents;
+.hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
 }
 
-@media (min-width: 960px) {
-  .pairRow {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
-    align-items: start;
-  }
+.prayerRollPersonHeader {
+  text-align: left !important;
+  background: var(--color-surface-alt);
+  white-space: normal !important;
+}
+
+.prayerRollInput {
+  min-height: var(--min-tap-target);
+  width: 64px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  padding: 0 var(--space-1);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.section > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.section > summary::before {
+  content: "▸ ";
+  color: var(--color-primary);
+}
+
+.section[open] > summary::before {
+  content: "▾ ";
 }

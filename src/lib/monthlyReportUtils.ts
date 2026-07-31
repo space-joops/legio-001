@@ -10,8 +10,11 @@ import type {
   OfficerRole,
   PraesidiumRoster,
   PrayerCounts,
+  PrayerSessionEntry,
   WeeklyReport,
 } from "./types";
+
+export const MAX_ATTENDANCE_SESSIONS = 6;
 
 export const OFFICER_ROLES: OfficerRole[] = ["president", "vicePresident", "secretary", "treasurer"];
 
@@ -67,6 +70,7 @@ export function createDefaultRoster(): PraesidiumRoster {
     })),
     memberCounts: { ...EMPTY_MEMBER_COUNTS },
     memberRoster: createDefaultMemberRoster(),
+    regularMeetingWeekday: -1,
   };
 }
 
@@ -103,11 +107,61 @@ function sessionRangeForMonth(history: WeeklyReport[], yearMonth: string): { sta
   return { start: Math.min(...numbers), end: Math.max(...numbers) };
 }
 
+export function countWeekdayOccurrencesInMonth(yearMonth: string, weekday: number): number {
+  const [year, month] = yearMonth.split("-").map(Number);
+  if (!year || !month) return 0;
+  const daysInMonth = new Date(year, month, 0).getDate();
+  let count = 0;
+  for (let day = 1; day <= daysInMonth; day++) {
+    if (new Date(year, month - 1, day).getDay() === weekday) count++;
+  }
+  return count;
+}
+
+function computeSessionRange(
+  yearMonth: string,
+  roster: PraesidiumRoster,
+  previousReport: MonthlyReport | null,
+  history: WeeklyReport[]
+): { start: number; end: number } {
+  if (roster.regularMeetingWeekday >= 0 && previousReport) {
+    const start = previousReport.sessionRangeEnd + 1;
+    const count = Math.min(
+      countWeekdayOccurrencesInMonth(yearMonth, roster.regularMeetingWeekday),
+      MAX_ATTENDANCE_SESSIONS
+    );
+    const end = count > 0 ? start + count - 1 : start - 1;
+    return { start, end };
+  }
+  return sessionRangeForMonth(history, yearMonth);
+}
+
 export function sessionRangeNumbers(sessionStart: number, sessionEnd: number): number[] {
   if (sessionEnd < sessionStart) return [];
   const numbers: number[] = [];
   for (let n = sessionStart; n <= sessionEnd; n++) numbers.push(n);
   return numbers;
+}
+
+function formatPersonLabel(prefix: string, name: string, baptismalName: string): string {
+  const base = name ? `${prefix} ${name}` : prefix;
+  return name && baptismalName ? `${base}(${baptismalName})` : base;
+}
+
+function rosterPersons(roster: PraesidiumRoster): { id: string; label: string; isOfficer: boolean }[] {
+  const officers = roster.officers.map((officer) => ({
+    id: `officer:${officer.role}`,
+    label: formatPersonLabel(OFFICER_ROLE_LABEL_KO[officer.role], officer.name, officer.baptismalName),
+    isOfficer: true,
+  }));
+  const members = [...roster.memberRoster.activeMale, ...roster.memberRoster.activeFemale].map(
+    (member) => ({
+      id: `member:${member.id}`,
+      label: formatPersonLabel("단원", member.name, member.baptismalName),
+      isOfficer: false,
+    })
+  );
+  return [...officers, ...members];
 }
 
 export function buildAttendanceRoll(
@@ -119,26 +173,55 @@ export function buildAttendanceRoll(
   const emptySessions = (): Record<number, boolean> =>
     Object.fromEntries(numbers.map((n) => [n, false]));
 
-  const officerRows: AttendanceRecord[] = roster.officers.map((officer) => ({
-    personId: `officer:${officer.role}`,
-    personLabel: officer.name
-      ? `${OFFICER_ROLE_LABEL_KO[officer.role]} ${officer.name}`
-      : OFFICER_ROLE_LABEL_KO[officer.role],
-    isOfficer: true,
+  return rosterPersons(roster).map((person) => ({
+    personId: person.id,
+    personLabel: person.label,
+    isOfficer: person.isOfficer,
     sessions: emptySessions(),
   }));
+}
 
-  const memberRows: AttendanceRecord[] = [
-    ...roster.memberRoster.activeMale,
-    ...roster.memberRoster.activeFemale,
-  ].map((member) => ({
-    personId: `member:${member.id}`,
-    personLabel: member.name,
-    isOfficer: false,
+export function buildPrayerRoll(
+  roster: PraesidiumRoster,
+  sessionStart: number,
+  sessionEnd: number
+): PrayerSessionEntry[] {
+  const numbers = sessionRangeNumbers(sessionStart, sessionEnd);
+  const emptySessions = (): Record<number, PrayerCounts> =>
+    Object.fromEntries(numbers.map((n) => [n, { ...EMPTY_COUNTS }]));
+
+  return rosterPersons(roster).map((person) => ({
+    personId: person.id,
+    personLabel: person.label,
     sessions: emptySessions(),
   }));
+}
 
-  return [...officerRows, ...memberRows];
+export function resyncPrayerRollSessions(
+  roll: PrayerSessionEntry[],
+  sessionStart: number,
+  sessionEnd: number
+): PrayerSessionEntry[] {
+  const numbers = sessionRangeNumbers(sessionStart, sessionEnd);
+  return roll.map((entry) => {
+    const sessions: Record<number, PrayerCounts> = {};
+    for (const n of numbers) {
+      sessions[n] = entry.sessions[n] ?? { ...EMPTY_COUNTS };
+    }
+    return { ...entry, sessions };
+  });
+}
+
+export function computePrayerCountsFromRoll(roll: PrayerSessionEntry[]): PrayerCounts {
+  const sums: PrayerCounts = { ...EMPTY_COUNTS };
+  for (const entry of roll) {
+    for (const counts of Object.values(entry.sessions)) {
+      for (const item of PRAYER_ITEMS) {
+        sums[item.key] += counts[item.key] ?? 0;
+      }
+    }
+  }
+  return sums;
 }
 
 export function resyncAttendanceSessions(
@@ -183,9 +266,10 @@ export function createMonthlyReport(
   history: WeeklyReport[]
 ): MonthlyReport {
   const now = new Date().toISOString();
-  const range = sessionRangeForMonth(history, yearMonth);
+  const range = computeSessionRange(yearMonth, roster, previousReport, history);
   const broughtForward = previousReport?.treasury.balance ?? 0;
   const attendanceRoll = buildAttendanceRoll(roster, range.start, range.end);
+  const prayerRoll = buildPrayerRoll(roster, range.start, range.end);
   return {
     id: generateId(),
     yearMonth,
@@ -196,6 +280,7 @@ export function createMonthlyReport(
     meetingLocation: "",
     attendance: computeAttendanceSummary(attendanceRoll),
     attendanceRoll,
+    prayerRoll,
     roster: structuredClone(roster),
     memberCountsPrevMonth: previousReport
       ? { ...previousReport.memberCountsThisMonth }

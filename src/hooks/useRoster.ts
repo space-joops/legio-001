@@ -33,6 +33,15 @@ export function useRoster() {
     []
   );
 
+  const updateRegularMeetingWeekday = useCallback((weekday: number) => {
+    setRoster((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, regularMeetingWeekday: weekday };
+      storage.setRoster(next);
+      return next;
+    });
+  }, []);
+
   const updateOfficer = useCallback((role: OfficerRole, patch: Partial<OfficerEntry>) => {
     setRoster((prev) => {
       if (!prev) return prev;
@@ -99,6 +108,7 @@ export function useRoster() {
     ready,
     roster,
     updateHeader,
+    updateRegularMeetingWeekday,
     updateOfficer,
     addMemberEntry,
     removeMemberEntry,
