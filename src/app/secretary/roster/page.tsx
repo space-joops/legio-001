@@ -9,6 +9,16 @@ import { OFFICER_ROLES } from "@/lib/monthlyReportUtils";
 import type { MemberCounts } from "@/lib/types";
 import styles from "./page.module.css";
 
+const WEEKDAY_LABEL_KEYS = [
+  "secretaryRoster.weekdaySun",
+  "secretaryRoster.weekdayMon",
+  "secretaryRoster.weekdayTue",
+  "secretaryRoster.weekdayWed",
+  "secretaryRoster.weekdayThu",
+  "secretaryRoster.weekdayFri",
+  "secretaryRoster.weekdaySat",
+] as const;
+
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
   { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },
@@ -32,8 +42,15 @@ const EMPTY_DRAFT: Draft = {
 export default function SecretaryRosterPage() {
   const { t } = useTranslation();
   const { showToast } = useToast();
-  const { ready, roster, updateHeader, updateOfficer, addMemberEntry, removeMemberEntry } =
-    useRoster();
+  const {
+    ready,
+    roster,
+    updateHeader,
+    updateRegularMeetingWeekday,
+    updateOfficer,
+    addMemberEntry,
+    removeMemberEntry,
+  } = useRoster();
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
 
   if (!ready || !roster) {
@@ -80,6 +97,21 @@ export default function SecretaryRosterPage() {
             value={roster.spiritualDirectorBaptismalName}
             onChange={(e) => updateHeader({ spiritualDirectorBaptismalName: e.target.value })}
           />
+        </label>
+        <label className={styles.field}>
+          <span className={styles.label}>{t("secretaryRoster.regularMeetingWeekdayLabel")}</span>
+          <select
+            className={styles.input}
+            value={roster.regularMeetingWeekday}
+            onChange={(e) => updateRegularMeetingWeekday(Number(e.target.value))}
+          >
+            <option value={-1}>{t("secretaryRoster.weekdayNotSet")}</option>
+            {WEEKDAY_LABEL_KEYS.map((key, index) => (
+              <option key={key} value={index}>
+                {t(key)}
+              </option>
+            ))}
+          </select>
         </label>
       </section>
 

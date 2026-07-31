@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
   CalendarIcon,
   HistoryIcon,
   HomeIcon,
-  PreviewIcon,
   ReportListIcon,
   SecretarySettingsIcon,
   SettingsIcon,
@@ -18,7 +16,6 @@ import styles from "./BottomNav.module.css";
 export function BottomNav() {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const { reports } = useMonthlyReports();
   const isSecretary = pathname.startsWith("/secretary");
 
   const defaultItems = [
@@ -28,22 +25,12 @@ export function BottomNav() {
     { href: "/settings", label: t("nav.settings"), Icon: SettingsIcon, swappable: true },
   ];
 
-  const previewHref = reports[0]
-    ? `/secretary/report?id=${reports[0].id}&mode=preview`
-    : "/secretary";
-
   const secretaryItems = [
-    {
-      href: previewHref,
-      label: t("secretary.navPreview"),
-      Icon: PreviewIcon,
-      isActive: pathname.startsWith("/secretary/report"),
-    },
     {
       href: "/secretary",
       label: t("secretary.navReportList"),
       Icon: ReportListIcon,
-      isActive: pathname === "/secretary",
+      isActive: pathname === "/secretary" || pathname.startsWith("/secretary/report"),
     },
     {
       href: "/secretary/roster",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Fragment, Suspense, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
@@ -11,15 +11,18 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { generateId } from "@/lib/id";
 import {
+  MAX_ATTENDANCE_SESSIONS,
   OFFICER_ROLES,
   computeAttendanceSummary,
+  computePrayerCountsFromRoll,
   formatMonthlyShareText,
   formatYearMonthLabel,
   resyncAttendanceSessions,
+  resyncPrayerRollSessions,
   sessionRangeNumbers,
   sumPrayerCountsForSessionRange,
 } from "@/lib/monthlyReportUtils";
-import type { AgendaItem, AttendanceRecord, MemberCounts, MonthlyReport } from "@/lib/types";
+import type { AgendaItem, MemberCounts, MonthlyReport, PrayerItemKey } from "@/lib/types";
 import styles from "./page.module.css";
 
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
@@ -66,17 +69,24 @@ function ReportPageContent() {
     field: "sessionRangeStart" | "sessionRangeEnd",
     value: string
   ) => {
-    const nextReport = { ...report, [field]: toNumber(value) };
-    const attendanceRoll = resyncAttendanceSessions(
-      report.attendanceRoll,
-      nextReport.sessionRangeStart,
-      nextReport.sessionRangeEnd
-    );
+    let start = field === "sessionRangeStart" ? toNumber(value) : report.sessionRangeStart;
+    let end = field === "sessionRangeEnd" ? toNumber(value) : report.sessionRangeEnd;
+    if (end - start + 1 > MAX_ATTENDANCE_SESSIONS) {
+      if (field === "sessionRangeStart") {
+        end = start + MAX_ATTENDANCE_SESSIONS - 1;
+      } else {
+        start = end - MAX_ATTENDANCE_SESSIONS + 1;
+      }
+    }
+    const attendanceRoll = resyncAttendanceSessions(report.attendanceRoll, start, end);
+    const prayerRoll = resyncPrayerRollSessions(report.prayerRoll, start, end);
     patch({
-      [field]: toNumber(value),
+      sessionRangeStart: start,
+      sessionRangeEnd: end,
       attendanceRoll,
+      prayerRoll,
       attendance: computeAttendanceSummary(attendanceRoll),
-    } as Partial<MonthlyReport>);
+    });
   };
 
   const toggleAttendance = (personId: string, sessionNumber: number) => {
@@ -99,21 +109,29 @@ function ReportPageContent() {
     });
   };
 
-  const addAttendanceRow = () => {
-    const numbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
-    const newRow: AttendanceRecord = {
-      personId: generateId(),
-      personLabel: "",
-      isOfficer: false,
-      sessions: Object.fromEntries(numbers.map((n) => [n, false])),
-    };
-    const attendanceRoll = [...report.attendanceRoll, newRow];
-    patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
+  const patchPrayerRollCell = (
+    personId: string,
+    sessionNumber: number,
+    itemKey: PrayerItemKey,
+    value: string
+  ) => {
+    patch({
+      prayerRoll: report.prayerRoll.map((entry) =>
+        entry.personId === personId
+          ? {
+              ...entry,
+              sessions: {
+                ...entry.sessions,
+                [sessionNumber]: { ...entry.sessions[sessionNumber], [itemKey]: toNumber(value) },
+              },
+            }
+          : entry
+      ),
+    });
   };
 
-  const removeAttendanceRow = (personId: string) => {
-    const attendanceRoll = report.attendanceRoll.filter((record) => record.personId !== personId);
-    patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
+  const fillPrayerCountsFromRoll = () => {
+    patch({ prayerCounts: computePrayerCountsFromRoll(report.prayerRoll) });
   };
 
   const patchTreasury = (
@@ -232,7 +250,6 @@ function ReportPageContent() {
         </button>
       </div>
 
-      <div className={styles.pairRow}>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.meetingInfoSection")}</h2>
         <div className={styles.row}>
@@ -257,6 +274,7 @@ function ReportPageContent() {
             />
           </label>
         </div>
+        <p className={styles.hint}>{t("secretaryReport.maxSessionsHint")}</p>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.meetingWeekdayLabel")}</span>
           <input
@@ -308,7 +326,6 @@ function ReportPageContent() {
                 {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map((n) => (
                   <th key={n}>{n}</th>
                 ))}
-                <th />
               </tr>
             </thead>
             <tbody>
@@ -334,30 +351,15 @@ function ReportPageContent() {
                       </td>
                     )
                   )}
-                  <td>
-                    {!record.personId.startsWith("officer:") && (
-                      <button
-                        type="button"
-                        className={styles.removeButton}
-                        onClick={() => removeAttendanceRow(record.personId)}
-                      >
-                        {t("secretaryReport.removeAttendanceRow")}
-                      </button>
-                    )}
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <button type="button" className={styles.secondaryButton} onClick={addAttendanceRow}>
-          {t("secretaryReport.addAttendanceRow")}
-        </button>
       </section>
-      </div>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</h2>
+      <details className={styles.section}>
+        <summary className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</summary>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryRoster.councilAffiliationLabel")}</span>
           <input
@@ -405,10 +407,10 @@ function ReportPageContent() {
             </div>
           );
         })}
-      </section>
+      </details>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</h2>
+      <details className={styles.section}>
+        <summary className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</summary>
         {MEMBER_COUNT_FIELDS.map(({ key, labelKey }) => (
           <div key={key} className={styles.memberCountRow}>
             <span className={styles.label}>{t(labelKey)}</span>
@@ -428,7 +430,7 @@ function ReportPageContent() {
             </div>
           </div>
         ))}
-      </section>
+      </details>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.agendaSection")}</h2>
@@ -512,7 +514,6 @@ function ReportPageContent() {
         </button>
       </section>
 
-      <div className={styles.pairRow}>
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
         <div className={styles.row}>
@@ -591,8 +592,63 @@ function ReportPageContent() {
             </label>
           ))}
         </div>
+
+        <div className={styles.sectionHeaderRow}>
+          <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
+          <button type="button" className={styles.secondaryButton} onClick={fillPrayerCountsFromRoll}>
+            {t("secretaryReport.fillFromRoll")}
+          </button>
+        </div>
+        <div className={styles.tableScroll}>
+          <table className={styles.attendanceTable}>
+            <thead>
+              <tr>
+                <th>{t("secretaryReport.attendanceRowNamePlaceholder")}</th>
+                {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map((n) => (
+                  <th key={n}>{n}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {report.prayerRoll.map((entry) => (
+                <Fragment key={entry.personId}>
+                  <tr>
+                    <th
+                      colSpan={
+                        sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd)
+                          .length + 1
+                      }
+                      className={styles.prayerRollPersonHeader}
+                    >
+                      {entry.personLabel}
+                    </th>
+                  </tr>
+                  {PRAYER_ITEMS.map((item) => (
+                    <tr key={item.key}>
+                      <td>{t(item.labelKey)}</td>
+                      {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map(
+                        (n) => (
+                          <td key={n}>
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              className={styles.prayerRollInput}
+                              value={entry.sessions[n]?.[item.key] ?? 0}
+                              onChange={(e) =>
+                                patchPrayerRollCell(entry.personId, n, item.key, e.target.value)
+                              }
+                            />
+                          </td>
+                        )
+                      )}
+                    </tr>
+                  ))}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
-      </div>
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.instructionsSection")}</h2>
