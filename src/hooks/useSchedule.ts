@@ -74,6 +74,12 @@ export function useSchedule() {
 
   const events =
     now === null ? [] : allEvents.filter((event) => new Date(event.dateTime).getTime() > now);
+  // Kept visible (most recent first) instead of silently vanishing the moment
+  // an event's time passes — users read that as "my event got deleted".
+  const pastEvents =
+    now === null
+      ? []
+      : allEvents.filter((event) => new Date(event.dateTime).getTime() <= now).reverse();
 
-  return { ready, events, addEvent, removeEvent, markNotified };
+  return { ready, events, pastEvents, addEvent, removeEvent, markNotified };
 }

@@ -26,7 +26,7 @@ function downloadBlob(blob: Blob, filename: string): void {
   URL.revokeObjectURL(url);
 }
 
-export async function shareOrDownloadExportedData(): Promise<void> {
+export async function shareOrDownloadExportedData(): Promise<"shared" | "downloaded" | "cancelled"> {
   const data = buildExportedData();
   const name = data.profile.name || "unknown";
   const date = data.exportedAt.slice(0, 10);
@@ -40,14 +40,15 @@ export async function shareOrDownloadExportedData(): Promise<void> {
     if (navigator.canShare({ files: [file] })) {
       try {
         await navigator.share({ files: [file], title: filename });
-        return;
+        return "shared";
       } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") return;
+        if (err instanceof DOMException && err.name === "AbortError") return "cancelled";
       }
     }
   }
 
   downloadBlob(blob, filename);
+  return "downloaded";
 }
 
 export function importExportedData(data: Partial<ExportedData>): void {

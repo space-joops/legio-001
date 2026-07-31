@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useDisplayPreferences } from "./DisplayPreferencesProvider";
+import { useToast } from "./ToastProvider";
 import { useTranslation } from "@/i18n/useTranslation";
 import { storage } from "@/lib/storage";
 import styles from "./SplashOverlay.module.css";
@@ -9,17 +10,25 @@ import styles from "./SplashOverlay.module.css";
 /** Minimum gap between splash appearances, so it greets you but never nags. */
 const SPLASH_INTERVAL_MS = 3 * 60 * 60 * 1000;
 /** How long the image stays fully visible before it starts fading away. */
-const HOLD_MS = 2000;
+const HOLD_MS = 5000;
 /** Must stay in sync with the fade-out duration in SplashOverlay.module.css. */
 const FADE_OUT_MS = 600;
 
 type Phase = "hidden" | "visible" | "leaving";
 
+function isTypingTarget(el: Element | null): boolean {
+  return (
+    el instanceof HTMLInputElement ||
+    el instanceof HTMLTextAreaElement ||
+    el instanceof HTMLSelectElement
+  );
+}
+
 export function SplashOverlay() {
   const { t } = useTranslation();
   const { setSplashEnabled } = useDisplayPreferences();
+  const { showToast } = useToast();
   const [phase, setPhase] = useState<Phase>("hidden");
-  const [dontShowAgain, setDontShowAgain] = useState(false);
   const ref = useRef<HTMLDialogElement>(null);
   const phaseRef = useRef<Phase>("hidden");
 
@@ -37,6 +46,9 @@ export function SplashOverlay() {
       if (phaseRef.current !== "hidden") return;
       if (!storage.getSettings().splashEnabled) return;
       if (Date.now() - storage.getLastSplashShownAt() < SPLASH_INTERVAL_MS) return;
+      // Don't steal the screen from someone mid-typing (e.g. returning to a
+      // half-filled form after a long time in another app).
+      if (isTypingTarget(document.activeElement)) return;
       storage.setLastSplashShownAt(Date.now());
       setPhase("visible");
     };
@@ -79,9 +91,10 @@ export function SplashOverlay() {
 
   const dismiss = () => setPhase((current) => (current === "visible" ? "leaving" : current));
 
-  const handleDontShowAgain = (checked: boolean) => {
-    setDontShowAgain(checked);
-    setSplashEnabled(!checked);
+  const handleDontShowAgain = () => {
+    setSplashEnabled(false);
+    dismiss();
+    showToast(t("splash.reEnableHint"));
   };
 
   return (
@@ -89,6 +102,7 @@ export function SplashOverlay() {
       ref={ref}
       className={`${styles.dialog} ${phase === "leaving" ? styles.leaving : ""}`}
       data-app-chrome
+      onClick={dismiss}
       onCancel={(e) => {
         e.preventDefault();
         dismiss();
@@ -96,21 +110,33 @@ export function SplashOverlay() {
     >
       {phase !== "hidden" && (
         <div className={styles.screen}>
-          {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
-          <img className={styles.image} src="/splash.jpg" alt={t("splash.imageAlt")} />
-          <div className={styles.actions}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                className={styles.checkbox}
-                checked={dontShowAgain}
-                onChange={(e) => handleDontShowAgain(e.target.checked)}
-              />
-              {t("splash.dontShowAgain")}
-            </label>
-            <button type="button" className={styles.skipButton} onClick={dismiss}>
-              {t("splash.skip")}
-            </button>
+          <div className={styles.frame}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
+            <img className={styles.image} src="/splash.jpg" alt={t("splash.imageAlt")} />
+            <div className={styles.scrim} />
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.closeButton}
+                autoFocus
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dismiss();
+                }}
+              >
+                {t("common.close")}
+              </button>
+              <button
+                type="button"
+                className={styles.dontShowButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDontShowAgain();
+                }}
+              >
+                {t("splash.dontShowAgain")}
+              </button>
+            </div>
           </div>
         </div>
       )}

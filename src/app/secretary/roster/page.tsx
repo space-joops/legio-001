@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { useToast } from "@/components/ToastProvider";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { useRoster } from "@/hooks/useRoster";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -31,7 +32,6 @@ const EMPTY_DRAFT: Draft = {
 
 export default function SecretaryRosterPage() {
   const { t } = useTranslation();
-  const { showToast } = useToast();
   const {
     ready,
     roster,
@@ -42,6 +42,10 @@ export default function SecretaryRosterPage() {
     removeMemberEntry,
   } = useRoster();
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
+  const [removeTarget, setRemoveTarget] = useState<{
+    category: keyof MemberCounts;
+    id: string;
+  } | null>(null);
 
   if (!ready || !roster) {
     return <PageShell title={t("secretaryRoster.title")} wide>{null}</PageShell>;
@@ -180,7 +184,7 @@ export default function SecretaryRosterPage() {
                     <button
                       type="button"
                       className={styles.removeButton}
-                      onClick={() => removeMemberEntry(key, entry.id)}
+                      onClick={() => setRemoveTarget({ category: key, id: entry.id })}
                     >
                       {t("secretaryRoster.removeMember")}
                     </button>
@@ -224,13 +228,25 @@ export default function SecretaryRosterPage() {
         ))}
       </div>
 
-      <button
-        type="button"
-        className={styles.saveButton}
-        onClick={() => showToast(t("secretaryRoster.saved"))}
-      >
-        {t("common.save")}
-      </button>
+      <p className={styles.autoSaveNotice}>{t("common.autoSaveNotice")}</p>
+
+      <Link href="/secretary" className={styles.backLink}>
+        {t("secretaryRoster.backToSecretary")}
+      </Link>
+
+      <ConfirmDialog
+        open={removeTarget !== null}
+        title={t("secretaryRoster.removeMemberConfirmTitle")}
+        body={t("secretaryRoster.removeMemberConfirmBody")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        danger
+        onCancel={() => setRemoveTarget(null)}
+        onConfirm={() => {
+          if (removeTarget) removeMemberEntry(removeTarget.category, removeTarget.id);
+          setRemoveTarget(null);
+        }}
+      />
     </PageShell>
   );
 }

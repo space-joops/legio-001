@@ -41,5 +41,13 @@ export function useHistory() {
     []
   );
 
-  return { ready, history, refresh, findById, updateReportEntry };
+  const removeReport = useCallback((id: string) => {
+    setHistory((prev) => {
+      const next = prev.filter((r) => r.id !== id);
+      storage.setHistory(next);
+      return next;
+    });
+  }, []);
+
+  return { ready, history, refresh, findById, updateReportEntry, removeReport };
 }

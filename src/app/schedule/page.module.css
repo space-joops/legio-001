@@ -101,6 +101,17 @@
   color: var(--color-primary);
 }
 
+.pastTitle {
+  margin-top: var(--space-4);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.pastList .itemTitle {
+  color: var(--color-text-muted);
+}
+
 .deleteButton {
   flex-shrink: 0;
   min-height: var(--min-tap-target);

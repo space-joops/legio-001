@@ -19,10 +19,30 @@ export function BottomNav() {
   const isSecretary = pathname.startsWith("/secretary");
 
   const defaultItems = [
-    { href: "/", label: t("nav.home"), Icon: HomeIcon, swappable: false },
-    { href: "/history", label: t("nav.history"), Icon: HistoryIcon, swappable: true },
-    { href: "/schedule", label: t("nav.schedule"), Icon: CalendarIcon, swappable: true },
-    { href: "/settings", label: t("nav.settings"), Icon: SettingsIcon, swappable: true },
+    { href: "/", label: t("nav.home"), Icon: HomeIcon, swappable: false, isActive: pathname === "/" },
+    {
+      href: "/history",
+      label: t("nav.history"),
+      Icon: HistoryIcon,
+      swappable: true,
+      // A weekly report detail is part of the history flow, so the tab stays lit
+      // there — mirrors how /secretary/report keeps the report-list tab active.
+      isActive: pathname.startsWith("/history") || pathname.startsWith("/report"),
+    },
+    {
+      href: "/schedule",
+      label: t("nav.schedule"),
+      Icon: CalendarIcon,
+      swappable: true,
+      isActive: pathname.startsWith("/schedule"),
+    },
+    {
+      href: "/settings",
+      label: t("nav.settings"),
+      Icon: SettingsIcon,
+      swappable: true,
+      isActive: pathname.startsWith("/settings"),
+    },
   ];
 
   const secretaryItems = [
@@ -41,23 +61,20 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className={styles.nav} aria-label={t("nav.home")} data-app-chrome data-secretary={isSecretary}>
-      {defaultItems.map(({ href, label, Icon, swappable }) => {
-        const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            className={`${styles.item} ${swappable ? styles.swappable : ""} ${
-              isActive ? styles.itemActive : ""
-            }`}
-            aria-current={isActive ? "page" : undefined}
-          >
-            <Icon className={styles.icon} />
-            <span>{label}</span>
-          </Link>
-        );
-      })}
+    <nav className={styles.nav} aria-label={t("nav.menuLabel")} data-app-chrome data-secretary={isSecretary}>
+      {defaultItems.map(({ href, label, Icon, swappable, isActive }) => (
+        <Link
+          key={href}
+          href={href}
+          className={`${styles.item} ${swappable ? styles.swappable : ""} ${
+            isActive ? styles.itemActive : ""
+          }`}
+          aria-current={isActive ? "page" : undefined}
+        >
+          <Icon className={styles.icon} />
+          <span>{label}</span>
+        </Link>
+      ))}
       {secretaryItems.map(({ href, label, Icon, isActive }) => (
         <Link
           key={href}

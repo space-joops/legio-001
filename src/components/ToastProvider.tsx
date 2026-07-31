@@ -24,7 +24,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const showToast = useCallback((next: string) => {
     setMessage(next);
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setMessage(null), 2500);
+    // 4s, not the usual 2.5s: the audience skews older and some messages are
+    // full sentences (import errors, undo hints) that need time to read.
+    timerRef.current = setTimeout(() => setMessage(null), 4000);
   }, []);
 
   useEffect(() => {
