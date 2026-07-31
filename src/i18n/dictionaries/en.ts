@@ -107,6 +107,7 @@ export const en = {
       "Importing will overwrite all data currently stored on this device with the imported file's contents. This cannot be undone.",
     importSuccess: "Data imported.",
     importError: "Could not read this file. Please check it's a valid export file.",
+    appVersionLabel: "Version",
   },
   common: {
     save: "Save",
@@ -273,6 +274,7 @@ export const en = {
     cumulativeEvangelizationLabel: "Cumulative evangelization results",
     otherNotesLabel: "Other notes",
     preview: "Preview",
+    saved: "Saved.",
     edit: "Edit",
     print: "Print / Save as PDF",
     share: "Share",

@@ -56,3 +56,13 @@
   font-size: var(--font-size-base);
   font-weight: 700;
 }
+
+.hiddenFileInput {
+  display: none;
+}
+
+.versionText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+}

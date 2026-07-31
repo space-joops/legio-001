@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FontFamilyToggle } from "@/components/FontFamilyToggle";
 import { FontScaleToggle } from "@/components/FontScaleToggle";
@@ -12,10 +12,11 @@ import { ShareButton } from "@/components/ShareButton";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
-import { downloadExportedData, importExportedData, resetAllData } from "@/lib/exportData";
+import { importExportedData, resetAllData, shareOrDownloadExportedData } from "@/lib/exportData";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
 import type { ExportedData, Profile } from "@/lib/types";
+import { APP_VERSION } from "@/lib/version";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
@@ -25,6 +26,7 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [resetOpen, setResetOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
@@ -148,7 +150,9 @@ export default function SettingsPage() {
         <button
           type="button"
           className={styles.secondaryButton}
-          onClick={downloadExportedData}
+          onClick={() => {
+            void shareOrDownloadExportedData();
+          }}
         >
           {t("settings.exportData")}
         </button>
@@ -157,10 +161,19 @@ export default function SettingsPage() {
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.importData")}</span>
         <p className={styles.description}>{t("settings.importDescription")}</p>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          {t("settings.importData")}
+        </button>
+        {importFile && <p className={styles.description}>{importFile.name}</p>}
         <input
+          ref={fileInputRef}
           type="file"
           accept="application/json"
-          className={styles.input}
+          className={styles.hiddenFileInput}
           onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
         />
       </section>
@@ -198,6 +211,10 @@ export default function SettingsPage() {
         onCancel={() => setImportFile(null)}
         onConfirm={handleImportConfirm}
       />
+
+      <p className={styles.versionText}>
+        {t("settings.appVersionLabel")} {APP_VERSION}
+      </p>
     </PageShell>
   );
 }
