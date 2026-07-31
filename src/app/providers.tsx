@@ -5,6 +5,7 @@ import { DisplayPreferencesProvider } from "@/components/DisplayPreferencesProvi
 import { InAppBrowserNotice } from "@/components/InAppBrowserNotice";
 import { OnboardingGate } from "@/components/OnboardingGate";
 import { ScheduleReminderChecker } from "@/components/ScheduleReminderChecker";
+import { SplashOverlay } from "@/components/SplashOverlay";
 import { ToastProvider } from "@/components/ToastProvider";
 import { UpdateAvailableNotice } from "@/components/UpdateAvailableNotice";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -19,6 +20,10 @@ export function Providers({ children }: { children: ReactNode }) {
             <InAppBrowserNotice />
             <UpdateAvailableNotice />
           </div>
+          {/* Sibling of OnboardingGate, not a child: the gate renders nothing
+              until hydrated, so the splash must sit outside it to also cover
+              the onboarding screen. */}
+          <SplashOverlay />
           <OnboardingGate>
             <ScheduleReminderChecker />
             {children}

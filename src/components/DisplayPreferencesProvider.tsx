@@ -7,8 +7,10 @@ import type { FontFamily, FontScale } from "@/lib/types";
 interface DisplayPreferencesContextValue {
   fontScale: FontScale;
   fontFamily: FontFamily;
+  splashEnabled: boolean;
   setFontScale: (scale: FontScale) => void;
   setFontFamily: (family: FontFamily) => void;
+  setSplashEnabled: (enabled: boolean) => void;
   ready: boolean;
 }
 
@@ -17,6 +19,7 @@ const DisplayPreferencesContext = createContext<DisplayPreferencesContextValue |
 export function DisplayPreferencesProvider({ children }: { children: ReactNode }) {
   const [fontScale, setFontScaleState] = useState<FontScale>("medium");
   const [fontFamily, setFontFamilyState] = useState<FontFamily>("system");
+  const [splashEnabled, setSplashEnabledState] = useState(true);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -24,6 +27,7 @@ export function DisplayPreferencesProvider({ children }: { children: ReactNode }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
     setFontScaleState(settings.fontScale);
     setFontFamilyState(settings.fontFamily);
+    setSplashEnabledState(settings.splashEnabled);
     setReady(true);
   }, []);
 
@@ -43,9 +47,22 @@ export function DisplayPreferencesProvider({ children }: { children: ReactNode }
     storage.setSettings({ ...storage.getSettings(), fontFamily: family });
   };
 
+  const setSplashEnabled = (enabled: boolean) => {
+    setSplashEnabledState(enabled);
+    storage.setSettings({ ...storage.getSettings(), splashEnabled: enabled });
+  };
+
   return (
     <DisplayPreferencesContext.Provider
-      value={{ fontScale, fontFamily, setFontScale, setFontFamily, ready }}
+      value={{
+        fontScale,
+        fontFamily,
+        splashEnabled,
+        setFontScale,
+        setFontFamily,
+        setSplashEnabled,
+        ready,
+      }}
     >
       {children}
     </DisplayPreferencesContext.Provider>

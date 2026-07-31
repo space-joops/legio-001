@@ -44,7 +44,7 @@
 }
 
 .label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   font-weight: 700;
 }
 
@@ -181,6 +181,15 @@
 .sessionTable th:first-child,
 .sessionTable td:first-child {
   text-align: left;
+}
+
+/* The default ~16px checkbox was the smallest target in the app, in the one
+   control secretaries tap dozens of times per report. */
+.attendanceCheckbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: var(--space-2);
+  accent-color: var(--color-primary);
 }
 
 .attendanceNameInput {

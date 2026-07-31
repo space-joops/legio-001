@@ -12,8 +12,10 @@
   --color-danger: #a3342c;
   --color-danger-contrast: #ffffff;
 
-  --min-tap-target: 56px;
-  --bottom-nav-height: 76px;
+  /* rem so they grow with the font-size setting below — at px the nav clipped
+     its own icons and labels once a user picked a larger text size. */
+  --min-tap-target: 3.5rem;
+  --bottom-nav-height: 4.75rem;
 
   /* rem, relative to the 16px html root, so the font-scale setting below (which changes
      the html root font-size) scales these together with any other rem-based sizing. */
@@ -106,6 +108,24 @@ button {
 button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+/* Keyboard focus needs to be obvious against the cream/beige surfaces — the
+   browser default ring is far too faint on this palette. */
+:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Wider screens get roomier type: the tokens are rem-based, so the user's own
+   text-size setting still multiplies on top of these. */
+@media (min-width: 960px) {
+  :root {
+    --font-size-base: 1.3125rem;
+    --font-size-lg: 1.75rem;
+    --font-size-xl: 2.125rem;
+    --font-size-sm: 1.125rem;
+  }
 }
 
 @media print {

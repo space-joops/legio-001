@@ -18,6 +18,7 @@ const KEYS = {
   praesidiumRoster: "legioMariae.praesidiumRoster",
   monthlyReports: "legioMariae.monthlyReports",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
+  lastSplashShownAt: "legioMariae.lastSplashShownAt",
 } as const;
 
 function isBrowser(): boolean {
@@ -50,6 +51,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "ko",
   fontScale: "medium",
   fontFamily: "system",
+  splashEnabled: true,
 };
 export const DEFAULT_ROSTER: PraesidiumRoster = {
   councilAffiliation: "",
@@ -136,6 +138,14 @@ export const storage = {
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
+  },
+
+  /** Epoch ms of the last splash display; 0 means it has never been shown. */
+  getLastSplashShownAt(): number {
+    return readJson<number>(KEYS.lastSplashShownAt, 0);
+  },
+  setLastSplashShownAt(timestamp: number): void {
+    writeJson(KEYS.lastSplashShownAt, timestamp);
   },
 
   ensureSchemaVersion(): void {

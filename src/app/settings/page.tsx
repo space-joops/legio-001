@@ -9,6 +9,7 @@ import { InstallPromptButton } from "@/components/InstallPromptButton";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { PageShell } from "@/components/PageShell";
 import { ShareButton } from "@/components/ShareButton";
+import { SplashToggle } from "@/components/SplashToggle";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -118,6 +119,12 @@ export default function SettingsPage() {
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.fontFamilyLabel")}</span>
         <FontFamilyToggle />
+      </section>
+
+      <section className={styles.section}>
+        <span className={styles.label}>{t("settings.splashLabel")}</span>
+        <p className={styles.description}>{t("settings.splashDescription")}</p>
+        <SplashToggle />
       </section>
 
       <section className={styles.section}>

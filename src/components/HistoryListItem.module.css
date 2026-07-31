@@ -19,7 +19,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   text-align: center;
   padding: 0 var(--space-1);
 }
