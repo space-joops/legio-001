@@ -192,6 +192,7 @@ export default function SecretaryRosterPage() {
               <input
                 type="text"
                 className={styles.input}
+                aria-label={t("secretaryRoster.nameLabel")}
                 placeholder={t("secretaryRoster.memberNamePlaceholder")}
                 value={draft[key].name}
                 onChange={(e) =>
@@ -201,6 +202,7 @@ export default function SecretaryRosterPage() {
               <input
                 type="text"
                 className={styles.input}
+                aria-label={t("secretaryRoster.baptismalNameLabel")}
                 placeholder={t("secretaryRoster.memberBaptismalNamePlaceholder")}
                 value={draft[key].baptismalName}
                 onChange={(e) =>
