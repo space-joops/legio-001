@@ -16,6 +16,16 @@ import type {
 
 export const MAX_ATTENDANCE_SESSIONS = 6;
 
+export const WEEKDAY_LABEL_KEYS = [
+  "secretaryRoster.weekdaySun",
+  "secretaryRoster.weekdayMon",
+  "secretaryRoster.weekdayTue",
+  "secretaryRoster.weekdayWed",
+  "secretaryRoster.weekdayThu",
+  "secretaryRoster.weekdayFri",
+  "secretaryRoster.weekdaySat",
+] as const;
+
 export const OFFICER_ROLES: OfficerRole[] = ["president", "vicePresident", "secretary", "treasurer"];
 
 const OFFICER_ROLE_LABEL_KO: Record<OfficerRole, string> = {
@@ -79,26 +89,6 @@ function reportYearMonth(report: WeeklyReport): string {
   return iso.slice(0, 7);
 }
 
-export function sumPrayerCountsForSessionRange(
-  history: WeeklyReport[],
-  sessionStart: number,
-  sessionEnd: number
-): PrayerCounts {
-  const matching = history.filter(
-    (report) =>
-      report.status === "submitted" &&
-      report.sessionNumber >= sessionStart &&
-      report.sessionNumber <= sessionEnd
-  );
-  const sums: PrayerCounts = { ...EMPTY_COUNTS };
-  for (const report of matching) {
-    for (const item of PRAYER_ITEMS) {
-      sums[item.key] += report.counts[item.key] ?? 0;
-    }
-  }
-  return sums;
-}
-
 function sessionRangeForMonth(history: WeeklyReport[], yearMonth: string): { start: number; end: number } {
   const numbers = history
     .filter((report) => report.status === "submitted" && reportYearMonth(report) === yearMonth)
@@ -124,10 +114,14 @@ function computeSessionRange(
   previousReport: MonthlyReport | null,
   history: WeeklyReport[]
 ): { start: number; end: number } {
-  if (roster.regularMeetingWeekday >= 0 && previousReport) {
+  const weekday =
+    previousReport && previousReport.meetingWeekday >= 0
+      ? previousReport.meetingWeekday
+      : roster.regularMeetingWeekday;
+  if (weekday >= 0 && previousReport) {
     const start = previousReport.sessionRangeEnd + 1;
     const count = Math.min(
-      countWeekdayOccurrencesInMonth(yearMonth, roster.regularMeetingWeekday),
+      countWeekdayOccurrencesInMonth(yearMonth, weekday),
       MAX_ATTENDANCE_SESSIONS
     );
     const end = count > 0 ? start + count - 1 : start - 1;
@@ -171,7 +165,7 @@ export function buildAttendanceRoll(
 ): AttendanceRecord[] {
   const numbers = sessionRangeNumbers(sessionStart, sessionEnd);
   const emptySessions = (): Record<number, boolean> =>
-    Object.fromEntries(numbers.map((n) => [n, false]));
+    Object.fromEntries(numbers.map((n) => [n, true]));
 
   return rosterPersons(roster).map((person) => ({
     personId: person.id,
@@ -233,7 +227,7 @@ export function resyncAttendanceSessions(
   return roll.map((record) => {
     const sessions: Record<number, boolean> = {};
     for (const n of numbers) {
-      sessions[n] = record.sessions[n] ?? false;
+      sessions[n] = record.sessions[n] ?? true;
     }
     return { ...record, sessions };
   });
@@ -275,7 +269,7 @@ export function createMonthlyReport(
     yearMonth,
     sessionRangeStart: range.start,
     sessionRangeEnd: range.end,
-    meetingWeekday: "",
+    meetingWeekday: previousReport?.meetingWeekday ?? roster.regularMeetingWeekday,
     meetingTime: "",
     meetingLocation: "",
     attendance: computeAttendanceSummary(attendanceRoll),
@@ -290,7 +284,7 @@ export function createMonthlyReport(
     memberCountsDecrease: { ...EMPTY_MEMBER_COUNTS },
     agendaItems: [],
     treasury: { broughtForward, income: 0, expense: 0, balance: broughtForward, expenseBreakdown: "" },
-    prayerCounts: sumPrayerCountsForSessionRange(history, range.start, range.end),
+    prayerCounts: computePrayerCountsFromRoll(prayerRoll),
     dioceseInstructions: "",
     parishInstructions: "",
     councilInstructions: "",
@@ -304,6 +298,13 @@ export function createMonthlyReport(
 
 export function sortMonthlyReports(reports: MonthlyReport[]): MonthlyReport[] {
   return [...reports].sort((a, b) => b.yearMonth.localeCompare(a.yearMonth));
+}
+
+export function addMonthToYearMonth(yearMonth: string): string {
+  const [year, month] = yearMonth.split("-").map(Number);
+  if (!year || !month) return yearMonth;
+  const next = new Date(year, month, 1);
+  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
 }
 
 export function formatYearMonthLabel(yearMonth: string, language: Language): string {

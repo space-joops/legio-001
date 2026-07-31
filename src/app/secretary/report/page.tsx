@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Fragment, Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
@@ -13,6 +13,7 @@ import { generateId } from "@/lib/id";
 import {
   MAX_ATTENDANCE_SESSIONS,
   OFFICER_ROLES,
+  WEEKDAY_LABEL_KEYS,
   computeAttendanceSummary,
   computePrayerCountsFromRoll,
   formatMonthlyShareText,
@@ -20,8 +21,8 @@ import {
   resyncAttendanceSessions,
   resyncPrayerRollSessions,
   sessionRangeNumbers,
-  sumPrayerCountsForSessionRange,
 } from "@/lib/monthlyReportUtils";
+import { selectOnFocus } from "@/lib/selectOnFocus";
 import type { AgendaItem, MemberCounts, MonthlyReport, PrayerItemKey } from "@/lib/types";
 import styles from "./page.module.css";
 
@@ -46,22 +47,65 @@ function toNumber(value: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function SessionTabBar({
+  sessions,
+  active,
+  onSelect,
+}: {
+  sessions: number[];
+  active: number;
+  onSelect: (session: number) => void;
+}) {
+  return (
+    <div className={styles.sessionTabs}>
+      {sessions.map((n) => (
+        <button
+          key={n}
+          type="button"
+          className={`${styles.sessionTab} ${n === active ? styles.sessionTabActive : ""}`}
+          onClick={() => onSelect(n)}
+        >
+          {n}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function ReportPageContent() {
   const { t, language } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
-  const { ready: historyReady, history } = useHistory();
+  const { ready: historyReady } = useHistory();
   const [mode, setMode] = useState<"edit" | "preview">(
     searchParams.get("mode") === "preview" ? "preview" : "edit"
   );
+  const report = reportsReady && id ? findById(id) : null;
+  const [activeAttendanceSession, setActiveAttendanceSession] = useState(
+    report?.sessionRangeStart ?? 0
+  );
+  const [activePrayerSession, setActivePrayerSession] = useState(report?.sessionRangeStart ?? 0);
+
+  useEffect(() => {
+    const start = report?.sessionRangeStart;
+    const end = report?.sessionRangeEnd;
+    if (start === undefined || end === undefined) return;
+    const numbers = sessionRangeNumbers(start, end);
+    if (numbers.length === 0) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- clamps tab selection when the session range (external, storage-backed) shrinks past it */
+    setActiveAttendanceSession((prev) => (numbers.includes(prev) ? prev : numbers[0]));
+    setActivePrayerSession((prev) => (numbers.includes(prev) ? prev : numbers[0]));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [report?.sessionRangeStart, report?.sessionRangeEnd]);
 
   if (!reportsReady || !historyReady) return null;
 
-  const report = id ? findById(id) : null;
   if (!report) {
     return <p>{t("secretaryReport.notFound")}</p>;
   }
+
+  const sessionNumbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
 
   const patch = (p: Partial<MonthlyReport>) => updateReport(report.id, p);
 
@@ -115,23 +159,18 @@ function ReportPageContent() {
     itemKey: PrayerItemKey,
     value: string
   ) => {
-    patch({
-      prayerRoll: report.prayerRoll.map((entry) =>
-        entry.personId === personId
-          ? {
-              ...entry,
-              sessions: {
-                ...entry.sessions,
-                [sessionNumber]: { ...entry.sessions[sessionNumber], [itemKey]: toNumber(value) },
-              },
-            }
-          : entry
-      ),
-    });
-  };
-
-  const fillPrayerCountsFromRoll = () => {
-    patch({ prayerCounts: computePrayerCountsFromRoll(report.prayerRoll) });
+    const prayerRoll = report.prayerRoll.map((entry) =>
+      entry.personId === personId
+        ? {
+            ...entry,
+            sessions: {
+              ...entry.sessions,
+              [sessionNumber]: { ...entry.sessions[sessionNumber], [itemKey]: toNumber(value) },
+            },
+          }
+        : entry
+    );
+    patch({ prayerRoll, prayerCounts: computePrayerCountsFromRoll(prayerRoll) });
   };
 
   const patchTreasury = (
@@ -176,20 +215,6 @@ function ReportPageContent() {
           officer.role === role ? { ...officer, [field]: value } : officer
         ),
       },
-    });
-  };
-
-  const patchPrayerCounts = (key: (typeof PRAYER_ITEMS)[number]["key"], value: string) => {
-    patch({ prayerCounts: { ...report.prayerCounts, [key]: toNumber(value) } });
-  };
-
-  const autoSumPrayerCounts = () => {
-    patch({
-      prayerCounts: sumPrayerCountsForSessionRange(
-        history,
-        report.sessionRangeStart,
-        report.sessionRangeEnd
-      ),
     });
   };
 
@@ -260,6 +285,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.sessionRangeStart}
+              onFocus={selectOnFocus}
               onChange={(e) => handleSessionRangeChange("sessionRangeStart", e.target.value)}
             />
           </label>
@@ -270,6 +296,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.sessionRangeEnd}
+              onFocus={selectOnFocus}
               onChange={(e) => handleSessionRangeChange("sessionRangeEnd", e.target.value)}
             />
           </label>
@@ -277,17 +304,23 @@ function ReportPageContent() {
         <p className={styles.hint}>{t("secretaryReport.maxSessionsHint")}</p>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.meetingWeekdayLabel")}</span>
-          <input
-            type="text"
+          <select
             className={styles.input}
             value={report.meetingWeekday}
-            onChange={(e) => patch({ meetingWeekday: e.target.value })}
-          />
+            onChange={(e) => patch({ meetingWeekday: Number(e.target.value) })}
+          >
+            <option value={-1}>{t("secretaryRoster.weekdayNotSet")}</option>
+            {WEEKDAY_LABEL_KEYS.map((key, index) => (
+              <option key={key} value={index}>
+                {t(key)}
+              </option>
+            ))}
+          </select>
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.meetingTimeLabel")}</span>
           <input
-            type="text"
+            type="time"
             className={styles.input}
             value={report.meetingTime}
             onChange={(e) => patch({ meetingTime: e.target.value })}
@@ -318,44 +351,41 @@ function ReportPageContent() {
         </div>
 
         <h3 className={styles.sectionTitle}>{t("secretaryReport.attendanceGridSection")}</h3>
-        <div className={styles.tableScroll}>
-          <table className={styles.attendanceTable}>
-            <thead>
-              <tr>
-                <th>{t("secretaryReport.attendanceRowNamePlaceholder")}</th>
-                {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map((n) => (
-                  <th key={n}>{n}</th>
-                ))}
+        <SessionTabBar
+          sessions={sessionNumbers}
+          active={activeAttendanceSession}
+          onSelect={setActiveAttendanceSession}
+        />
+        <table className={styles.sessionTable}>
+          <thead>
+            <tr>
+              <th>{t("secretaryReport.personColumnLabel")}</th>
+              <th>{t("secretaryReport.attendance")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.attendanceRoll.map((record) => (
+              <tr key={record.personId}>
+                <td>
+                  <input
+                    type="text"
+                    className={styles.attendanceNameInput}
+                    value={record.personLabel}
+                    placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
+                    onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={record.sessions[activeAttendanceSession] ?? true}
+                    onChange={() => toggleAttendance(record.personId, activeAttendanceSession)}
+                  />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {report.attendanceRoll.map((record) => (
-                <tr key={record.personId}>
-                  <td>
-                    <input
-                      type="text"
-                      className={styles.attendanceNameInput}
-                      value={record.personLabel}
-                      placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
-                      onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
-                    />
-                  </td>
-                  {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map(
-                    (n) => (
-                      <td key={n}>
-                        <input
-                          type="checkbox"
-                          checked={record.sessions[n] ?? false}
-                          onChange={() => toggleAttendance(record.personId, n)}
-                        />
-                      </td>
-                    )
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </section>
 
       <details className={styles.section}>
@@ -423,6 +453,7 @@ function ReportPageContent() {
                     inputMode="numeric"
                     className={styles.input}
                     value={report[bucket.key][key]}
+                    onFocus={selectOnFocus}
                     onChange={(e) => patchMemberCountBucket(bucket.key, key, e.target.value)}
                   />
                 </label>
@@ -524,6 +555,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.treasury.broughtForward}
+              onFocus={selectOnFocus}
               onChange={(e) => patchTreasury("broughtForward", e.target.value)}
             />
           </label>
@@ -534,6 +566,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.treasury.income}
+              onFocus={selectOnFocus}
               onChange={(e) => patchTreasury("income", e.target.value)}
             />
           </label>
@@ -546,6 +579,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.treasury.expense}
+              onFocus={selectOnFocus}
               onChange={(e) => patchTreasury("expense", e.target.value)}
             />
           </label>
@@ -556,6 +590,7 @@ function ReportPageContent() {
               inputMode="numeric"
               className={styles.input}
               value={report.treasury.balance}
+              onFocus={selectOnFocus}
               onChange={(e) => patchTreasury("balance", e.target.value)}
             />
           </label>
@@ -572,82 +607,52 @@ function ReportPageContent() {
       </section>
 
       <section className={styles.section}>
-        <div className={styles.sectionHeaderRow}>
-          <h2 className={styles.sectionTitle}>{t("secretaryReport.prayerSection")}</h2>
-          <button type="button" className={styles.secondaryButton} onClick={autoSumPrayerCounts}>
-            {t("secretaryReport.autoSum")}
-          </button>
-        </div>
+        <h2 className={styles.sectionTitle}>{t("secretaryReport.prayerSection")}</h2>
         <div className={styles.row}>
           {PRAYER_ITEMS.map((item) => (
-            <label key={item.key} className={styles.field}>
-              <span className={styles.smallLabel}>{t(item.labelKey)}</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                className={styles.input}
-                value={report.prayerCounts[item.key]}
-                onChange={(e) => patchPrayerCounts(item.key, e.target.value)}
-              />
-            </label>
+            <p key={item.key} className={styles.attendanceSummary}>
+              {t(item.labelKey)} {report.prayerCounts[item.key]}
+            </p>
           ))}
         </div>
 
-        <div className={styles.sectionHeaderRow}>
-          <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
-          <button type="button" className={styles.secondaryButton} onClick={fillPrayerCountsFromRoll}>
-            {t("secretaryReport.fillFromRoll")}
-          </button>
-        </div>
-        <div className={styles.tableScroll}>
-          <table className={styles.attendanceTable}>
-            <thead>
-              <tr>
-                <th>{t("secretaryReport.attendanceRowNamePlaceholder")}</th>
-                {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map((n) => (
-                  <th key={n}>{n}</th>
+        <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
+        <SessionTabBar
+          sessions={sessionNumbers}
+          active={activePrayerSession}
+          onSelect={setActivePrayerSession}
+        />
+        <table className={styles.sessionTable}>
+          <thead>
+            <tr>
+              <th>{t("secretaryReport.personColumnLabel")}</th>
+              {PRAYER_ITEMS.map((item) => (
+                <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {report.prayerRoll.map((entry) => (
+              <tr key={entry.personId}>
+                <td>{entry.personLabel}</td>
+                {PRAYER_ITEMS.map((item) => (
+                  <td key={item.key}>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      className={styles.prayerRollInput}
+                      value={entry.sessions[activePrayerSession]?.[item.key] ?? 0}
+                      onFocus={selectOnFocus}
+                      onChange={(e) =>
+                        patchPrayerRollCell(entry.personId, activePrayerSession, item.key, e.target.value)
+                      }
+                    />
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {report.prayerRoll.map((entry) => (
-                <Fragment key={entry.personId}>
-                  <tr>
-                    <th
-                      colSpan={
-                        sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd)
-                          .length + 1
-                      }
-                      className={styles.prayerRollPersonHeader}
-                    >
-                      {entry.personLabel}
-                    </th>
-                  </tr>
-                  {PRAYER_ITEMS.map((item) => (
-                    <tr key={item.key}>
-                      <td>{t(item.labelKey)}</td>
-                      {sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd).map(
-                        (n) => (
-                          <td key={n}>
-                            <input
-                              type="number"
-                              inputMode="numeric"
-                              className={styles.prayerRollInput}
-                              value={entry.sessions[n]?.[item.key] ?? 0}
-                              onChange={(e) =>
-                                patchPrayerRollCell(entry.personId, n, item.key, e.target.value)
-                              }
-                            />
-                          </td>
-                        )
-                      )}
-                    </tr>
-                  ))}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </section>
 
       <section className={styles.section}>

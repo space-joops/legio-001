@@ -37,12 +37,10 @@
   display: none;
 }
 
-@media (min-width: 960px) {
-  nav[data-secretary="true"] .swappable {
-    display: none;
-  }
+nav[data-secretary="true"] .swappable {
+  display: none;
+}
 
-  nav[data-secretary="true"] .secretaryOnly {
-    display: flex;
-  }
+nav[data-secretary="true"] .secretaryOnly {
+  display: flex;
 }

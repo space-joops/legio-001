@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
+import { selectOnFocus } from "@/lib/selectOnFocus";
 import styles from "./CounterButton.module.css";
 
 interface CounterButtonProps {
@@ -92,6 +93,7 @@ export function CounterButton({
               min={0}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onFocus={selectOnFocus}
               aria-label={label}
               className={styles.numberInput}
             />
