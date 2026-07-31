@@ -161,9 +161,14 @@
   color: var(--color-primary-contrast);
 }
 
+.tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .sessionTable {
   border-collapse: collapse;
-  width: 100%;
+  min-width: 100%;
 }
 
 .sessionTable th,

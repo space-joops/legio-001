@@ -365,36 +365,38 @@ function ReportPageContent() {
           active={activeAttendanceSession}
           onSelect={setActiveAttendanceSession}
         />
-        <table className={styles.sessionTable}>
-          <thead>
-            <tr>
-              <th>{t("secretaryReport.personColumnLabel")}</th>
-              <th>{t("secretaryReport.attendance")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {report.attendanceRoll.map((record) => (
-              <tr key={record.personId}>
-                <td>
-                  <input
-                    type="text"
-                    className={styles.attendanceNameInput}
-                    value={record.personLabel}
-                    placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
-                    onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
-                  />
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={record.sessions[activeAttendanceSession] ?? true}
-                    onChange={() => toggleAttendance(record.personId, activeAttendanceSession)}
-                  />
-                </td>
+        <div className={styles.tableScroll}>
+          <table className={styles.sessionTable}>
+            <thead>
+              <tr>
+                <th>{t("secretaryReport.personColumnLabel")}</th>
+                <th>{t("secretaryReport.attendance")}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {report.attendanceRoll.map((record) => (
+                <tr key={record.personId}>
+                  <td>
+                    <input
+                      type="text"
+                      className={styles.attendanceNameInput}
+                      value={record.personLabel}
+                      placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
+                      onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={record.sessions[activeAttendanceSession] ?? true}
+                      onChange={() => toggleAttendance(record.personId, activeAttendanceSession)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <details className={styles.section}>
@@ -631,37 +633,39 @@ function ReportPageContent() {
           active={activePrayerSession}
           onSelect={setActivePrayerSession}
         />
-        <table className={styles.sessionTable}>
-          <thead>
-            <tr>
-              <th>{t("secretaryReport.personColumnLabel")}</th>
-              {PRAYER_ITEMS.map((item) => (
-                <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {report.prayerRoll.map((entry) => (
-              <tr key={entry.personId}>
-                <td>{entry.personLabel}</td>
+        <div className={styles.tableScroll}>
+          <table className={styles.sessionTable}>
+            <thead>
+              <tr>
+                <th>{t("secretaryReport.personColumnLabel")}</th>
                 {PRAYER_ITEMS.map((item) => (
-                  <td key={item.key}>
-                    <input
-                      type="number"
-                      inputMode="numeric"
-                      className={styles.prayerRollInput}
-                      value={entry.sessions[activePrayerSession]?.[item.key] ?? 0}
-                      onFocus={selectOnFocus}
-                      onChange={(e) =>
-                        patchPrayerRollCell(entry.personId, activePrayerSession, item.key, e.target.value)
-                      }
-                    />
-                  </td>
+                  <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {report.prayerRoll.map((entry) => (
+                <tr key={entry.personId}>
+                  <td>{entry.personLabel}</td>
+                  {PRAYER_ITEMS.map((item) => (
+                    <td key={item.key}>
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        className={styles.prayerRollInput}
+                        value={entry.sessions[activePrayerSession]?.[item.key] ?? 0}
+                        onFocus={selectOnFocus}
+                        onChange={(e) =>
+                          patchPrayerRollCell(entry.personId, activePrayerSession, item.key, e.target.value)
+                        }
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section className={styles.section}>
