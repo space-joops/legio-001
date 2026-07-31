@@ -73,12 +73,21 @@ export interface MemberCounts {
   adjutorium: number;
 }
 
+export interface MemberEntry {
+  id: string;
+  name: string;
+  baptismalName: string;
+}
+
+export type MemberRoster = Record<keyof MemberCounts, MemberEntry[]>;
+
 export interface PraesidiumRoster {
   councilAffiliation: string;
   spiritualDirectorName: string;
   spiritualDirectorBaptismalName: string;
   officers: OfficerEntry[];
   memberCounts: MemberCounts;
+  memberRoster: MemberRoster;
 }
 
 export interface AgendaItem {
@@ -89,6 +98,13 @@ export interface AgendaItem {
   dateTime: string;
   location: string;
   attendanceNote: string;
+}
+
+export interface AttendanceRecord {
+  personId: string;
+  personLabel: string;
+  isOfficer: boolean;
+  sessions: Record<number, boolean>;
 }
 
 export interface MonthlyReport {
@@ -105,6 +121,7 @@ export interface MonthlyReport {
     membersPresent: number;
     membersTotal: number;
   };
+  attendanceRoll: AttendanceRecord[];
   roster: PraesidiumRoster;
   memberCountsPrevMonth: MemberCounts;
   memberCountsThisMonth: MemberCounts;

@@ -1,5 +1,5 @@
 import { DATA_SCHEMA_VERSION } from "./constants";
-import { storage } from "./storage";
+import { DEFAULT_PROFILE, DEFAULT_ROSTER, storage } from "./storage";
 import type { ExportedData } from "./types";
 
 export function buildExportedData(): ExportedData {
@@ -32,6 +32,16 @@ export function downloadExportedData(): void {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+export function importExportedData(data: Partial<ExportedData>): void {
+  storage.setProfile({ ...DEFAULT_PROFILE, ...data.profile });
+  storage.setHistory(data.history ?? []);
+  storage.setCurrentReport(data.currentReport ?? null);
+  storage.setSchedule(data.schedule ?? []);
+  storage.setRoster({ ...DEFAULT_ROSTER, ...data.roster });
+  storage.setMonthlyReports(data.monthlyReports ?? []);
+  storage.ensureSchemaVersion();
 }
 
 export function resetAllData(): void {

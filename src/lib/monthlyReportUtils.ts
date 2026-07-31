@@ -2,8 +2,10 @@ import { dictionaries } from "@/i18n/dictionaries";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
 import type {
+  AttendanceRecord,
   Language,
   MemberCounts,
+  MemberRoster,
   MonthlyReport,
   OfficerRole,
   PraesidiumRoster,
@@ -13,6 +15,13 @@ import type {
 
 export const OFFICER_ROLES: OfficerRole[] = ["president", "vicePresident", "secretary", "treasurer"];
 
+const OFFICER_ROLE_LABEL_KO: Record<OfficerRole, string> = {
+  president: "단장",
+  vicePresident: "부단장",
+  secretary: "서기",
+  treasurer: "회계",
+};
+
 export const EMPTY_MEMBER_COUNTS: MemberCounts = {
   activeMale: 0,
   activeFemale: 0,
@@ -21,6 +30,28 @@ export const EMPTY_MEMBER_COUNTS: MemberCounts = {
   auxiliaryFemale: 0,
   adjutorium: 0,
 };
+
+export function createDefaultMemberRoster(): MemberRoster {
+  return {
+    activeMale: [],
+    activeFemale: [],
+    praetorium: [],
+    auxiliaryMale: [],
+    auxiliaryFemale: [],
+    adjutorium: [],
+  };
+}
+
+export function deriveMemberCounts(memberRoster: MemberRoster): MemberCounts {
+  return {
+    activeMale: memberRoster.activeMale.length,
+    activeFemale: memberRoster.activeFemale.length,
+    praetorium: memberRoster.praetorium.length,
+    auxiliaryMale: memberRoster.auxiliaryMale.length,
+    auxiliaryFemale: memberRoster.auxiliaryFemale.length,
+    adjutorium: memberRoster.adjutorium.length,
+  };
+}
 
 export function createDefaultRoster(): PraesidiumRoster {
   return {
@@ -35,6 +66,7 @@ export function createDefaultRoster(): PraesidiumRoster {
       note: "",
     })),
     memberCounts: { ...EMPTY_MEMBER_COUNTS },
+    memberRoster: createDefaultMemberRoster(),
   };
 }
 
@@ -43,9 +75,16 @@ function reportYearMonth(report: WeeklyReport): string {
   return iso.slice(0, 7);
 }
 
-export function sumPrayerCountsForMonth(history: WeeklyReport[], yearMonth: string): PrayerCounts {
+export function sumPrayerCountsForSessionRange(
+  history: WeeklyReport[],
+  sessionStart: number,
+  sessionEnd: number
+): PrayerCounts {
   const matching = history.filter(
-    (report) => report.status === "submitted" && reportYearMonth(report) === yearMonth
+    (report) =>
+      report.status === "submitted" &&
+      report.sessionNumber >= sessionStart &&
+      report.sessionNumber <= sessionEnd
   );
   const sums: PrayerCounts = { ...EMPTY_COUNTS };
   for (const report of matching) {
@@ -64,6 +103,79 @@ function sessionRangeForMonth(history: WeeklyReport[], yearMonth: string): { sta
   return { start: Math.min(...numbers), end: Math.max(...numbers) };
 }
 
+export function sessionRangeNumbers(sessionStart: number, sessionEnd: number): number[] {
+  if (sessionEnd < sessionStart) return [];
+  const numbers: number[] = [];
+  for (let n = sessionStart; n <= sessionEnd; n++) numbers.push(n);
+  return numbers;
+}
+
+export function buildAttendanceRoll(
+  roster: PraesidiumRoster,
+  sessionStart: number,
+  sessionEnd: number
+): AttendanceRecord[] {
+  const numbers = sessionRangeNumbers(sessionStart, sessionEnd);
+  const emptySessions = (): Record<number, boolean> =>
+    Object.fromEntries(numbers.map((n) => [n, false]));
+
+  const officerRows: AttendanceRecord[] = roster.officers.map((officer) => ({
+    personId: `officer:${officer.role}`,
+    personLabel: officer.name
+      ? `${OFFICER_ROLE_LABEL_KO[officer.role]} ${officer.name}`
+      : OFFICER_ROLE_LABEL_KO[officer.role],
+    isOfficer: true,
+    sessions: emptySessions(),
+  }));
+
+  const memberRows: AttendanceRecord[] = [
+    ...roster.memberRoster.activeMale,
+    ...roster.memberRoster.activeFemale,
+  ].map((member) => ({
+    personId: `member:${member.id}`,
+    personLabel: member.name,
+    isOfficer: false,
+    sessions: emptySessions(),
+  }));
+
+  return [...officerRows, ...memberRows];
+}
+
+export function resyncAttendanceSessions(
+  roll: AttendanceRecord[],
+  sessionStart: number,
+  sessionEnd: number
+): AttendanceRecord[] {
+  const numbers = sessionRangeNumbers(sessionStart, sessionEnd);
+  return roll.map((record) => {
+    const sessions: Record<number, boolean> = {};
+    for (const n of numbers) {
+      sessions[n] = record.sessions[n] ?? false;
+    }
+    return { ...record, sessions };
+  });
+}
+
+export function computeAttendanceSummary(roll: AttendanceRecord[]): MonthlyReport["attendance"] {
+  let officersPresent = 0;
+  let officersTotal = 0;
+  let membersPresent = 0;
+  let membersTotal = 0;
+  for (const record of roll) {
+    const sessionValues = Object.values(record.sessions);
+    const present = sessionValues.filter(Boolean).length;
+    const total = sessionValues.length;
+    if (record.isOfficer) {
+      officersPresent += present;
+      officersTotal += total;
+    } else {
+      membersPresent += present;
+      membersTotal += total;
+    }
+  }
+  return { officersPresent, officersTotal, membersPresent, membersTotal };
+}
+
 export function createMonthlyReport(
   yearMonth: string,
   roster: PraesidiumRoster,
@@ -73,6 +185,7 @@ export function createMonthlyReport(
   const now = new Date().toISOString();
   const range = sessionRangeForMonth(history, yearMonth);
   const broughtForward = previousReport?.treasury.balance ?? 0;
+  const attendanceRoll = buildAttendanceRoll(roster, range.start, range.end);
   return {
     id: generateId(),
     yearMonth,
@@ -81,7 +194,8 @@ export function createMonthlyReport(
     meetingWeekday: "",
     meetingTime: "",
     meetingLocation: "",
-    attendance: { officersPresent: 0, officersTotal: 0, membersPresent: 0, membersTotal: 0 },
+    attendance: computeAttendanceSummary(attendanceRoll),
+    attendanceRoll,
     roster: structuredClone(roster),
     memberCountsPrevMonth: previousReport
       ? { ...previousReport.memberCountsThisMonth }
@@ -91,7 +205,7 @@ export function createMonthlyReport(
     memberCountsDecrease: { ...EMPTY_MEMBER_COUNTS },
     agendaItems: [],
     treasury: { broughtForward, income: 0, expense: 0, balance: broughtForward, expenseBreakdown: "" },
-    prayerCounts: sumPrayerCountsForMonth(history, yearMonth),
+    prayerCounts: sumPrayerCountsForSessionRange(history, range.start, range.end),
     dioceseInstructions: "",
     parishInstructions: "",
     councilInstructions: "",

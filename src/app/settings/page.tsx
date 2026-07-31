@@ -12,10 +12,10 @@ import { ShareButton } from "@/components/ShareButton";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
-import { downloadExportedData, resetAllData } from "@/lib/exportData";
+import { downloadExportedData, importExportedData, resetAllData } from "@/lib/exportData";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
-import type { Profile } from "@/lib/types";
+import type { ExportedData, Profile } from "@/lib/types";
 import styles from "./page.module.css";
 
 export default function SettingsPage() {
@@ -24,6 +24,7 @@ export default function SettingsPage() {
   const ready = useLocalStorageReady();
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [resetOpen, setResetOpen] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
@@ -41,6 +42,20 @@ export default function SettingsPage() {
     setResetOpen(false);
     showToast(t("settings.resetDone"));
     window.location.href = "/";
+  };
+
+  const handleImportConfirm = async () => {
+    const file = importFile;
+    setImportFile(null);
+    if (!file) return;
+    try {
+      const data = JSON.parse(await file.text()) as Partial<ExportedData>;
+      importExportedData(data);
+      showToast(t("settings.importSuccess"));
+      window.location.href = "/";
+    } catch {
+      showToast(t("settings.importError"));
+    }
   };
 
   return (
@@ -140,6 +155,17 @@ export default function SettingsPage() {
       </section>
 
       <section className={styles.section}>
+        <span className={styles.label}>{t("settings.importData")}</span>
+        <p className={styles.description}>{t("settings.importDescription")}</p>
+        <input
+          type="file"
+          accept="application/json"
+          className={styles.input}
+          onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
+        />
+      </section>
+
+      <section className={styles.section}>
         <span className={styles.label}>{t("settings.resetData")}</span>
         <p className={styles.description}>{t("settings.resetDescription")}</p>
         <button
@@ -160,6 +186,17 @@ export default function SettingsPage() {
         danger
         onCancel={() => setResetOpen(false)}
         onConfirm={handleReset}
+      />
+
+      <ConfirmDialog
+        open={importFile !== null}
+        title={t("settings.importConfirmTitle")}
+        body={t("settings.importConfirmBody")}
+        confirmLabel={t("common.confirm")}
+        cancelLabel={t("common.cancel")}
+        danger
+        onCancel={() => setImportFile(null)}
+        onConfirm={handleImportConfirm}
       />
     </PageShell>
   );

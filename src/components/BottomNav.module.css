@@ -32,3 +32,17 @@
   width: 26px;
   height: 26px;
 }
+
+.secretaryOnly {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  nav[data-secretary="true"] .swappable {
+    display: none;
+  }
+
+  nav[data-secretary="true"] .secretaryOnly {
+    display: flex;
+  }
+}

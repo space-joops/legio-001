@@ -3,6 +3,23 @@
   color: var(--color-text-muted);
 }
 
+.topRow {
+  display: contents;
+}
+
+@media (min-width: 960px) {
+  .topRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .topRow .section {
+    margin-top: 0;
+  }
+}
+
 .section {
   display: flex;
   flex-direction: column;

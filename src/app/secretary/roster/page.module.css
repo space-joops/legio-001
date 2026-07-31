@@ -49,3 +49,104 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+
+.memberGrid {
+  display: contents;
+}
+
+@media (min-width: 960px) {
+  .memberGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .memberGrid .section {
+    margin-top: 0;
+  }
+}
+
+.memberCategoryTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.memberCount {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.memberListEmpty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.memberList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+}
+
+.memberName {
+  font-size: var(--font-size-base);
+}
+
+.removeButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  padding: 0 var(--space-3);
+}
+
+.addRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.addRow .input {
+  flex: 1;
+  min-width: 120px;
+}
+
+.addButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.saveButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  margin-top: var(--space-4);
+}
