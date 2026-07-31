@@ -19,13 +19,13 @@
   justify-content: center;
   gap: 2px;
   min-height: var(--min-tap-target);
-  color: var(--color-text-muted);
+  color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: 600;
 }
 
 .itemActive {
-  color: var(--color-accent-secondary);
+  color: var(--color-primary);
 }
 
 .icon {
