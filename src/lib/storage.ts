@@ -19,6 +19,8 @@ const KEYS = {
   praesidiumRoster: "legioMariae.praesidiumRoster",
   monthlyReports: "legioMariae.monthlyReports",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
+  // Kept in KEYS so resetAll() still clears it on devices that used the
+  // splash cooldown this app no longer has.
   lastSplashShownAt: "legioMariae.lastSplashShownAt",
   lastExportedAt: "legioMariae.lastExportedAt",
 } as const;
@@ -207,14 +209,6 @@ export const storage = {
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
-  },
-
-  /** Epoch ms of the last splash display; 0 means it has never been shown. */
-  getLastSplashShownAt(): number {
-    return readJson<number>(KEYS.lastSplashShownAt, 0);
-  },
-  setLastSplashShownAt(timestamp: number): void {
-    writeJson(KEYS.lastSplashShownAt, timestamp);
   },
 
   /** Epoch ms of the last successful export; 0 means never backed up. */

@@ -5,8 +5,13 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { storage } from "@/lib/storage";
 import styles from "./SplashOverlay.module.css";
 
-/** Minimum gap between splash appearances, so it greets you but never nags. */
-const SPLASH_INTERVAL_MS = 3 * 60 * 60 * 1000;
+/**
+ * How long the app has to have been in the background before coming back
+ * counts as a return. Only there to swallow momentary blips — an OS share
+ * sheet or permission prompt that flicks the page hidden and straight back —
+ * so switching tabs or apps for real always re-greets you.
+ */
+const MIN_AWAY_MS = 3000;
 /** How long the image stays fully visible before it starts fading away. */
 const HOLD_MS = 5000;
 /** Must stay in sync with the fade-out duration in SplashOverlay.module.css. */
@@ -22,38 +27,50 @@ function isTypingTarget(el: Element | null): boolean {
   );
 }
 
+/** A confirm/import dialog already has the screen — don't cover it. */
+function anotherDialogIsOpen(self: HTMLDialogElement | null): boolean {
+  return [...document.querySelectorAll("dialog[open]")].some((d) => d !== self);
+}
+
 export function SplashOverlay() {
   const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>("hidden");
   const ref = useRef<HTMLDialogElement>(null);
   const phaseRef = useRef<Phase>("hidden");
+  const hiddenAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
 
-  // Runs on first mount and again whenever the app is brought back to the
-  // foreground, so returning from another app re-greets you — still subject to
-  // the interval, so tabbing away for a moment doesn't trigger it.
+  // Shows on first mount and every time the app comes back to the foreground —
+  // switching browser tabs, or leaving the installed app for another one.
   useEffect(() => {
     // Read settings straight from storage rather than context: this closure
     // outlives several renders, and storage is always the current value.
     const maybeShow = () => {
       if (phaseRef.current !== "hidden") return;
       if (!storage.getSettings().splashEnabled) return;
-      if (Date.now() - storage.getLastSplashShownAt() < SPLASH_INTERVAL_MS) return;
       // Don't steal the screen from someone mid-typing (e.g. returning to a
-      // half-filled form after a long time in another app).
+      // half-filled form after time in another app).
       if (isTypingTarget(document.activeElement)) return;
-      storage.setLastSplashShownAt(Date.now());
+      if (anotherDialogIsOpen(ref.current)) return;
       setPhase("visible");
     };
 
     const handleVisibility = () => {
-      if (document.visibilityState === "visible") maybeShow();
+      if (document.visibilityState === "hidden") {
+        hiddenAtRef.current = Date.now();
+        return;
+      }
+      const hiddenAt = hiddenAtRef.current;
+      hiddenAtRef.current = null;
+      if (hiddenAt !== null && Date.now() - hiddenAt < MIN_AWAY_MS) return;
+      maybeShow();
     };
     // pageshow covers iOS restoring the page from the back/forward cache,
-    // which doesn't always fire visibilitychange.
+    // which doesn't always fire visibilitychange. Getting here at all means a
+    // real navigation away and back, so no away-time check.
     const handlePageShow = () => maybeShow();
 
     maybeShow();
