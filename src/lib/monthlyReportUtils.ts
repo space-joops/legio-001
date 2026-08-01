@@ -487,15 +487,73 @@ export function applySubmissionsToPrayerRoll(
   });
 }
 
-/** Everyone is taken to attend every Sunday unless the secretary says otherwise. */
-export function defaultSundayMassTotal(yearMonth: string, peopleCount: number): number {
-  return countWeekdayOccurrencesInMonth(yearMonth, 0) * peopleCount;
+/** Last date in the month that falls on `weekday` (0 = Sunday). */
+function lastWeekdayOfMonth(year: number, month: number, weekday: number): Date | null {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  for (let day = daysInMonth; day >= 1; day--) {
+    const date = new Date(year, month - 1, day);
+    if (date.getDay() === weekday) return date;
+  }
+  return null;
+}
+
+export interface SundayMassBasis {
+  /** Day after the previous month's last meeting — the window's first day. */
+  from: Date;
+  /** This month's last meeting — the window's last day. */
+  to: Date;
+  sundayCount: number;
+  peopleCount: number;
+  total: number;
+}
+
+/**
+ * Sundays counted for 미사영성체, taken over the window that runs from the day
+ * after last month's final 주회 through this month's final 주회.
+ *
+ * Sundays falling after the last meeting belong to the next report, and the
+ * previous month's tail comes back in here — so no Sunday is counted twice or
+ * dropped. In June 2026 that swaps 6/28 out for 5/31 and still yields four,
+ * matching the submitted report.
+ *
+ * The result is only a starting point: members report what they actually
+ * attended, so the secretary can overwrite the total.
+ */
+export function computeSundayMassBasis(
+  yearMonth: string,
+  meetingWeekday: number,
+  peopleCount: number
+): SundayMassBasis | null {
+  const [year, month] = yearMonth.split("-").map(Number);
+  if (!year || !month || meetingWeekday < 0) return null;
+
+  const to = lastWeekdayOfMonth(year, month, meetingWeekday);
+  const prevMonth = month === 1 ? 12 : month - 1;
+  const prevYear = month === 1 ? year - 1 : year;
+  const prevMeeting = lastWeekdayOfMonth(prevYear, prevMonth, meetingWeekday);
+  if (!to || !prevMeeting) return null;
+
+  const from = new Date(prevMeeting);
+  from.setDate(from.getDate() + 1);
+
+  let sundayCount = 0;
+  for (const d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+    if (d.getDay() === 0) sundayCount += 1;
+  }
+  return { from, to, sundayCount, peopleCount, total: sundayCount * peopleCount };
+}
+
+export function defaultSundayMassTotal(
+  yearMonth: string,
+  meetingWeekday: number,
+  peopleCount: number
+): number {
+  return computeSundayMassBasis(yearMonth, meetingWeekday, peopleCount)?.total ?? 0;
 }
 
 /**
  * 미사영성체 on the official form is weekday Mass attendance plus the month's
- * Sunday Masses — it is not tallied separately by members. Verified against
- * three submitted reports (2026.06: 25 + 28 = 53; 2026.04: 37 + 28 = 65).
+ * Sunday Masses — it is not tallied separately by members.
  */
 export function computeMassCommunion(report: MonthlyReport): number {
   return (report.prayerCounts.weekdayMass ?? 0) + (report.sundayMassTotal ?? 0);
@@ -550,7 +608,12 @@ export function createMonthlyReport(
     memberCountsThisMonth: { ...roster.memberCounts },
     memberCountsIncrease: { ...EMPTY_MEMBER_COUNTS },
     memberCountsDecrease: { ...EMPTY_MEMBER_COUNTS },
-    sundayMassTotal: defaultSundayMassTotal(yearMonth, prayerRoll.length),
+    activityEntries: [],
+    sundayMassTotal: defaultSundayMassTotal(
+      yearMonth,
+      previousReport?.meetingWeekday ?? roster.regularMeetingWeekday,
+      prayerRoll.length
+    ),
     evangelization: {
       baptism: { result: 0, target: 0 },
       returnToFaith: { result: 0, target: 0 },

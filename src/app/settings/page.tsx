@@ -9,6 +9,7 @@ import { InstallPromptButton } from "@/components/InstallPromptButton";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { PageShell } from "@/components/PageShell";
 import { ShareButton } from "@/components/ShareButton";
+import { SHOW_SPLASH_EVENT } from "@/components/SplashOverlay";
 import { SplashToggle } from "@/components/SplashToggle";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
@@ -24,7 +25,7 @@ import { formatMeetingDateTime } from "@/lib/reportUtils";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
 import type { ExportedData, Profile } from "@/lib/types";
-import { APP_VERSION } from "@/lib/version";
+import { APP_VERSION, BUILD_TIME } from "@/lib/version";
 import styles from "./page.module.css";
 
 /** Nag only once the user has enough recorded to lose. */
@@ -195,14 +196,6 @@ export default function SettingsPage() {
       </section>
 
       <section className={styles.section}>
-        <span className={styles.label}>{t("settings.secretaryLink")}</span>
-        <p className={styles.description}>{t("settings.secretaryLinkDescription")}</p>
-        <Link href="/secretary" className={styles.secondaryButton}>
-          {t("secretary.open")}
-        </Link>
-      </section>
-
-      <section className={styles.section}>
         <span className={styles.label}>{t("settings.languageLabel")}</span>
         <LanguageToggle />
       </section>
@@ -221,6 +214,13 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.splashLabel")}</span>
         <p className={styles.description}>{t("settings.splashDescription")}</p>
         <SplashToggle />
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => window.dispatchEvent(new Event(SHOW_SPLASH_EVENT))}
+        >
+          {t("settings.splashPreview")}
+        </button>
       </section>
 
       <section className={styles.section}>
@@ -276,18 +276,6 @@ export default function SettingsPage() {
         />
       </section>
 
-      <section className={styles.section}>
-        <span className={styles.label}>{t("settings.resetData")}</span>
-        <p className={styles.description}>{t("settings.resetDescription")}</p>
-        <button
-          type="button"
-          className={styles.dangerButton}
-          onClick={() => setResetOpen(true)}
-        >
-          {t("settings.resetData")}
-        </button>
-      </section>
-
       <ConfirmDialog
         open={resetOpen}
         title={t("settings.resetConfirmTitle")}
@@ -315,9 +303,44 @@ export default function SettingsPage() {
         onConfirm={handleImportConfirm}
       />
 
-      <p className={styles.versionText}>
-        {t("settings.appVersionLabel")} {APP_VERSION}
-      </p>
+      {/* Neither belongs in a member's daily path: the secretary screens are for
+          one person, and reset destroys everything. Collapsed at the very end so
+          they take a deliberate extra tap. */}
+      <details className={styles.advanced}>
+        <summary className={styles.advancedSummary}>
+          <h2 className={styles.advancedTitle}>{t("settings.secretaryLink")}</h2>
+        </summary>
+        <p className={styles.description}>{t("settings.secretaryLinkDescription")}</p>
+        <Link href="/secretary" className={styles.secondaryButton}>
+          {t("secretary.open")}
+        </Link>
+      </details>
+
+      <details className={styles.advanced}>
+        <summary className={styles.advancedSummary}>
+          <h2 className={styles.advancedTitle}>{t("settings.resetData")}</h2>
+        </summary>
+        <p className={styles.description}>{t("settings.resetDescription")}</p>
+        <button type="button" className={styles.dangerButton} onClick={() => setResetOpen(true)}>
+          {t("settings.resetData")}
+        </button>
+      </details>
+
+      <div className={styles.versionText}>
+        <p>
+          {t("settings.appVersionLabel")} {APP_VERSION}
+        </p>
+        {BUILD_TIME && (
+          <p>
+            {t("settings.buildTimeLabel")} {formatMeetingDateTime(BUILD_TIME, language)}
+          </p>
+        )}
+        <p>
+          <a href={SITE_URL} className={styles.siteLink}>
+            {SITE_URL.replace(/^https?:\/\//, "")}
+          </a>
+        </p>
+      </div>
     </PageShell>
   );
 }

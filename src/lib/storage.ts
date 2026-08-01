@@ -1,5 +1,7 @@
+import { createDefaultActivityItems } from "./activityItems";
 import { DATA_SCHEMA_VERSION } from "./constants";
 import type {
+  ActivityItem,
   Language,
   MemberCounts,
   MonthlyReport,
@@ -18,6 +20,7 @@ const KEYS = {
   schedule: "legioMariae.schedule",
   praesidiumRoster: "legioMariae.praesidiumRoster",
   monthlyReports: "legioMariae.monthlyReports",
+  activityItems: "legioMariae.activityItems",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
   // Kept in KEYS so resetAll() still clears it on devices that used the
   // splash cooldown this app no longer has.
@@ -103,6 +106,7 @@ const EMPTY_MONTHLY_REPORT_DEFAULTS = {
   attendanceRoll: [],
   prayerRoll: [],
   agendaItems: [],
+  activityEntries: [],
   sundayMassTotal: 0,
   evangelization: EMPTY_EVANGELIZATION,
   memberCountsPrevMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
@@ -209,6 +213,16 @@ export const storage = {
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
+  },
+
+  /** Falls back to the built-in catalogue until the secretary customises it. */
+  getActivityItems(): ActivityItem[] {
+    const stored = readJson<ActivityItem[]>(KEYS.activityItems, []);
+    if (!Array.isArray(stored) || stored.length === 0) return createDefaultActivityItems();
+    return stored;
+  },
+  setActivityItems(items: ActivityItem[]): void {
+    writeJson(KEYS.activityItems, items);
   },
 
   /** Epoch ms of the last successful export; 0 means never backed up. */

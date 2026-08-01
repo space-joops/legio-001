@@ -1,9 +1,10 @@
 import { dictionaries } from "@/i18n/dictionaries";
+import { buildActivityLines } from "./activityReport";
 import { PRAYER_ITEMS } from "./constants";
+import { storage } from "./storage";
 import {
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
-  computeMassCommunion,
   formatYearMonthLabel,
 } from "./monthlyReportUtils";
 import type { EvangelizationTallies, Language, MemberCounts, MonthlyReport } from "./types";
@@ -230,20 +231,14 @@ export function buildMonthlyReportRtf(report: MonthlyReport, language: Language)
   body.push(para(""));
 
   body.push(para(`8. ${sr.activityDetailSection}`));
-  const dioceseTally = [
-    `${sr.massCommunionLabel}(${computeMassCommunion(report)})`,
-    ...PRAYER_ITEMS.filter((i) => i.key !== "weekdayMass").map(
-      (item) => `${lookup(dict, item.labelKey)}(${report.prayerCounts[item.key] ?? 0})`
-    ),
-  ].join(",");
+  // Same builder the screen and print view use, so all three agree.
+  const lines = buildActivityLines(report, storage.getActivityItems(), {
+    massCommunion: sr.massCommunionLabel,
+    prayer: Object.fromEntries(PRAYER_ITEMS.map((i) => [i.key, lookup(dict, i.labelKey)])),
+  });
   body.push(para(`* ${sr.dioceseInstructionsLabel} : ${report.dioceseInstructions}`));
-  body.push(para(`  ${dioceseTally}`));
-  body.push(
-    para(
-      `* ${sr.parishInstructionsLabel} : ${report.parishInstructions}` +
-        `  ${dict.counters.weekdayMass}(${report.prayerCounts.weekdayMass ?? 0})`
-    )
-  );
+  body.push(para(`  ${lines.diocese}`));
+  body.push(para(`* ${sr.parishInstructionsLabel} : ${report.parishInstructions}  ${lines.parish}`));
   body.push(para(`* ${sr.councilInstructionsLabel} : ${report.councilInstructions}`));
   body.push(para(`* ${sr.activitySummary} : ${report.activitySummary}`));
   const evangelization = EVANGELIZATION_ROWS.map(({ key, labelKey }) => {
