@@ -1,6 +1,7 @@
 import { dictionaries } from "@/i18n/dictionaries";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
+import { formatSubmissionBlock } from "./prayerSubmission";
 import type { Language, Profile, WeeklyReport } from "./types";
 
 export function createNewReport(
@@ -71,5 +72,8 @@ export function formatShareText(report: WeeklyReport, language: Language): strin
   const noteLines = report.activityNote?.trim()
     ? ["", `${dict.report.activityNoteLabel}: ${report.activityNote.trim()}`]
     : [];
-  return [title, dateLine, nameLine, "", ...lines, ...noteLines].join("\n");
+  // Machine-readable tail so the secretary can paste this straight into the
+  // monthly report instead of copying the numbers by hand.
+  const submissionBlock = formatSubmissionBlock(report, dict.report.shareBlockLabel);
+  return [title, dateLine, nameLine, "", ...lines, ...noteLines].join("\n") + submissionBlock;
 }

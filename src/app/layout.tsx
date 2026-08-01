@@ -4,15 +4,18 @@ import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 import { Providers } from "./providers";
 
-// Nanum Gothic's Google Fonts metadata only exposes a "latin" subset name in
-// next/font's typings, but the underlying font file is a single CJK-inclusive
-// file (Korean fonts aren't split into separate per-script subsets the way
-// Latin-script families are), so Korean glyphs render correctly regardless.
+// Google splits Nanum Gothic into ~276 unicode-range slices (2.9MB all told).
+// preload:false is deliberate and load-bearing: preload tags ignore
+// unicode-range and fetch every slice, which put ~1.9MB of fonts on the
+// critical path of every page — for the majority who never leave the default
+// system font (Settings > 폰트). Without it the @font-face rules stay, so
+// opting in still works, just fetched lazily per slice as glyphs are used.
 const nanumGothic = Nanum_Gothic({
   subsets: ["latin"],
   weight: ["400", "700", "800"],
   variable: "--font-nanum",
   display: "swap",
+  preload: false,
 });
 
 const SITE_NAME = "레지오 마리애 주간 활동 보고";

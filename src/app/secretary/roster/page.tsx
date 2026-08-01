@@ -40,6 +40,7 @@ export default function SecretaryRosterPage() {
     updateOfficer,
     addMemberEntry,
     removeMemberEntry,
+    updateMemberEntry,
   } = useRoster();
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
   const [removeTarget, setRemoveTarget] = useState<{
@@ -177,10 +178,27 @@ export default function SecretaryRosterPage() {
               <ul className={styles.memberList}>
                 {roster.memberRoster[key].map((entry) => (
                   <li key={entry.id} className={styles.memberItem}>
-                    <span className={styles.memberName}>
-                      {entry.name}
-                      {entry.baptismalName ? ` (${entry.baptismalName})` : ""}
-                    </span>
+                    {/* Editable in place: deleting and re-adding to fix a typo
+                        would mint a new member id and orphan the rows already
+                        recorded against this person in past monthly reports. */}
+                    <input
+                      type="text"
+                      className={styles.memberNameInput}
+                      value={entry.name}
+                      aria-label={t("secretaryRoster.nameLabel")}
+                      onChange={(e) =>
+                        updateMemberEntry(key, entry.id, { name: e.target.value })
+                      }
+                    />
+                    <input
+                      type="text"
+                      className={styles.memberNameInput}
+                      value={entry.baptismalName}
+                      aria-label={t("secretaryRoster.baptismalNameLabel")}
+                      onChange={(e) =>
+                        updateMemberEntry(key, entry.id, { baptismalName: e.target.value })
+                      }
+                    />
                     <button
                       type="button"
                       className={styles.removeButton}

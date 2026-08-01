@@ -1,4 +1,9 @@
-const CACHE_NAME = "legio-shell-v2";
+// scripts/generate-precache-manifest.mjs rewrites this literal after every
+// build so the bytes of /sw.js change whenever the site does. That is what
+// makes the browser see a new worker at all: without it this file is
+// byte-identical forever, so install/activate never re-run — no update
+// prompt, no fresh precache, and the cache-cleanup below never fires.
+const CACHE_NAME = "legio-shell-dev";
 const FALLBACK_PRECACHE_URLS = [
   "/",
   "/manifest.json",
@@ -78,6 +83,19 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Next's client-side router fetches RSC payloads from unhashed .txt URLs, so
+  // cache-first would keep serving last deploy's payload (which names last
+  // deploy's chunks) even after a hard load got the new HTML — one session
+  // ending up half-old, half-new. Treat them like navigations instead.
+  if (url.pathname.endsWith(".txt")) {
+    event.respondWith(
+      fetch(request).catch(() =>
+        caches.match(request).then((res) => res || Response.error())
+      )
+    );
+    return;
+  }
+
   // Static assets: cache-first, populating the cache from the network the
   // first time each asset is requested.
   event.respondWith(
@@ -91,7 +109,7 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => cached);
+        .catch(() => Response.error());
     })
   );
 });

@@ -94,14 +94,17 @@ export default function HomePage() {
   return (
     <PageShell title={t("app.shortName")}>
       {!report ? (
-        <WeekSessionForm
-          sessionNumber={sessionNumber}
-          meetingDateTime={meetingDateTime}
-          onSessionNumberChange={setSessionNumber}
-          onMeetingDateTimeChange={setMeetingDateTime}
-          onSubmit={handleStart}
-          submitLabel={t("week.startWeek")}
-        />
+        <>
+          <p className={styles.emptyNotice}>{t("week.noActiveWeek")}</p>
+          <WeekSessionForm
+            sessionNumber={sessionNumber}
+            meetingDateTime={meetingDateTime}
+            onSessionNumberChange={setSessionNumber}
+            onMeetingDateTimeChange={setMeetingDateTime}
+            onSubmit={handleStart}
+            submitLabel={t("week.startWeek")}
+          />
+        </>
       ) : (
         <>
           {editing ? (

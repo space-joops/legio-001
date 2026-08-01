@@ -13,25 +13,42 @@ import { SplashToggle } from "@/components/SplashToggle";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
-import { importExportedData, resetAllData, shareOrDownloadExportedData } from "@/lib/exportData";
+import {
+  importExportedData,
+  inspectImportFile,
+  resetAllData,
+  shareOrDownloadExportedData,
+  type ImportSummary,
+} from "@/lib/exportData";
+import { formatMeetingDateTime } from "@/lib/reportUtils";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
 import type { ExportedData, Profile } from "@/lib/types";
 import { APP_VERSION } from "@/lib/version";
 import styles from "./page.module.css";
 
+/** Nag only once the user has enough recorded to lose. */
+const BACKUP_REMINDER_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
+
 export default function SettingsPage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { showToast } = useToast();
   const ready = useLocalStorageReady();
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [resetOpen, setResetOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
+  const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
+  const [backupOverdue, setBackupOverdue] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
-    if (ready) setProfile(storage.getProfile());
+    if (!ready) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated */
+    setProfile(storage.getProfile());
+    const lastExportedAt = storage.getLastExportedAt();
+    const hasRecords = storage.getHistory().length > 0;
+    setBackupOverdue(hasRecords && Date.now() - lastExportedAt > BACKUP_REMINDER_AFTER_MS);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [ready]);
 
   const handleProfileChange = (field: keyof Profile, value: string) => {
@@ -50,6 +67,7 @@ export default function SettingsPage() {
 
   const clearFileInput = () => {
     setImportFile(null);
+    setImportSummary(null);
     // Without this, re-picking the same file fires no change event and the
     // button appears dead.
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -60,6 +78,32 @@ export default function SettingsPage() {
     setResetOpen(false);
     showToast(t("settings.resetDone"));
     reloadAfterToast();
+  };
+
+  // Validate up front so a wrong file is caught before the confirm dialog, and
+  // so the dialog can describe what is actually about to overwrite everything.
+  const handleFilePicked = async (file: File | undefined) => {
+    if (!file) return;
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch {
+      clearFileInput();
+      showToast(t("settings.importError"));
+      return;
+    }
+    const check = inspectImportFile(parsed);
+    if (!check.ok) {
+      clearFileInput();
+      showToast(
+        check.reason === "futureVersion"
+          ? t("settings.importFutureVersion")
+          : t("settings.importError")
+      );
+      return;
+    }
+    setImportFile(file);
+    setImportSummary(check.summary);
   };
 
   const handleImportConfirm = async () => {
@@ -77,10 +121,32 @@ export default function SettingsPage() {
   };
 
   const handleExport = async () => {
-    if ((await shareOrDownloadExportedData()) === "downloaded") {
-      showToast(t("settings.exportSaved"));
-    }
+    const outcome = await shareOrDownloadExportedData();
+    if (outcome === "cancelled") return;
+    setBackupOverdue(false);
+    if (outcome === "downloaded") showToast(t("settings.exportSaved"));
   };
+
+  // Offered from inside the reset dialog: the one moment we know for sure the
+  // user is about to destroy everything.
+  const handleExportBeforeReset = async () => {
+    setResetOpen(false);
+    await handleExport();
+  };
+
+  const importSummaryText = importSummary
+    ? [
+        importSummary.memberName,
+        importSummary.exportedAt
+          ? formatMeetingDateTime(importSummary.exportedAt, language)
+          : "",
+        `${t("history.title")} ${importSummary.historyCount}`,
+        `${t("secretary.listTitle")} ${importSummary.monthlyReportCount}`,
+        `${t("secretaryRoster.memberCountsSection")} ${importSummary.rosterMemberCount}`,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : "";
 
   return (
     <PageShell title={t("settings.title")}>
@@ -176,6 +242,7 @@ export default function SettingsPage() {
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.exportData")}</span>
         <p className={styles.description}>{t("settings.exportDescription")}</p>
+        {backupOverdue && <p className={styles.backupNotice}>{t("settings.backupOverdue")}</p>}
         <button
           type="button"
           className={styles.secondaryButton}
@@ -203,7 +270,9 @@ export default function SettingsPage() {
           type="file"
           accept="application/json"
           className={styles.hiddenFileInput}
-          onChange={(e) => setImportFile(e.target.files?.[0] ?? null)}
+          onChange={(e) => {
+            void handleFilePicked(e.target.files?.[0]);
+          }}
         />
       </section>
 
@@ -225,6 +294,10 @@ export default function SettingsPage() {
         body={t("settings.resetConfirmBody")}
         confirmLabel={t("common.confirm")}
         cancelLabel={t("common.cancel")}
+        altLabel={t("settings.exportBeforeReset")}
+        onAlt={() => {
+          void handleExportBeforeReset();
+        }}
         danger
         onCancel={() => setResetOpen(false)}
         onConfirm={handleReset}
@@ -234,6 +307,7 @@ export default function SettingsPage() {
         open={importFile !== null}
         title={t("settings.importConfirmTitle")}
         body={t("settings.importConfirmBody")}
+        detail={importSummaryText}
         confirmLabel={t("common.confirm")}
         cancelLabel={t("common.cancel")}
         danger

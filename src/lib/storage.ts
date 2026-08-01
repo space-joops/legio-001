@@ -1,6 +1,7 @@
 import { DATA_SCHEMA_VERSION } from "./constants";
 import type {
   Language,
+  MemberCounts,
   MonthlyReport,
   PraesidiumRoster,
   Profile,
@@ -19,6 +20,7 @@ const KEYS = {
   monthlyReports: "legioMariae.monthlyReports",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
   lastSplashShownAt: "legioMariae.lastSplashShownAt",
+  lastExportedAt: "legioMariae.lastExportedAt",
 } as const;
 
 function isBrowser(): boolean {
@@ -36,9 +38,33 @@ function readJson<T>(key: string, fallback: T): T {
   }
 }
 
-function writeJson<T>(key: string, value: T): void {
-  if (!isBrowser()) return;
-  window.localStorage.setItem(key, JSON.stringify(value));
+type WriteFailureListener = () => void;
+
+const writeFailureListeners = new Set<WriteFailureListener>();
+
+/**
+ * Subscribe to storage writes that were rejected (quota exhausted, Safari
+ * private mode, …). Every setter here is fire-and-forget, so without this the
+ * failure would be completely silent and the user would keep tapping counters
+ * that never persist.
+ */
+export function onStorageWriteFailure(listener: WriteFailureListener): () => void {
+  writeFailureListeners.add(listener);
+  return () => writeFailureListeners.delete(listener);
+}
+
+function writeJson<T>(key: string, value: T): boolean {
+  if (!isBrowser()) return false;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    // Throwing here would take down the whole app: these setters are called
+    // from render-adjacent handlers (a counter tap, a keystroke) and there is
+    // no error boundary between them and the root.
+    writeFailureListeners.forEach((listener) => listener());
+    return false;
+  }
 }
 
 export const DEFAULT_PROFILE: Profile = {
@@ -53,6 +79,35 @@ export const DEFAULT_SETTINGS: Settings = {
   fontFamily: "system",
   splashEnabled: true,
 };
+const EMPTY_MEMBER_COUNTS_DEFAULT: MemberCounts = {
+  activeMale: 0,
+  activeFemale: 0,
+  praetorium: 0,
+  auxiliaryMale: 0,
+  auxiliaryFemale: 0,
+  adjutorium: 0,
+};
+
+/** Only the fields that can be missing from reports written by older versions;
+    spread *under* the stored report so real values always win. */
+const EMPTY_MONTHLY_REPORT_DEFAULTS = {
+  attendanceRoll: [],
+  prayerRoll: [],
+  agendaItems: [],
+  memberCountsPrevMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
+  memberCountsThisMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
+  memberCountsIncrease: EMPTY_MEMBER_COUNTS_DEFAULT,
+  memberCountsDecrease: EMPTY_MEMBER_COUNTS_DEFAULT,
+  dioceseInstructions: "",
+  parishInstructions: "",
+  councilInstructions: "",
+  activitySummary: "",
+  cumulativeEvangelization: "",
+  otherNotes: "",
+  meetingTime: "",
+  meetingLocation: "",
+} satisfies Partial<MonthlyReport>;
+
 export const DEFAULT_ROSTER: PraesidiumRoster = {
   councilAffiliation: "",
   spiritualDirectorName: "",
@@ -134,7 +189,11 @@ export const storage = {
   },
 
   getMonthlyReports(): MonthlyReport[] {
-    return readJson<MonthlyReport[]>(KEYS.monthlyReports, []);
+    const stored = readJson<MonthlyReport[]>(KEYS.monthlyReports, []);
+    if (!Array.isArray(stored)) return [];
+    // Reports saved before a field existed would otherwise surface `undefined`
+    // deep inside the print view; MonthlyReport is too big to hand-check.
+    return stored.map((report) => ({ ...EMPTY_MONTHLY_REPORT_DEFAULTS, ...report }));
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
@@ -148,6 +207,17 @@ export const storage = {
     writeJson(KEYS.lastSplashShownAt, timestamp);
   },
 
+  /** Epoch ms of the last successful export; 0 means never backed up. */
+  getLastExportedAt(): number {
+    return readJson<number>(KEYS.lastExportedAt, 0);
+  },
+  setLastExportedAt(timestamp: number): void {
+    writeJson(KEYS.lastExportedAt, timestamp);
+  },
+
+  getSchemaVersion(): number {
+    return readJson<number>(KEYS.dataSchemaVersion, 0);
+  },
   ensureSchemaVersion(): void {
     writeJson(KEYS.dataSchemaVersion, DATA_SCHEMA_VERSION);
   },
