@@ -13,23 +13,37 @@ import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
+import { shareOrDownloadFile } from "@/lib/exportData";
 import { generateId } from "@/lib/id";
+import { buildMonthlyReportRtf } from "@/lib/monthlyReportRtf";
 import {
   MAX_ATTENDANCE_SESSIONS,
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
+  addMemberToReport,
   applySubmissionsToPrayerRoll,
   computeAttendanceSummary,
+  computeMassCommunion,
   computePrayerCountsFromRoll,
+  findPersonInReport,
   formatMonthlyShareText,
   formatYearMonthLabel,
+  renamePersonInReport,
   resyncAttendanceSessions,
+  resyncNamesFromRoster,
   resyncPrayerRollSessions,
   sessionRangeNumbers,
   type SubmissionDecision,
 } from "@/lib/monthlyReportUtils";
 import { selectOnFocus } from "@/lib/selectOnFocus";
-import type { AgendaItem, MemberCounts, MonthlyReport, PrayerItemKey } from "@/lib/types";
+import { storage } from "@/lib/storage";
+import type {
+  AgendaItem,
+  EvangelizationTallies,
+  MemberCounts,
+  MonthlyReport,
+  PrayerItemKey,
+} from "@/lib/types";
 import styles from "./page.module.css";
 
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
@@ -39,6 +53,13 @@ const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "auxiliaryMale", labelKey: "secretaryRoster.auxiliaryMaleLabel" },
   { key: "auxiliaryFemale", labelKey: "secretaryRoster.auxiliaryFemaleLabel" },
   { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
+];
+
+const EVANGELIZATION_FIELDS: { key: keyof EvangelizationTallies; labelKey: string }[] = [
+  { key: "baptism", labelKey: "secretaryReport.evangelizationBaptism" },
+  { key: "returnToFaith", labelKey: "secretaryReport.evangelizationReturn" },
+  { key: "activeMember", labelKey: "secretaryReport.evangelizationActiveMember" },
+  { key: "praetorium", labelKey: "secretaryReport.evangelizationPraetorium" },
 ];
 
 const MEMBER_COUNT_BUCKETS = [
@@ -178,12 +199,32 @@ function ReportPageContent() {
     patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
   };
 
-  const patchAttendanceLabel = (personId: string, personLabel: string) => {
-    patch({
-      attendanceRoll: report.attendanceRoll.map((record) =>
-        record.personId === personId ? { ...record, personLabel } : record
-      ),
-    });
+  /**
+   * One rename updates the roster snapshot and both rolls together. Editing any
+   * single one of them used to leave the same person under two different names
+   * inside one report.
+   */
+  const renamePerson = (personId: string, field: "name" | "baptismalName", value: string) => {
+    const next = { ...findPersonInReport(report, personId), [field]: value };
+    patch(renamePersonInReport(report, personId, next.name, next.baptismalName));
+  };
+
+  const handleResyncNames = () => {
+    patch(resyncNamesFromRoster(report, storage.getRoster()));
+    showToast(t("secretaryReport.resyncNamesDone"));
+  };
+
+  const handleAddPerson = () => {
+    patch(addMemberToReport(report, "", ""));
+  };
+
+  const handleExportRtf = async () => {
+    const rtf = buildMonthlyReportRtf(report, language);
+    // RTF is 7-bit ASCII by construction (Korean goes out as \u escapes).
+    const blob = new Blob([rtf], { type: "application/rtf" });
+    const name = report.roster.praesidiumName || t("app.shortName");
+    const outcome = await shareOrDownloadFile(blob, `${name}_${report.yearMonth}.rtf`);
+    if (outcome === "downloaded") showToast(t("secretaryReport.exportDocumentSaved"));
   };
 
   const patchPrayerRollCell = (
@@ -308,6 +349,15 @@ function ReportPageContent() {
           >
             {t("secretaryReport.print")}
           </button>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => {
+              void handleExportRtf();
+            }}
+          >
+            {t("secretaryReport.exportDocument")}
+          </button>
           <ShareButton
             title={`${t("app.shortName")} ${formatYearMonthLabel(report.yearMonth, language)}`}
             text={formatMonthlyShareText(report, language)}
@@ -405,8 +455,23 @@ function ReportPageContent() {
           </p>
         </div>
 
-        <h3 className={styles.sectionTitle}>{t("secretaryReport.attendanceGridSection")}</h3>
+        <div className={styles.sectionHeaderRow}>
+          <h3 className={styles.sectionTitle}>{t("secretaryReport.attendanceGridSection")}</h3>
+          <div className={styles.topActions}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={handleResyncNames}
+            >
+              {t("secretaryReport.resyncNames")}
+            </button>
+            <button type="button" className={styles.secondaryButton} onClick={handleAddPerson}>
+              {t("secretaryReport.addPerson")}
+            </button>
+          </div>
+        </div>
         <p className={styles.hint}>{t("secretaryReport.attendanceDefaultHint")}</p>
+        <p className={styles.hint}>{t("secretaryReport.nameEditHint")}</p>
         <SessionTabBar
           sessions={sessionNumbers}
           active={activeAttendanceSession}
@@ -417,6 +482,7 @@ function ReportPageContent() {
             <thead>
               <tr>
                 <th>{t("secretaryReport.personColumnLabel")}</th>
+                <th>{t("secretaryRoster.baptismalNameLabel")}</th>
                 <th>{t("secretaryReport.attendance")}</th>
               </tr>
             </thead>
@@ -427,10 +493,19 @@ function ReportPageContent() {
                     <input
                       type="text"
                       className={styles.attendanceNameInput}
-                      value={record.personLabel}
+                      value={findPersonInReport(report, record.personId).name}
                       aria-label={t("secretaryReport.personColumnLabel")}
                       placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
-                      onChange={(e) => patchAttendanceLabel(record.personId, e.target.value)}
+                      onChange={(e) => renamePerson(record.personId, "name", e.target.value)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      className={styles.attendanceNameInput}
+                      value={findPersonInReport(report, record.personId).baptismalName}
+                      aria-label={t("secretaryRoster.baptismalNameLabel")}
+                      onChange={(e) => renamePerson(record.personId, "baptismalName", e.target.value)}
                     />
                   </td>
                   <td>
@@ -681,6 +756,25 @@ function ReportPageContent() {
           ))}
         </div>
 
+        <div className={styles.row}>
+          <label className={styles.field}>
+            <span className={styles.label}>{t("secretaryReport.sundayMassLabel")}</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              className={styles.input}
+              value={report.sundayMassTotal}
+              onFocus={selectOnFocus}
+              onChange={(e) => patch({ sundayMassTotal: toNumber(e.target.value) })}
+            />
+          </label>
+          <label className={styles.field}>
+            <span className={styles.label}>{t("secretaryReport.massCommunionResult")}</span>
+            <output className={styles.derivedValue}>{computeMassCommunion(report)}</output>
+          </label>
+        </div>
+        <p className={styles.hint}>{t("secretaryReport.sundayMassHint")}</p>
+
         <div className={styles.sectionHeaderRow}>
           <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
           <button
@@ -709,7 +803,16 @@ function ReportPageContent() {
             <tbody>
               {report.prayerRoll.map((entry) => (
                 <tr key={entry.personId}>
-                  <td>{entry.personLabel}</td>
+                  <td>
+                    <input
+                      type="text"
+                      className={styles.attendanceNameInput}
+                      value={findPersonInReport(report, entry.personId).name}
+                      aria-label={t("secretaryReport.personColumnLabel")}
+                      placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
+                      onChange={(e) => renamePerson(entry.personId, "name", e.target.value)}
+                    />
+                  </td>
                   {PRAYER_ITEMS.map((item) => (
                     <td key={item.key}>
                       <input
@@ -774,11 +877,41 @@ function ReportPageContent() {
             onChange={(e) => patch({ activitySummary: e.target.value })}
           />
         </label>
+        <h3 className={styles.sectionTitle}>{t("secretaryReport.evangelizationSection")}</h3>
+        {EVANGELIZATION_FIELDS.map(({ key, labelKey }) => (
+          <div key={key} className={styles.memberCountRow}>
+            <span className={styles.label}>{t(labelKey)}</span>
+            <div className={styles.row}>
+              {(["result", "target"] as const).map((slot) => (
+                <label key={slot} className={styles.field}>
+                  <span className={styles.smallLabel}>
+                    {t(`secretaryReport.evangelization${slot === "result" ? "Result" : "Target"}`)}
+                  </span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    className={styles.input}
+                    value={report.evangelization[key][slot]}
+                    onFocus={selectOnFocus}
+                    onChange={(e) =>
+                      patch({
+                        evangelization: {
+                          ...report.evangelization,
+                          [key]: { ...report.evangelization[key], [slot]: toNumber(e.target.value) },
+                        },
+                      })
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.cumulativeEvangelizationLabel")}</span>
           <textarea
             className={styles.textarea}
-            rows={3}
+            rows={2}
             value={report.cumulativeEvangelization}
             onChange={(e) => patch({ cumulativeEvangelization: e.target.value })}
           />

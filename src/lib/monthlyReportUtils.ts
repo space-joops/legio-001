@@ -6,6 +6,7 @@ import type {
   AttendanceRecord,
   Language,
   MemberCounts,
+  MemberEntry,
   MemberRoster,
   MonthlyReport,
   OfficerRole,
@@ -154,6 +155,142 @@ export function rosterPersons(roster: PraesidiumRoster): RosterPerson[] {
     })
   );
   return [...officers, ...members];
+}
+
+/** The prefix a personId's label carries — role name for officers, "단원" otherwise. */
+function labelPrefixFor(personId: string): string {
+  if (personId.startsWith("officer:")) {
+    const role = personId.slice("officer:".length) as OfficerRole;
+    return OFFICER_ROLE_LABEL_KO[role] ?? "단원";
+  }
+  return "단원";
+}
+
+/**
+ * Renames one person everywhere the report stores their name at once.
+ *
+ * A report keeps the same name in three independent places — the roster
+ * snapshot, the attendance roll's label, and the prayer roll's label — and the
+ * snapshot means edits to the live roster never reach a report that already
+ * exists. Fixing a typo in only one of them left the same person listed under
+ * two different names within a single report, so every rename goes through here.
+ * personIds are stable across renames (`officer:<role>` / `member:<uuid>`),
+ * which is what lets one edit find all three.
+ */
+export function renamePersonInReport(
+  report: MonthlyReport,
+  personId: string,
+  name: string,
+  baptismalName: string
+): Partial<MonthlyReport> {
+  const label = formatPersonLabel(labelPrefixFor(personId), name, baptismalName);
+
+  const roster: PraesidiumRoster = { ...report.roster };
+  if (personId.startsWith("officer:")) {
+    const role = personId.slice("officer:".length);
+    roster.officers = roster.officers.map((officer) =>
+      officer.role === role ? { ...officer, name, baptismalName } : officer
+    );
+  } else {
+    const memberId = personId.slice("member:".length);
+    const memberRoster = { ...roster.memberRoster };
+    for (const key of Object.keys(memberRoster) as (keyof MemberRoster)[]) {
+      memberRoster[key] = memberRoster[key].map((entry) =>
+        entry.id === memberId ? { ...entry, name, baptismalName } : entry
+      );
+    }
+    roster.memberRoster = memberRoster;
+  }
+
+  return {
+    roster,
+    attendanceRoll: report.attendanceRoll.map((record) =>
+      record.personId === personId ? { ...record, personLabel: label } : record
+    ),
+    prayerRoll: report.prayerRoll.map((entry) =>
+      entry.personId === personId ? { ...entry, personLabel: label } : entry
+    ),
+  };
+}
+
+/** Name + baptismal name as currently stored for a person in this report. */
+export function findPersonInReport(
+  report: MonthlyReport,
+  personId: string
+): { name: string; baptismalName: string } {
+  const person = rosterPersons(report.roster).find((p) => p.id === personId);
+  return { name: person?.name ?? "", baptismalName: person?.baptismalName ?? "" };
+}
+
+/**
+ * Pulls current names from the live roster into an existing report. Only
+ * refreshes rows that already exist — adding or removing rows here would
+ * discard attendance and prayer numbers the secretary already entered.
+ */
+export function resyncNamesFromRoster(
+  report: MonthlyReport,
+  roster: PraesidiumRoster
+): Partial<MonthlyReport> {
+  const current = new Map(rosterPersons(roster).map((p) => [p.id, p]));
+  let next: MonthlyReport = report;
+  for (const person of rosterPersons(report.roster)) {
+    const live = current.get(person.id);
+    if (!live) continue;
+    if (live.name === person.name && live.baptismalName === person.baptismalName) continue;
+    next = { ...next, ...renamePersonInReport(next, person.id, live.name, live.baptismalName) };
+  }
+  return { roster: next.roster, attendanceRoll: next.attendanceRoll, prayerRoll: next.prayerRoll };
+}
+
+/**
+ * Adds a person to this report's rolls. Members who join after the report was
+ * created otherwise have no row at all and can never be recorded for that month.
+ * The new member also lands in the report's roster snapshot so the name edits
+ * and the paste-matching above can find them.
+ */
+export function addMemberToReport(
+  report: MonthlyReport,
+  name: string,
+  baptismalName: string,
+  category: keyof MemberCounts = "activeFemale"
+): Partial<MonthlyReport> {
+  const entry: MemberEntry = { id: generateId(), name, baptismalName };
+  const personId = `member:${entry.id}`;
+  const label = formatPersonLabel("단원", name, baptismalName);
+  const numbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
+
+  const roster: PraesidiumRoster = {
+    ...report.roster,
+    memberRoster: {
+      ...report.roster.memberRoster,
+      [category]: [...report.roster.memberRoster[category], entry],
+    },
+  };
+
+  const attendanceRoll = [
+    ...report.attendanceRoll,
+    {
+      personId,
+      personLabel: label,
+      isOfficer: false,
+      sessions: Object.fromEntries(numbers.map((n) => [n, true])),
+    },
+  ];
+  const prayerRoll = [
+    ...report.prayerRoll,
+    {
+      personId,
+      personLabel: label,
+      sessions: Object.fromEntries(numbers.map((n) => [n, { ...EMPTY_COUNTS }])),
+    },
+  ];
+
+  return {
+    roster,
+    attendanceRoll,
+    prayerRoll,
+    attendance: computeAttendanceSummary(attendanceRoll),
+  };
 }
 
 export function buildAttendanceRoll(
@@ -350,6 +487,20 @@ export function applySubmissionsToPrayerRoll(
   });
 }
 
+/** Everyone is taken to attend every Sunday unless the secretary says otherwise. */
+export function defaultSundayMassTotal(yearMonth: string, peopleCount: number): number {
+  return countWeekdayOccurrencesInMonth(yearMonth, 0) * peopleCount;
+}
+
+/**
+ * 미사영성체 on the official form is weekday Mass attendance plus the month's
+ * Sunday Masses — it is not tallied separately by members. Verified against
+ * three submitted reports (2026.06: 25 + 28 = 53; 2026.04: 37 + 28 = 65).
+ */
+export function computeMassCommunion(report: MonthlyReport): number {
+  return (report.prayerCounts.weekdayMass ?? 0) + (report.sundayMassTotal ?? 0);
+}
+
 export function computeAttendanceSummary(roll: AttendanceRecord[]): MonthlyReport["attendance"] {
   let officersPresent = 0;
   let officersTotal = 0;
@@ -399,6 +550,13 @@ export function createMonthlyReport(
     memberCountsThisMonth: { ...roster.memberCounts },
     memberCountsIncrease: { ...EMPTY_MEMBER_COUNTS },
     memberCountsDecrease: { ...EMPTY_MEMBER_COUNTS },
+    sundayMassTotal: defaultSundayMassTotal(yearMonth, prayerRoll.length),
+    evangelization: {
+      baptism: { result: 0, target: 0 },
+      returnToFaith: { result: 0, target: 0 },
+      activeMember: { result: 0, target: 0 },
+      praetorium: { result: 0, target: 0 },
+    },
     agendaItems: [],
     treasury: { broughtForward, income: 0, expense: 0, balance: broughtForward, expenseBreakdown: "" },
     prayerCounts: computePrayerCountsFromRoll(prayerRoll),

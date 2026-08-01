@@ -84,6 +84,8 @@ export interface MemberEntry {
 export type MemberRoster = Record<keyof MemberCounts, MemberEntry[]>;
 
 export interface PraesidiumRoster {
+  /** Printed in the report's signature block. */
+  praesidiumName: string;
   councilAffiliation: string;
   spiritualDirectorName: string;
   spiritualDirectorBaptismalName: string;
@@ -117,6 +119,19 @@ export interface PrayerSessionEntry {
   sessions: Record<number, PrayerCounts>;
 }
 
+/** Printed as "영세·외짝(0/1), 냉담회두(0/3), …" — result over target. */
+export interface EvangelizationTally {
+  result: number;
+  target: number;
+}
+
+export interface EvangelizationTallies {
+  baptism: EvangelizationTally;
+  returnToFaith: EvangelizationTally;
+  activeMember: EvangelizationTally;
+  praetorium: EvangelizationTally;
+}
+
 export interface MonthlyReport {
   id: string;
   yearMonth: string; // "2026-06"
@@ -148,6 +163,15 @@ export interface MonthlyReport {
     expenseBreakdown: string;
   };
   prayerCounts: PrayerCounts;
+  /**
+   * Sunday Masses attended across the whole praesidium this month. Seeded as
+   * (people on the prayer roll x Sundays in the month) because members are
+   * assumed to attend every Sunday unless they report otherwise; the secretary
+   * adjusts it for extra feast-day Masses or absences.
+   */
+  sundayMassTotal: number;
+  /** Year-to-date evangelisation results against target, per the official form. */
+  evangelization: EvangelizationTallies;
   dioceseInstructions: string;
   parishInstructions: string;
   councilInstructions: string;

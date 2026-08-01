@@ -1,6 +1,15 @@
-import { PRAYER_ITEMS } from "@/lib/constants";
-import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
-import type { MemberCounts, MonthlyReport } from "@/lib/types";
+import {
+  OFFICER_ROLES,
+  WEEKDAY_LABEL_KEYS,
+  computeMassCommunion,
+  formatYearMonthLabel,
+} from "@/lib/monthlyReportUtils";
+import type {
+  EvangelizationTallies,
+  MemberCounts,
+  MonthlyReport,
+  PrayerItemKey,
+} from "@/lib/types";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./SecretaryReportPrintView.module.css";
 
@@ -13,6 +22,38 @@ const MEMBER_COUNT_ROWS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
 ];
 
+/** 교구 지시사항 줄에 미사영성체 다음으로 오는 기도 4종 (공식 양식 순서). */
+const DIOCESE_PRAYER_KEYS = [
+  "priestPrayer",
+  "chainPrayer",
+  "rosaryDecades",
+  "aspirations",
+] as const satisfies readonly PrayerItemKey[];
+
+const EVANGELIZATION_ROWS: {
+  key: keyof EvangelizationTallies;
+  labelKey: string;
+}[] = [
+  { key: "baptism", labelKey: "secretaryReport.evangelizationBaptism" },
+  { key: "returnToFaith", labelKey: "secretaryReport.evangelizationReturn" },
+  { key: "activeMember", labelKey: "secretaryReport.evangelizationActiveMember" },
+  { key: "praetorium", labelKey: "secretaryReport.evangelizationPraetorium" },
+];
+
+/** 남·여를 합친 "계" 행. 공식 양식이 행동단원과 협조단원에만 계를 둔다. */
+const SUBTOTAL_ROWS: {
+  labelKey: string;
+  male: keyof MemberCounts;
+  female: keyof MemberCounts;
+}[] = [
+  { labelKey: "secretaryReport.activeSubtotalLabel", male: "activeMale", female: "activeFemale" },
+  {
+    labelKey: "secretaryReport.auxiliarySubtotalLabel",
+    male: "auxiliaryMale",
+    female: "auxiliaryFemale",
+  },
+];
+
 function TextBlock({ label, value }: { label: string; value: string }) {
   return (
     <div className={styles.textBlock}>
@@ -22,15 +63,41 @@ function TextBlock({ label, value }: { label: string; value: string }) {
   );
 }
 
+function joinLines(...parts: string[]): string {
+  return parts.filter((p) => p && p.trim()).join("\n");
+}
+
 export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) {
   const { t, language } = useTranslation();
+  const president = report.roster.officers.find((officer) => officer.role === "president");
+
+  // 교구 지시사항 line: 미사영성체 is derived (weekday Mass + this month's Sundays).
+  const dioceseTally = [
+    `${t("secretaryReport.massCommunionLabel")}(${computeMassCommunion(report)})`,
+    ...DIOCESE_PRAYER_KEYS.map(
+      (key) => `${t(`counters.${key}`)}(${report.prayerCounts[key] ?? 0})`
+    ),
+  ].join(", ");
+
+  const parishTally = `${t("counters.weekdayMass")}(${report.prayerCounts.weekdayMass ?? 0})`;
+
+  const evangelizationLine = EVANGELIZATION_ROWS.map(({ key, labelKey }) => {
+    const tally = report.evangelization?.[key];
+    return `${t(labelKey)}(${tally?.result ?? 0}/${tally?.target ?? 0})`;
+  }).join(", ");
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
+        <p className={styles.orgLine}>{t("app.name")}</p>
         <h1 className={styles.title}>{t("secretaryReport.title")}</h1>
-        <p className={styles.yearMonth}>{formatYearMonthLabel(report.yearMonth, language)}</p>
-        <p className={styles.councilLine}>{report.roster.councilAffiliation}</p>
+        <p className={styles.yearMonth}>
+          {formatYearMonthLabel(report.yearMonth, language)} {t("secretaryReport.asOfSuffix")} · {t("week.sessionNumber")}{" "}
+          {report.sessionRangeStart} ~ {report.sessionRangeEnd}
+        </p>
+        <p className={styles.councilLine}>
+          {report.roster.praesidiumName} {report.roster.councilAffiliation}
+        </p>
       </header>
 
       <section className={styles.section}>
@@ -131,6 +198,17 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
                   <td>{report.memberCountsDecrease[key]}</td>
                 </tr>
               ))}
+              {/* The official form carries a 계 column for 행동단원 and 협조단원;
+                  derived from 남+여 so nobody has to keep it in sync by hand. */}
+              {SUBTOTAL_ROWS.map(({ labelKey, male, female }) => (
+                <tr key={labelKey} className={styles.subtotalRow}>
+                  <th>{t(labelKey)}</th>
+                  <td>{report.memberCountsPrevMonth[male] + report.memberCountsPrevMonth[female]}</td>
+                  <td>{report.memberCountsThisMonth[male] + report.memberCountsThisMonth[female]}</td>
+                  <td>{report.memberCountsIncrease[male] + report.memberCountsIncrease[female]}</td>
+                  <td>{report.memberCountsDecrease[male] + report.memberCountsDecrease[female]}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -177,15 +255,15 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
             <tbody>
               <tr>
                 <th>{t("secretaryReport.broughtForwardLabel")}</th>
-                <td>{report.treasury.broughtForward}</td>
+                <td>{report.treasury.broughtForward.toLocaleString()}</td>
                 <th>{t("secretaryReport.incomeLabel")}</th>
-                <td>{report.treasury.income}</td>
+                <td>{report.treasury.income.toLocaleString()}</td>
               </tr>
               <tr>
                 <th>{t("secretaryReport.expenseLabel")}</th>
-                <td>{report.treasury.expense}</td>
+                <td>{report.treasury.expense.toLocaleString()}</td>
                 <th>{t("secretaryReport.balanceLabel")}</th>
-                <td>{report.treasury.balance}</td>
+                <td>{report.treasury.balance.toLocaleString()}</td>
               </tr>
               <tr>
                 <th>{t("secretaryReport.expenseBreakdownLabel")}</th>
@@ -196,44 +274,46 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
         </div>
       </section>
 
+      {/* The official form has no standalone prayer table: the tallies belong on
+          the 교구/본당 지시사항 lines, which is where a reviewer looks for them. */}
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.prayerSection")}</h2>
-        <div className={styles.tableScroll}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                {PRAYER_ITEMS.map((item) => (
-                  <th key={item.key}>{t(item.labelKey)}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {PRAYER_ITEMS.map((item) => (
-                  <td key={item.key}>{report.prayerCounts[item.key]}</td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.instructionsSection")}</h2>
-        <TextBlock label={t("secretaryReport.dioceseInstructionsLabel")} value={report.dioceseInstructions} />
-        <TextBlock label={t("secretaryReport.parishInstructionsLabel")} value={report.parishInstructions} />
-        <TextBlock label={t("secretaryReport.councilInstructionsLabel")} value={report.councilInstructions} />
-      </section>
-
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.activitySummarySection")}</h2>
+        <h2 className={styles.sectionTitle}>{t("secretaryReport.activityDetailSection")}</h2>
+        <TextBlock
+          label={t("secretaryReport.dioceseInstructionsLabel")}
+          value={joinLines(report.dioceseInstructions, dioceseTally)}
+        />
+        <TextBlock
+          label={t("secretaryReport.parishInstructionsLabel")}
+          value={joinLines(report.parishInstructions, parishTally)}
+        />
+        <TextBlock
+          label={t("secretaryReport.councilInstructionsLabel")}
+          value={report.councilInstructions}
+        />
         <TextBlock label={t("secretaryReport.activitySummary")} value={report.activitySummary} />
         <TextBlock
           label={t("secretaryReport.cumulativeEvangelizationLabel")}
-          value={report.cumulativeEvangelization}
+          value={joinLines(evangelizationLine, report.cumulativeEvangelization)}
         />
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>{t("secretaryReport.otherNotesLabel")}</h2>
         <TextBlock label={t("secretaryReport.otherNotesLabel")} value={report.otherNotes} />
       </section>
+
+      <footer className={styles.signature}>
+        <p>
+          ({t("secretaryRoster.councilAffiliationLabel")}) {report.roster.councilAffiliation || "-"}{" "}
+          {t("secretaryReport.directlyUnder")}
+        </p>
+        <p className={styles.signatureLine}>
+          {report.roster.praesidiumName || "-"} {t("secretaryReport.praesidiumSuffix")}{" "}
+          {t("secretaryRoster.roleLabel.president")} {president?.name || "-"}{" "}
+          {president?.baptismalName || ""} ({t("secretaryReport.signature")})
+        </p>
+        <p className={styles.formNumber}>{t("secretaryReport.formNumber")}</p>
+      </footer>
     </div>
   );
 }

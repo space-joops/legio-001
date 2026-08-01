@@ -64,6 +64,16 @@ export default function SecretaryRosterPage() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryRoster.headerSection")}</h2>
         <label className={styles.field}>
+          <span className={styles.label}>{t("secretaryRoster.praesidiumNameLabel")}</span>
+          <input
+            type="text"
+            className={styles.input}
+            value={roster.praesidiumName}
+            placeholder={t("secretaryRoster.praesidiumNamePlaceholder")}
+            onChange={(e) => updateHeader({ praesidiumName: e.target.value })}
+          />
+        </label>
+        <label className={styles.field}>
           <span className={styles.label}>{t("secretaryRoster.councilAffiliationLabel")}</span>
           <input
             type="text"
