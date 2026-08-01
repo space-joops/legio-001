@@ -22,7 +22,17 @@ export function useRoster() {
   }, []);
 
   const updateHeader = useCallback(
-    (patch: Partial<Pick<PraesidiumRoster, "councilAffiliation" | "spiritualDirectorName" | "spiritualDirectorBaptismalName">>) => {
+    (
+      patch: Partial<
+        Pick<
+          PraesidiumRoster,
+          | "praesidiumName"
+          | "councilAffiliation"
+          | "spiritualDirectorName"
+          | "spiritualDirectorBaptismalName"
+        >
+      >
+    ) => {
       setRoster((prev) => {
         if (!prev) return prev;
         const next = { ...prev, ...patch };

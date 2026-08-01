@@ -19,6 +19,8 @@ const KEYS = {
   praesidiumRoster: "legioMariae.praesidiumRoster",
   monthlyReports: "legioMariae.monthlyReports",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
+  // Kept in KEYS so resetAll() still clears it on devices that used the
+  // splash cooldown this app no longer has.
   lastSplashShownAt: "legioMariae.lastSplashShownAt",
   lastExportedAt: "legioMariae.lastExportedAt",
 } as const;
@@ -90,10 +92,19 @@ const EMPTY_MEMBER_COUNTS_DEFAULT: MemberCounts = {
 
 /** Only the fields that can be missing from reports written by older versions;
     spread *under* the stored report so real values always win. */
+const EMPTY_EVANGELIZATION = {
+  baptism: { result: 0, target: 0 },
+  returnToFaith: { result: 0, target: 0 },
+  activeMember: { result: 0, target: 0 },
+  praetorium: { result: 0, target: 0 },
+};
+
 const EMPTY_MONTHLY_REPORT_DEFAULTS = {
   attendanceRoll: [],
   prayerRoll: [],
   agendaItems: [],
+  sundayMassTotal: 0,
+  evangelization: EMPTY_EVANGELIZATION,
   memberCountsPrevMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
   memberCountsThisMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
   memberCountsIncrease: EMPTY_MEMBER_COUNTS_DEFAULT,
@@ -109,6 +120,7 @@ const EMPTY_MONTHLY_REPORT_DEFAULTS = {
 } satisfies Partial<MonthlyReport>;
 
 export const DEFAULT_ROSTER: PraesidiumRoster = {
+  praesidiumName: "",
   councilAffiliation: "",
   spiritualDirectorName: "",
   spiritualDirectorBaptismalName: "",
@@ -197,14 +209,6 @@ export const storage = {
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
-  },
-
-  /** Epoch ms of the last splash display; 0 means it has never been shown. */
-  getLastSplashShownAt(): number {
-    return readJson<number>(KEYS.lastSplashShownAt, 0);
-  },
-  setLastSplashShownAt(timestamp: number): void {
-    writeJson(KEYS.lastSplashShownAt, timestamp);
   },
 
   /** Epoch ms of the last successful export; 0 means never backed up. */

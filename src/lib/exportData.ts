@@ -15,6 +15,27 @@ export function buildExportedData(): ExportedData {
   };
 }
 
+/** Share sheet on phones, plain download elsewhere. Returns what happened so the
+    caller can decide whether a toast is warranted. */
+export async function shareOrDownloadFile(
+  blob: Blob,
+  filename: string
+): Promise<"shared" | "downloaded" | "cancelled"> {
+  if (typeof navigator !== "undefined" && "canShare" in navigator) {
+    const file = new File([blob], filename, { type: blob.type });
+    if (navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: filename });
+        return "shared";
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return "cancelled";
+      }
+    }
+  }
+  downloadBlob(blob, filename);
+  return "downloaded";
+}
+
 function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
