@@ -66,6 +66,12 @@ const SALVE_REGINA_KO = [
   "너그러우시고 자애로우시며 오! 아름다우신 동정 마리아님.",
   "◎ 천주의 성모님, 저희를 위하여 빌어 주시어",
   "그리스도께서 약속하신 영원한 생명을 얻게 하소서.",
+  "➕ 기도합시다.",
+  "하느님, 외아드님이 삶과 죽음과 부활로서",
+  "저희에게 영원한 구원을 마련해 주셨나이다.",
+  "복되신 동정 마리아와 함께 이 신비를 묵상하며 묵주기도를 바치오니,",
+  "저희가 그 가르침을 따라 영원한 생명을 얻게 하소서.",
+  "우리 주 그리스도를 통하여 비나이다. 아멘.",
 ];
 
 const OUR_FATHER_EN = [
@@ -119,7 +125,16 @@ const SALVE_REGINA_EN = [
   "thine eyes of mercy toward us,",
   "and after this our exile,",
   "show unto us the blessed fruit of thy womb, Jesus.",
-  "O clement, O loving, O sweet Virgin Mary. Amen.",
+  "O clement, O loving, O sweet Virgin Mary.",
+  "V. Pray for us, O holy Mother of God.",
+  "R. That we may be made worthy of the promises of Christ.",
+  "➕ Let us pray.",
+  "O God, whose only-begotten Son, by his life, death, and resurrection,",
+  "has purchased for us the rewards of eternal life;",
+  "grant, we beseech thee, that meditating upon these mysteries",
+  "of the most holy Rosary of the Blessed Virgin Mary,",
+  "we may imitate what they contain and obtain what they promise,",
+  "through the same Christ our Lord. Amen.",
 ];
 
 export const PRAYER_TEXTS: PrayerTextMap = {
@@ -320,6 +335,81 @@ export const PRAYER_TEXTS: PrayerTextMap = {
         },
       ],
       note: "Aspirations are short, spontaneous prayers rather than one fixed text; these are common examples.",
+    },
+  },
+
+  catena: {
+    ko: {
+      sections: [
+        {
+          heading: "까떼나 (Catena Legionis)",
+          lines: [
+            "내 영혼이 주님을 찬송하며 내 마음이 나의 구원자 하느님 안에서 기뻐 뛰니",
+            "그분께서 당신 종의 비천함을 굽어보셨기 때문입니다.",
+            "이제부터 과연 모든 세대가 나를 행복하다 하리니",
+            "전능하신 분께서 나에게 큰일을 하셨기 때문입니다.",
+            "그분의 이름은 거룩하고 그분의 자비는 대대로 당신을 경외하는 이들에게 미칩니다.",
+            "그분께서는 당신 팔로 권능을 떨치시어 마음속 생각이 교만한 자들을 흩으셨습니다.",
+            "통치자들을 왕좌에서 끌어내리시고 비천한 이들을 들어 높이셨으며",
+            "굶주린 이들을 좋은 것으로 배불리시고 부유한 자들을 빈손으로 내치셨습니다.",
+            "당신의 자비를 기억하시어 당신 종 이스라엘을 거두어 주셨으니",
+            "우리 조상들에게 말씀하신 대로 그 자비가 아브라함과 그 후손에게 영원히 미칠 것입니다.",
+          ],
+        },
+      ],
+    },
+    en: {
+      sections: [
+        {
+          heading: "Catena Legionis",
+          lines: [
+            "My soul glorifies the Lord,",
+            "my spirit rejoices in God, my Saviour.",
+            "He looks on his servant in her nothingness;",
+            "henceforth all ages will call me blessed.",
+            "The Almighty works marvels for me.",
+            "Holy his name!",
+            "His mercy is from age to age, on those who fear him.",
+            "He puts forth his arm in strength",
+            "and scatters the proud-hearted.",
+            "He casts the mighty from their thrones",
+            "and raises the lowly.",
+            "He fills the starving with good things,",
+            "sends the rich away empty.",
+            "He protects Israel, his servant, remembering his mercy,",
+            "the mercy promised to our fathers,",
+            "to Abraham and his sons for ever.",
+          ],
+        },
+      ],
+    },
+  },
+
+  tesseraFull: {
+    ko: {
+      sections: [
+        {
+          heading: "뗏세라",
+          lines: ["(하단 '뗏세라' 메뉴에서 전체 기도문을 확인하세요)"],
+        },
+      ],
+    },
+    en: {
+      sections: [
+        {
+          heading: "Tessera",
+          lines: ["(Please use the Tessera tab to view the full prayer)"],
+        },
+      ],
+    },
+  },
+  
+  handbookReading: {
+    ko: {
+      sections: [{ heading: "교본 읽기", lines: ["레지오 마리애 공인 교본을 읽고 공부합니다."] }],
+    },
+    en: {
+      sections: [{ heading: "Handbook Reading", lines: ["Read and study the official Legion of Mary Handbook."] }],
     },
   },
 };

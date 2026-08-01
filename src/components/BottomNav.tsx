@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
+  BookIcon,
   CalendarIcon,
   HistoryIcon,
   HomeIcon,
@@ -25,9 +26,14 @@ export function BottomNav() {
       label: t("nav.history"),
       Icon: HistoryIcon,
       swappable: true,
-      // A weekly report detail is part of the history flow, so the tab stays lit
-      // there — mirrors how /secretary/report keeps the report-list tab active.
       isActive: pathname.startsWith("/history") || pathname.startsWith("/report"),
+    },
+    {
+      href: "/tessera",
+      label: t("nav.tessera"),
+      Icon: BookIcon,
+      swappable: true,
+      isActive: pathname.startsWith("/tessera"),
     },
     {
       href: "/schedule",

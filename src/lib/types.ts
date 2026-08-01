@@ -3,7 +3,10 @@ export type PrayerItemKey =
   | "priestPrayer"
   | "chainPrayer"
   | "rosaryDecades"
-  | "aspirations";
+  | "aspirations"
+  | "catena"
+  | "tesseraFull"
+  | "handbookReading";
 
 export type PrayerCounts = Record<PrayerItemKey, number>;
 

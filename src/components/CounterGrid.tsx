@@ -12,6 +12,7 @@ import { ChainPrayerIcon } from "./icons/ChainPrayerIcon";
 import { MassIcon } from "./icons/MassIcon";
 import { PriestIcon } from "./icons/PriestIcon";
 import { RosaryIcon } from "./icons/RosaryIcon";
+import { BookIcon } from "./icons/NavIcons";
 
 const ICONS = {
   mass: MassIcon,
@@ -19,6 +20,9 @@ const ICONS = {
   chain: ChainPrayerIcon,
   rosary: RosaryIcon,
   aspiration: AspirationIcon,
+  catena: ChainPrayerIcon,
+  tessera: AspirationIcon,
+  book: BookIcon,
 };
 
 interface CounterGridProps {
