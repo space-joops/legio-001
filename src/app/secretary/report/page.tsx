@@ -5,8 +5,10 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
+import { PrayerSubmissionImportDialog } from "@/components/PrayerSubmissionImportDialog";
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
+import { useToast } from "@/components/ToastProvider";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -16,6 +18,7 @@ import {
   MAX_ATTENDANCE_SESSIONS,
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
+  applySubmissionsToPrayerRoll,
   computeAttendanceSummary,
   computePrayerCountsFromRoll,
   formatMonthlyShareText,
@@ -23,6 +26,7 @@ import {
   resyncAttendanceSessions,
   resyncPrayerRollSessions,
   sessionRangeNumbers,
+  type SubmissionDecision,
 } from "@/lib/monthlyReportUtils";
 import { selectOnFocus } from "@/lib/selectOnFocus";
 import type { AgendaItem, MemberCounts, MonthlyReport, PrayerItemKey } from "@/lib/types";
@@ -90,6 +94,8 @@ function ReportPageContent() {
   const [activePrayerSession, setActivePrayerSession] = useState(report?.sessionRangeStart ?? 0);
   const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
   const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const start = report?.sessionRangeStart;
@@ -220,7 +226,25 @@ function ReportPageContent() {
     key: keyof MemberCounts,
     value: string
   ) => {
-    patch({ [bucket]: { ...report[bucket], [key]: toNumber(value) } } as Partial<MonthlyReport>);
+    const next = toNumber(value);
+    const patched = { [bucket]: { ...report[bucket], [key]: next } } as Partial<MonthlyReport>;
+    // Increase/decrease are just the month-over-month delta, so derive them
+    // instead of making the secretary fill twelve more boxes by hand. Editing
+    // either delta directly still wins — some months need a manual explanation.
+    if (bucket === "memberCountsPrevMonth" || bucket === "memberCountsThisMonth") {
+      const prev = bucket === "memberCountsPrevMonth" ? next : report.memberCountsPrevMonth[key];
+      const now = bucket === "memberCountsThisMonth" ? next : report.memberCountsThisMonth[key];
+      const delta = now - prev;
+      patched.memberCountsIncrease = {
+        ...report.memberCountsIncrease,
+        [key]: delta > 0 ? delta : 0,
+      };
+      patched.memberCountsDecrease = {
+        ...report.memberCountsDecrease,
+        [key]: delta < 0 ? -delta : 0,
+      };
+    }
+    patch(patched);
   };
 
   const patchRosterHeader = (
@@ -657,7 +681,16 @@ function ReportPageContent() {
           ))}
         </div>
 
-        <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
+        <div className={styles.sectionHeaderRow}>
+          <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => setImportOpen(true)}
+          >
+            {t("secretaryReport.importOpen")}
+          </button>
+        </div>
         <SessionTabBar
           sessions={sessionNumbers}
           active={activePrayerSession}
@@ -760,6 +793,18 @@ function ReportPageContent() {
           />
         </label>
       </section>
+
+      <PrayerSubmissionImportDialog
+        open={importOpen}
+        report={report}
+        onCancel={() => setImportOpen(false)}
+        onApply={(decisions: SubmissionDecision[]) => {
+          const prayerRoll = applySubmissionsToPrayerRoll(report.prayerRoll, decisions);
+          patch({ prayerRoll, prayerCounts: computePrayerCountsFromRoll(prayerRoll) });
+          setImportOpen(false);
+          showToast(t("secretaryReport.importApplied"));
+        }}
+      />
 
       <ConfirmDialog
         open={pendingRange !== null}

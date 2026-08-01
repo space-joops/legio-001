@@ -1,6 +1,7 @@
 import { dictionaries } from "@/i18n/dictionaries";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
+import { normalizeName, type ParsedSubmission } from "./prayerSubmission";
 import type {
   AttendanceRecord,
   Language,
@@ -66,23 +67,6 @@ export function deriveMemberCounts(memberRoster: MemberRoster): MemberCounts {
   };
 }
 
-export function createDefaultRoster(): PraesidiumRoster {
-  return {
-    councilAffiliation: "",
-    spiritualDirectorName: "",
-    spiritualDirectorBaptismalName: "",
-    officers: OFFICER_ROLES.map((role) => ({
-      role,
-      name: "",
-      baptismalName: "",
-      appointedDate: "",
-      note: "",
-    })),
-    memberCounts: { ...EMPTY_MEMBER_COUNTS },
-    memberRoster: createDefaultMemberRoster(),
-    regularMeetingWeekday: -1,
-  };
-}
 
 function reportYearMonth(report: WeeklyReport): string {
   const iso = report.submittedAt ?? report.meetingDateTime;
@@ -142,16 +126,30 @@ function formatPersonLabel(prefix: string, name: string, baptismalName: string):
   return name && baptismalName ? `${base}(${baptismalName})` : base;
 }
 
-function rosterPersons(roster: PraesidiumRoster): { id: string; label: string; isOfficer: boolean }[] {
+export interface RosterPerson {
+  id: string;
+  label: string;
+  /** Kept alongside the label so matching compares fields instead of trying to
+      pick names back out of the formatted "단원 홍길동(요한)" string. */
+  name: string;
+  baptismalName: string;
+  isOfficer: boolean;
+}
+
+export function rosterPersons(roster: PraesidiumRoster): RosterPerson[] {
   const officers = roster.officers.map((officer) => ({
     id: `officer:${officer.role}`,
     label: formatPersonLabel(OFFICER_ROLE_LABEL_KO[officer.role], officer.name, officer.baptismalName),
+    name: officer.name,
+    baptismalName: officer.baptismalName,
     isOfficer: true,
   }));
   const members = [...roster.memberRoster.activeMale, ...roster.memberRoster.activeFemale].map(
     (member) => ({
       id: `member:${member.id}`,
       label: formatPersonLabel("단원", member.name, member.baptismalName),
+      name: member.name,
+      baptismalName: member.baptismalName,
       isOfficer: false,
     })
   );
@@ -230,6 +228,125 @@ export function resyncAttendanceSessions(
       sessions[n] = record.sessions[n] ?? true;
     }
     return { ...record, sessions };
+  });
+}
+
+export type MatchConfidence = "exact" | "nameOnly" | "ambiguous" | "none";
+
+export interface SubmissionMatch {
+  submission: ParsedSubmission;
+  /** Pre-filled suggestion; null whenever the secretary must decide. */
+  personId: string | null;
+  confidence: MatchConfidence;
+  candidates: RosterPerson[];
+  inRange: boolean;
+  /** How many of the five target cells already hold a nonzero value. */
+  overwriteCount: number;
+}
+
+export interface SubmissionDecision {
+  personId: string;
+  sessionNumber: number;
+  counts: PrayerCounts;
+}
+
+function countExistingValues(
+  roll: PrayerSessionEntry[],
+  personId: string,
+  sessionNumber: number
+): number {
+  const entry = roll.find((e) => e.personId === personId);
+  const counts = entry?.sessions[sessionNumber];
+  if (!counts) return 0;
+  return PRAYER_ITEMS.filter((item) => (counts[item.key] ?? 0) > 0).length;
+}
+
+/**
+ * Matches pasted submissions against the roster snapshot stored *on the report*
+ * (not the live one): prayerRoll's personIds were generated from that snapshot,
+ * so ids are guaranteed to line up, and members added after the report was
+ * created honestly show up as unmatched rather than silently vanishing.
+ *
+ * Nothing here applies anything — every match, however confident, still goes
+ * through the secretary's preview.
+ */
+export function matchSubmissionsToRoster(
+  submissions: ParsedSubmission[],
+  report: MonthlyReport
+): SubmissionMatch[] {
+  const people = rosterPersons(report.roster);
+  const sessions = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
+
+  return submissions.map((submission) => {
+    const targetName = normalizeName(submission.name);
+    const nameMatches = people.filter(
+      (person) => person.name && normalizeName(person.name) === targetName
+    );
+
+    let personId: string | null = null;
+    let confidence: MatchConfidence = "none";
+    let candidates: RosterPerson[] = [];
+
+    if (nameMatches.length === 1) {
+      const only = nameMatches[0];
+      const baptismalGiven = Boolean(submission.baptismalName && only.baptismalName);
+      const baptismalAgrees =
+        baptismalGiven &&
+        normalizeName(only.baptismalName) === normalizeName(submission.baptismalName);
+      personId = only.id;
+      confidence = baptismalAgrees ? "exact" : "nameOnly";
+      candidates = nameMatches;
+    } else if (nameMatches.length > 1) {
+      // Same name twice, or one person listed both as an officer and a member.
+      const exact = submission.baptismalName
+        ? nameMatches.filter(
+            (person) =>
+              person.baptismalName &&
+              normalizeName(person.baptismalName) === normalizeName(submission.baptismalName)
+          )
+        : [];
+      if (exact.length === 1) {
+        personId = exact[0].id;
+        confidence = "exact";
+      } else {
+        confidence = "ambiguous";
+      }
+      candidates = nameMatches;
+    } else {
+      candidates = people;
+    }
+
+    const inRange = sessions.includes(submission.sessionNumber);
+    return {
+      submission,
+      personId,
+      confidence,
+      candidates,
+      inRange,
+      overwriteCount:
+        personId && inRange
+          ? countExistingValues(report.prayerRoll, personId, submission.sessionNumber)
+          : 0,
+    };
+  });
+}
+
+/** Pure: returns the next roll and leaves persistence to the caller, matching
+    how patchPrayerRollCell already works. Re-applying the same decisions is a
+    no-op, so pasting twice can't double-count and no ledger is needed. */
+export function applySubmissionsToPrayerRoll(
+  roll: PrayerSessionEntry[],
+  decisions: SubmissionDecision[]
+): PrayerSessionEntry[] {
+  if (decisions.length === 0) return roll;
+  return roll.map((entry) => {
+    const forEntry = decisions.filter((d) => d.personId === entry.personId);
+    if (forEntry.length === 0) return entry;
+    const sessions = { ...entry.sessions };
+    for (const decision of forEntry) {
+      sessions[decision.sessionNumber] = { ...decision.counts };
+    }
+    return { ...entry, sessions };
   });
 }
 

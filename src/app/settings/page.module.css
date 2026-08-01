@@ -57,6 +57,15 @@
   font-weight: 700;
 }
 
+.backupNotice {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-danger);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
 .hiddenFileInput {
   display: none;
 }

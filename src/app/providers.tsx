@@ -6,6 +6,8 @@ import { InAppBrowserNotice } from "@/components/InAppBrowserNotice";
 import { OnboardingGate } from "@/components/OnboardingGate";
 import { ScheduleReminderChecker } from "@/components/ScheduleReminderChecker";
 import { SplashOverlay } from "@/components/SplashOverlay";
+import { StorageBootstrap } from "@/components/StorageBootstrap";
+import { StorageFailureNotice } from "@/components/StorageFailureNotice";
 import { ToastProvider } from "@/components/ToastProvider";
 import { UpdateAvailableNotice } from "@/components/UpdateAvailableNotice";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -16,6 +18,8 @@ export function Providers({ children }: { children: ReactNode }) {
     <LanguageProvider>
       <DisplayPreferencesProvider>
         <ToastProvider>
+          <StorageBootstrap />
+          <StorageFailureNotice />
           <div className={styles.noticeStack} data-app-chrome>
             <InAppBrowserNotice />
             <UpdateAvailableNotice />

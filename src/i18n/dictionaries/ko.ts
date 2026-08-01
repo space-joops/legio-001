@@ -60,6 +60,7 @@ export const ko = {
     deleteConfirmTitle: "이 주간 보고를 삭제할까요?",
     deleteConfirmBody: "삭제하면 되돌릴 수 없습니다.",
     deleted: "삭제되었습니다.",
+    shareBlockLabel: "--- 서기 입력용 (지우지 마세요) ---",
   },
   onboarding: {
     title: "시작하기 전에",
@@ -101,6 +102,9 @@ export const ko = {
     exportData: "데이터 내보내기",
     exportDescription: "내 활동 기록을 파일로 저장합니다.",
     exportSaved: "파일이 저장되었습니다.",
+    exportBeforeReset: "먼저 내보내기(백업)",
+    backupOverdue:
+      "한 달 넘게 내보내기를 하지 않았습니다. 기기를 바꾸거나 앱을 지우면 기록이 사라지니 지금 저장해 두세요.",
     resetData: "데이터 초기화",
     resetDescription: "모든 기록을 삭제하고 처음 상태로 되돌립니다.",
     resetConfirmTitle: "정말 초기화할까요?",
@@ -113,9 +117,12 @@ export const ko = {
     importDescription: "다른 기기에서 내보낸 파일을 불러와 이어서 작업합니다.",
     importConfirmTitle: "데이터를 가져올까요?",
     importConfirmBody:
-      "가져오기를 진행하면 현재 기기에 저장된 모든 데이터가 가져온 파일 내용으로 덮어써집니다. 이 작업은 되돌릴 수 없습니다.",
+      "가져오기를 진행하면 현재 기기의 모든 데이터가 덮어써집니다. 활동 기록뿐 아니라 명단과 월례 보고서까지 함께 바뀝니다. 아래 내용이 맞는지 확인해 주세요.",
     importSuccess: "데이터를 가져왔습니다.",
     importError: "파일을 읽을 수 없습니다. 올바른 내보내기 파일인지 확인해 주세요.",
+    importFutureVersion: "더 새로운 버전에서 만든 파일입니다. 앱을 먼저 업데이트해 주세요.",
+    installUnavailable:
+      "이 브라우저에서는 설치 안내가 나타나지 않습니다. 브라우저 메뉴의 '홈 화면에 추가'를 이용해 주세요.",
     appVersionLabel: "버전",
   },
   common: {
@@ -126,6 +133,8 @@ export const ko = {
     close: "닫기",
     delete: "삭제",
     autoSaveNotice: "모든 변경 사항은 자동으로 저장됩니다.",
+    storageFull:
+      "저장 공간이 부족해 방금 입력한 내용이 저장되지 않았습니다. 설정에서 내보내기로 백업한 뒤 지난 기록을 정리해 주세요.",
   },
   inAppBrowser: {
     message:
@@ -242,13 +251,10 @@ export const ko = {
     officers: "간부",
     members: "단원",
     officersPresentLabel: "간부 출석",
-    officersTotalLabel: "간부 정원",
     membersPresentLabel: "단원 출석",
-    membersTotalLabel: "단원 정원",
     attendanceGridSection: "출석부 (회차별)",
     attendanceRowNamePlaceholder: "이름",
     attendanceDefaultHint: "처음에는 전원 출석으로 표시됩니다. 결석한 분만 체크를 해제해 주세요.",
-    sessionColumnLabel: "회차",
     personColumnLabel: "단원명",
     maxSessionsHint:
       "출석·기도 집계표는 최대 6회차까지 기록됩니다. 회차 범위를 줄이면 범위 밖 회차의 입력은 삭제됩니다.",
@@ -283,6 +289,39 @@ export const ko = {
     expenseBreakdownLabel: "지출 내역",
     prayerSection: "기도 집계",
     prayerRollSection: "기도 집계표 (명단별·회차별)",
+    importOpen: "단원 보고 붙여넣기",
+    importTitle: "단원 주간 보고 불러오기",
+    importPasteHint:
+      "카카오톡에서 단원이 보낸 주간 보고 메시지를 길게 눌러 복사한 뒤 아래에 붙여넣으세요. 여러 사람 것을 한꺼번에 붙여넣어도 됩니다.",
+    importPastePlaceholder: "여기에 붙여넣으세요",
+    importPasteFromClipboard: "클립보드에서 붙여넣기",
+    importLoad: "불러오기",
+    importApply: "반영하기",
+    importBack: "다시 붙여넣기",
+    importNothingFound:
+      "붙여넣은 내용에서 단원 보고를 찾지 못했습니다. 단원에게 앱을 최신으로 업데이트한 뒤 다시 공유해 달라고 알려 주세요.",
+    importFoundLabel: "반영할 보고",
+    importUnit: "건",
+    importMalformedLabel: "형식이 맞지 않아 건너뛴 줄",
+    importColumnSender: "보낸 사람",
+    importColumnPerson: "명단에서 선택",
+    importColumnSession: "회차",
+    importColumnCounts: "기도 (미·사·주·묵·화)",
+    importColumnStatus: "상태",
+    importColumnInclude: "반영",
+    importSelectPerson: "선택하세요",
+    importStatusExact: "확인됨",
+    importStatusNameOnly: "이름만 일치",
+    importStatusAmbiguous: "같은 이름 여럿 — 확인 필요",
+    importStatusNone: "명단에 없음",
+    importStatusOutOfRange: "회차 범위 밖",
+    importStatusOverwrite: "기존 입력 덮어씀",
+    importSessionRangeHint: "이 보고서의 회차 범위",
+    importOverwriteConfirmTitle: "이미 입력된 값을 덮어쓸까요?",
+    importOverwriteConfirmBody:
+      "이미 숫자가 들어 있는 칸이 있습니다. 반영하면 붙여넣은 값으로 바뀝니다.",
+    importApplied: "단원 보고를 반영했습니다.",
+    importNoneSelected: "반영할 보고가 없습니다. 명단과 회차를 확인해 주세요.",
     prayerAbbrev: {
       weekdayMass: "미",
       priestPrayer: "사",
@@ -303,6 +342,5 @@ export const ko = {
     backToList: "보고서 목록으로",
     edit: "수정",
     print: "인쇄 / PDF 저장",
-    share: "공유하기",
   },
 };

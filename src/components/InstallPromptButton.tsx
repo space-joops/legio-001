@@ -16,13 +16,13 @@ export function InstallPromptButton() {
     return <p className={styles.hint}>{t("settings.installIosHint")}</p>;
   }
 
+  // A disabled button with no explanation reads as "broken" — say why.
+  if (!canInstall) {
+    return <p className={styles.hint}>{t("settings.installUnavailable")}</p>;
+  }
+
   return (
-    <button
-      type="button"
-      className={styles.button}
-      onClick={promptInstall}
-      disabled={!canInstall}
-    >
+    <button type="button" className={styles.button} onClick={promptInstall}>
       {t("settings.install")}
     </button>
   );

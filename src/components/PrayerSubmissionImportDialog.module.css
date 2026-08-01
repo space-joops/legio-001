@@ -1,0 +1,176 @@
+.dialog {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  width: calc(100vw - 32px);
+  max-width: 900px;
+  max-height: calc(100dvh - 48px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  margin-bottom: var(--space-3);
+}
+
+.hint {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.error {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-danger);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.textarea {
+  width: 100%;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  background: var(--color-background);
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+}
+
+/* Wide table on a phone: scroll it rather than crushing the columns. */
+.tableScroll {
+  overflow-x: auto;
+  margin-bottom: var(--space-3);
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-2);
+  font-size: var(--font-size-base);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  background: var(--color-surface-alt);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.subText {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.select {
+  min-height: var(--min-tap-target);
+  min-width: 6rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  padding: 0 var(--space-2);
+}
+
+.counts {
+  white-space: nowrap;
+}
+
+/* Let the table stay wide and scroll rather than wrapping these two columns
+   one character per line, which is what happens on a narrow dialog. */
+.status {
+  font-weight: 700;
+  min-width: 9rem;
+  word-break: keep-all;
+}
+
+.sender {
+  min-width: 8rem;
+  word-break: keep-all;
+}
+
+.checkbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  accent-color: var(--color-primary);
+}
+
+.malformed {
+  border: 2px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.malformedLabel {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-danger);
+  margin-bottom: var(--space-1);
+}
+
+.summary {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  flex: 1;
+  min-width: 8rem;
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.secondaryButton {
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.primaryButton {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+}
+
+.dangerButton {
+  border: none;
+  background: var(--color-danger);
+  color: var(--color-danger-contrast);
+}

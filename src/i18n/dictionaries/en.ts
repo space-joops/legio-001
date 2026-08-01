@@ -62,6 +62,7 @@ export const en = {
     deleteConfirmTitle: "Delete this weekly report?",
     deleteConfirmBody: "This cannot be undone.",
     deleted: "Deleted.",
+    shareBlockLabel: "--- For the secretary (please keep) ---",
   },
   onboarding: {
     title: "Before you start",
@@ -103,6 +104,9 @@ export const en = {
     exportData: "Export data",
     exportDescription: "Save your activity records to a file.",
     exportSaved: "File saved.",
+    exportBeforeReset: "Back up first",
+    backupOverdue:
+      "You haven't exported in over a month. Records live only on this device, so save a copy now.",
     resetData: "Reset data",
     resetDescription: "Delete all records and start fresh.",
     resetConfirmTitle: "Reset everything?",
@@ -115,9 +119,12 @@ export const en = {
     importDescription: "Load a file exported from another device to continue there.",
     importConfirmTitle: "Import data?",
     importConfirmBody:
-      "Importing will overwrite all data currently stored on this device with the imported file's contents. This cannot be undone.",
+      "Importing overwrites everything on this device — activity records, the roster, and every monthly report. Check the details below first.",
     importSuccess: "Data imported.",
     importError: "Could not read this file. Please check it's a valid export file.",
+    importFutureVersion: "This file came from a newer version. Please update the app first.",
+    installUnavailable:
+      "This browser doesn't offer an install prompt. Use 'Add to Home Screen' from the browser menu.",
     appVersionLabel: "Version",
   },
   common: {
@@ -128,6 +135,8 @@ export const en = {
     close: "Close",
     delete: "Delete",
     autoSaveNotice: "All changes are saved automatically.",
+    storageFull:
+      "Storage is full, so your last change was not saved. Export a backup from Settings, then remove older records.",
   },
   inAppBrowser: {
     message:
@@ -244,13 +253,10 @@ export const en = {
     officers: "Officers",
     members: "Members",
     officersPresentLabel: "Officers present",
-    officersTotalLabel: "Officers total",
     membersPresentLabel: "Members present",
-    membersTotalLabel: "Members total",
     attendanceGridSection: "Attendance roll (by session)",
     attendanceRowNamePlaceholder: "Name",
     attendanceDefaultHint: "Everyone starts marked as present. Untick only those who were absent.",
-    sessionColumnLabel: "Session",
     personColumnLabel: "Member name",
     maxSessionsHint:
       "Attendance and prayer tables record at most 6 sessions. Narrowing the session range deletes entries outside it.",
@@ -285,6 +291,39 @@ export const en = {
     expenseBreakdownLabel: "Expense breakdown",
     prayerSection: "Prayer counts",
     prayerRollSection: "Prayer roll (by name & session)",
+    importOpen: "Paste member reports",
+    importTitle: "Import member weekly reports",
+    importPasteHint:
+      "Copy the weekly report messages your members sent and paste them below. You can paste several at once.",
+    importPastePlaceholder: "Paste here",
+    importPasteFromClipboard: "Paste from clipboard",
+    importLoad: "Load",
+    importApply: "Apply",
+    importBack: "Paste again",
+    importNothingFound:
+      "No member reports were found in what you pasted. Ask them to update the app and share again.",
+    importFoundLabel: "Reports to apply",
+    importUnit: "",
+    importMalformedLabel: "Skipped lines (bad format)",
+    importColumnSender: "Sender",
+    importColumnPerson: "Match to roster",
+    importColumnSession: "Session",
+    importColumnCounts: "Prayers (Ms·Pr·Ch·Ro·As)",
+    importColumnStatus: "Status",
+    importColumnInclude: "Apply",
+    importSelectPerson: "Select",
+    importStatusExact: "Matched",
+    importStatusNameOnly: "Name only",
+    importStatusAmbiguous: "Duplicate name — check",
+    importStatusNone: "Not on roster",
+    importStatusOutOfRange: "Outside session range",
+    importStatusOverwrite: "Overwrites existing",
+    importSessionRangeHint: "Session range for this report",
+    importOverwriteConfirmTitle: "Overwrite existing entries?",
+    importOverwriteConfirmBody:
+      "Some target cells already hold numbers. Applying replaces them with the pasted values.",
+    importApplied: "Member reports applied.",
+    importNoneSelected: "Nothing to apply. Check the roster match and session.",
     prayerAbbrev: {
       weekdayMass: "Ms",
       priestPrayer: "Pr",
@@ -305,6 +344,5 @@ export const en = {
     backToList: "Back to report list",
     edit: "Edit",
     print: "Print / Save as PDF",
-    share: "Share",
   },
 } satisfies typeof ko;

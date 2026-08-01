@@ -28,6 +28,12 @@
   font-size: var(--font-size-base);
 }
 
+.emptyNotice {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
 .sectionTitle {
   font-size: var(--font-size-lg);
   font-weight: 800;
