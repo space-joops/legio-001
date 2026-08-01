@@ -551,6 +551,7 @@ export function createMonthlyReport(
     memberCountsIncrease: { ...EMPTY_MEMBER_COUNTS },
     memberCountsDecrease: { ...EMPTY_MEMBER_COUNTS },
     sundayMassTotal: defaultSundayMassTotal(yearMonth, prayerRoll.length),
+    activityTallies: {},
     evangelization: {
       baptism: { result: 0, target: 0 },
       returnToFaith: { result: 0, target: 0 },

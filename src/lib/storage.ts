@@ -1,5 +1,6 @@
 import { DATA_SCHEMA_VERSION } from "./constants";
 import type {
+  AnnualReport,
   Language,
   MemberCounts,
   MonthlyReport,
@@ -18,6 +19,7 @@ const KEYS = {
   schedule: "legioMariae.schedule",
   praesidiumRoster: "legioMariae.praesidiumRoster",
   monthlyReports: "legioMariae.monthlyReports",
+  annualReports: "legioMariae.annualReports",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
   // Kept in KEYS so resetAll() still clears it on devices that used the
   // splash cooldown this app no longer has.
@@ -105,6 +107,7 @@ const EMPTY_MONTHLY_REPORT_DEFAULTS = {
   agendaItems: [],
   sundayMassTotal: 0,
   evangelization: EMPTY_EVANGELIZATION,
+  activityTallies: {},
   memberCountsPrevMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
   memberCountsThisMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
   memberCountsIncrease: EMPTY_MEMBER_COUNTS_DEFAULT,
@@ -209,6 +212,14 @@ export const storage = {
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
+  },
+
+  getAnnualReports(): AnnualReport[] {
+    const stored = readJson<AnnualReport[]>(KEYS.annualReports, []);
+    return Array.isArray(stored) ? stored : [];
+  },
+  setAnnualReports(reports: AnnualReport[]): void {
+    writeJson(KEYS.annualReports, reports);
   },
 
   /** Epoch ms of the last successful export; 0 means never backed up. */

@@ -13,6 +13,7 @@ import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
+import { ACTIVITY_CATEGORIES, categoryTotal } from "@/lib/activityItems";
 import { shareOrDownloadFile } from "@/lib/exportData";
 import { generateId } from "@/lib/id";
 import { buildMonthlyReportRtf } from "@/lib/monthlyReportRtf";
@@ -867,11 +868,48 @@ function ReportPageContent() {
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>{t("secretaryReport.activitySummarySection")}</h2>
+        <p className={styles.hint}>{t("secretaryReport.activityTalliesHint")}</p>
+        {/* Collapsed by default with the subtotal on the summary line: most
+            months only a few items are nonzero, so the secretary can see at a
+            glance which categories need opening. */}
+        {ACTIVITY_CATEGORIES.map((category) => {
+          const total = categoryTotal(report.activityTallies ?? {}, category);
+          return (
+            <details key={category.key} className={styles.activityCategory}>
+              <summary className={styles.sectionSummary}>
+                <span className={styles.activityCategoryTitle}>
+                  {category.label}
+                  {total > 0 ? ` (${total})` : ""}
+                </span>
+              </summary>
+              {category.items.map((item) => (
+                <label key={item.key} className={styles.activityRow}>
+                  <span className={styles.label}>{item.label}</span>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    className={styles.input}
+                    value={report.activityTallies?.[item.key] ?? 0}
+                    onFocus={selectOnFocus}
+                    onChange={(e) =>
+                      patch({
+                        activityTallies: {
+                          ...(report.activityTallies ?? {}),
+                          [item.key]: toNumber(e.target.value),
+                        },
+                      })
+                    }
+                  />
+                </label>
+              ))}
+            </details>
+          );
+        })}
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.activitySummary")}</span>
           <textarea
             className={styles.textarea}
-            rows={4}
+            rows={3}
             placeholder={t("secretaryReport.activitySummaryPlaceholder")}
             value={report.activitySummary}
             onChange={(e) => patch({ activitySummary: e.target.value })}

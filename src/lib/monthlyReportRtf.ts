@@ -1,5 +1,7 @@
 import { dictionaries } from "@/i18n/dictionaries";
+import { formatActivitySummaryLine } from "./activityItems";
 import { PRAYER_ITEMS } from "./constants";
+import { lookup, para, row, wrapDocument } from "./rtf";
 import {
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
@@ -16,44 +18,6 @@ import type { EvangelizationTallies, Language, MemberCounts, MonthlyReport } fro
  * 한글 and Word open natively, needs no library, and can be verified by
  * converting it with LibreOffice.
  */
-
-/** RTF is 7-bit; every non-ASCII character goes out as a \uN escape. */
-function esc(value: string): string {
-  let out = "";
-  for (const ch of value) {
-    const code = ch.codePointAt(0) ?? 0;
-    if (ch === "\\") out += "\\\\";
-    else if (ch === "{" || ch === "}") out += `\\${ch}`;
-    else if (ch === "\n") out += "\\line ";
-    else if (code < 128) out += ch;
-    // RTF's \u takes a signed 16-bit value, and the trailing "?" is the
-    // fallback glyph for readers that can't handle the escape.
-    else if (code <= 0xffff) out += `\\u${code < 32768 ? code : code - 65536}?`;
-    else out += "?";
-  }
-  return out;
-}
-
-function para(text: string, opts: { bold?: boolean; align?: "l" | "c" | "r"; size?: number } = {}) {
-  const align = `\\q${opts.align ?? "l"}`;
-  const size = opts.size ? `\\fs${opts.size}` : "";
-  const bold = opts.bold ? "\\b" : "";
-  return `{\\pard${align}${bold}${size} ${esc(text)}\\par}`;
-}
-
-/** One table row. `widths` are cumulative-independent column widths in twips. */
-function row(cells: string[], widths: number[], opts: { bold?: boolean } = {}): string {
-  let x = 0;
-  const borders = "\\clbrdrt\\brdrs\\clbrdrl\\brdrs\\clbrdrb\\brdrs\\clbrdrr\\brdrs";
-  const defs = widths.map((w) => {
-    x += w;
-    return `${borders}\\cellx${x}`;
-  });
-  const body = cells
-    .map((c) => `{\\intbl\\qc${opts.bold ? "\\b" : ""} ${esc(c)}\\cell}`)
-    .join("");
-  return `\\trowd\\trgaph60${defs.join("")}${body}\\row`;
-}
 
 const MEMBER_ROWS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
@@ -245,7 +209,9 @@ export function buildMonthlyReportRtf(report: MonthlyReport, language: Language)
     )
   );
   body.push(para(`* ${sr.councilInstructionsLabel} : ${report.councilInstructions}`));
-  body.push(para(`* ${sr.activitySummary} : ${report.activitySummary}`));
+  const activityLine = formatActivitySummaryLine(report.activityTallies ?? {});
+  body.push(para(`* ${sr.activitySummary} : ${activityLine}`));
+  if (report.activitySummary.trim()) body.push(para(`  ${report.activitySummary}`));
   const evangelization = EVANGELIZATION_ROWS.map(({ key, labelKey }) => {
     const tally = report.evangelization?.[key];
     return `${lookup(dict, labelKey)}(${tally?.result ?? 0}/${tally?.target ?? 0})`;
@@ -272,17 +238,6 @@ export function buildMonthlyReportRtf(report: MonthlyReport, language: Language)
   );
   body.push(para(sr.formNumber, { align: "r", size: 18 }));
 
-  // fcharset129 = Hangul, so 한글 picks a Korean face even if Malgun Gothic is absent.
-  return (
-    `{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\fnil\\fcharset129 Malgun Gothic;}}` +
-    `\\viewkind4\\uc1\\f0\\fs22\n${body.join("\n")}\n}`
-  );
+  return wrapDocument(body);
 }
 
-/** Resolves a dotted dictionary key the same way useTranslation does. */
-function lookup(dict: (typeof dictionaries)[Language], key: string): string {
-  const value = key
-    .split(".")
-    .reduce<unknown>((acc, part) => (acc as Record<string, unknown>)?.[part], dict);
-  return typeof value === "string" ? value : key;
-}

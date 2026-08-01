@@ -163,6 +163,8 @@ export interface MonthlyReport {
     expenseBreakdown: string;
   };
   prayerCounts: PrayerCounts;
+  /** Per-item activity counts keyed by ACTIVITY_ITEMS (src/lib/activityItems.ts). */
+  activityTallies: Record<string, number>;
   /**
    * Sunday Masses attended across the whole praesidium this month. Seeded as
    * (people on the prayer roll x Sundays in the month) because members are
@@ -182,6 +184,89 @@ export interface MonthlyReport {
   updatedAt: string;
 }
 
+/** One line of the annual report's income/expense ledger. */
+export interface TreasuryLine {
+  id: string;
+  label: string;
+  amount: number;
+}
+
+/** 행사 / 교육 및 피정 / 기타(행사) — three tables of the same shape. */
+export type AnnualEventKind = "event" | "formation" | "other";
+
+export interface AnnualEvent {
+  id: string;
+  kind: AnnualEventKind;
+  title: string;
+  date: string;
+  attendance: string;
+}
+
+/** Per-officer attendance as printed: "48/52" for Pr., "12/12" for the council. */
+export interface OfficerAttendance {
+  role: OfficerRole;
+  praesidiumPresent: number;
+  praesidiumTotal: number;
+  /** The app never sees council meetings, so the secretary types these. */
+  councilAttendance: string;
+  transferNote: string;
+}
+
+/**
+ * Figures rolled up from that year's monthly reports. Stored as a snapshot so
+ * the report stays stable, and refreshable on demand once the monthly reports
+ * behind it change.
+ */
+export interface AnnualAggregate {
+  monthCount: number;
+  sessionRangeStart: number;
+  sessionRangeEnd: number;
+  weekCount: number;
+  meetingWeekday: number;
+  meetingTime: string;
+  meetingLocation: string;
+  prayerCounts: PrayerCounts;
+  massCommunion: number;
+  activityTallies: Record<string, number>;
+  officerAttendance: OfficerAttendance[];
+  membersPresent: number;
+  membersTotal: number;
+  memberCountsStart: MemberCounts;
+  memberCountsEnd: MemberCounts;
+  treasuryBroughtForward: number;
+  treasuryIncome: number;
+  treasuryExpense: number;
+  treasuryBalance: number;
+  evangelization: EvangelizationTallies;
+}
+
+export interface AnnualReport {
+  id: string;
+  /** Calendar year covered, e.g. 2024. */
+  year: number;
+  /** The praesidium's own count, e.g. 33 for 제33차 사업 보고서. */
+  reportNumber: number;
+  submittedOn: string;
+  parishName: string;
+  foundedOn: string;
+  approvedOn: string;
+  deputyDirectorName: string;
+  deputyDirectorBaptismalName: string;
+  roster: PraesidiumRoster;
+  aggregate: AnnualAggregate;
+  /** Officer rows the secretary edited; overrides the aggregate on print. */
+  officerAttendance: OfficerAttendance[];
+  incomeLines: TreasuryLine[];
+  expenseLines: TreasuryLine[];
+  events: AnnualEvent[];
+  operationNotes: string;
+  issueTitle: string;
+  issueBody: string;
+  issueAction: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ExportedData {
   exportedAt: string;
   dataSchemaVersion: number;
@@ -191,4 +276,5 @@ export interface ExportedData {
   schedule: ScheduleEvent[];
   roster: PraesidiumRoster;
   monthlyReports: MonthlyReport[];
+  annualReports?: AnnualReport[];
 }

@@ -1,3 +1,4 @@
+import { formatActivitySummaryLine } from "@/lib/activityItems";
 import {
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
@@ -290,7 +291,13 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
           label={t("secretaryReport.councilInstructionsLabel")}
           value={report.councilInstructions}
         />
-        <TextBlock label={t("secretaryReport.activitySummary")} value={report.activitySummary} />
+        <TextBlock
+          label={t("secretaryReport.activitySummary")}
+          value={joinLines(
+            formatActivitySummaryLine(report.activityTallies ?? {}),
+            report.activitySummary
+          )}
+        />
         <TextBlock
           label={t("secretaryReport.cumulativeEvangelizationLabel")}
           value={joinLines(evangelizationLine, report.cumulativeEvangelization)}

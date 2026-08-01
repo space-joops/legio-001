@@ -12,6 +12,7 @@ export function buildExportedData(): ExportedData {
     schedule: storage.getSchedule(),
     roster: storage.getRoster(),
     monthlyReports: storage.getMonthlyReports(),
+    annualReports: storage.getAnnualReports(),
   };
 }
 
@@ -134,6 +135,7 @@ export function importExportedData(data: Partial<ExportedData>): void {
   storage.setSchedule(data.schedule ?? []);
   storage.setRoster({ ...DEFAULT_ROSTER, ...data.roster });
   storage.setMonthlyReports(data.monthlyReports ?? []);
+  storage.setAnnualReports(data.annualReports ?? []);
   storage.ensureSchemaVersion();
 }
 

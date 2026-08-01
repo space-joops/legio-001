@@ -1,0 +1,152 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.yearMonth {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.councilLine {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 4px;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table th,
+.table td {
+  border: 2px solid var(--color-border);
+  padding: var(--space-1);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  background: var(--color-surface-alt);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.textLabel {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.textValue {
+  font-size: var(--font-size-sm);
+  white-space: pre-wrap;
+}
+
+.orgLine {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+}
+
+.subtotalRow th,
+.subtotalRow td {
+  font-weight: 700;
+  background: var(--color-surface-alt);
+}
+
+.signature {
+  margin-top: var(--space-5);
+  text-align: center;
+  font-size: var(--font-size-base);
+  line-height: 1.8;
+}
+
+.signatureLine {
+  font-weight: 700;
+}
+
+.formNumber {
+  margin-top: var(--space-3);
+  text-align: right;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+@media print {
+  /* Keep a table or a section from being split across two sheets — a monthly
+     report handed in with a roster cut in half gets sent back. */
+  .section,
+  .table,
+  .signature {
+    break-inside: avoid;
+  }
+
+  .subtotalRow th,
+  .subtotalRow td {
+    background: transparent;
+  }
+}
+
+@media print {
+  .page {
+    border: none;
+    padding: 0;
+  }
+
+  .table th {
+    background: transparent;
+  }
+}
+
+.submitLine {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
