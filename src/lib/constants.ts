@@ -29,4 +29,9 @@ export const EMPTY_COUNTS: PrayerCounts = {
   aspirations: 0,
 };
 
-export const DATA_SCHEMA_VERSION = 1;
+/**
+ * 2: attendance defaults to absent. Reports written under 1 seeded every
+ * session present, which contradicted the screen's own rule that prayer
+ * numbers are what mark a member present.
+ */
+export const DATA_SCHEMA_VERSION = 2;

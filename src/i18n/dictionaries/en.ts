@@ -126,8 +126,6 @@ export const en = {
     importFutureVersion: "This file came from a newer version. Please update the app first.",
     installUnavailable:
       "This browser doesn't offer an install prompt. Use 'Add to Home Screen' from the browser menu.",
-    appVersionLabel: "Version",
-    buildTimeLabel: "Built",
     splashPreview: "Show now",
   },
   common: {
@@ -255,9 +253,6 @@ export const en = {
     labelColumn: "Name",
     lineColumn: "Report line",
     visibleColumn: "In use",
-    orderColumn: "Order",
-    moveUp: "Move up",
-    moveDown: "Move down",
     linePraesidium: "Praesidium activities",
     lineParish: "Parish instructions",
     hiddenHint:
@@ -308,12 +303,8 @@ export const en = {
     membersPresentLabel: "Members present",
     attendanceGridSection: "Attendance roll (by session)",
     attendanceRowNamePlaceholder: "Name",
-    attendanceDefaultHint: "Everyone starts marked as present. Untick only those who were absent.",
     nameEditHint:
-      "Editing a name updates the attendance roll, the prayer roll, and the officer list together. Each report keeps its own copy, so this affects only this month.",
-    resyncNames: "Reload names from roster",
-    resyncNamesDone: "Names reloaded from the roster.",
-    addPerson: "Add member",
+      "Names and the member list follow 명단 관리. Edit or add someone there and this table updates straight away.",
     personColumnLabel: "Member name",
     maxSessionsHint:
       "Attendance and prayer tables record at most 6 sessions. Narrowing the session range deletes entries outside it.",
@@ -393,6 +384,8 @@ export const en = {
     activityNoteLabel: "Note",
     activityNotePlaceholder: "e.g. the Kim family wake",
     activityNoteHint: "Notes are for your reference in the app only and are never printed.",
+    activityCustomOption: "Type my own…",
+    activityCustomPlaceholder: "New activity name",
     autoLineHint: "The grey lines below are what the report will actually print. They are not editable and follow the fields and activities above.",
     sundayMassBasis: "Window",
     sundayCountLabel: "Sundays",

@@ -2,11 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
-import { selectableActivityItems } from "@/lib/activityItems";
+import { createActivityItem, selectableActivityItems } from "@/lib/activityItems";
 import { generateId } from "@/lib/id";
 import { selectOnFocus } from "@/lib/selectOnFocus";
+import { storage } from "@/lib/storage";
 import type { ActivityEntry, ActivityItem } from "@/lib/types";
 import styles from "./ActivityEntryDialog.module.css";
+
+/** Sentinel for the "type it myself" option, which no catalogue key can use. */
+const CUSTOM = "__custom__";
 
 interface Props {
   open: boolean;
@@ -17,11 +21,15 @@ interface Props {
   entries: ActivityEntry[];
   onClose: () => void;
   onSave: (entries: ActivityEntry[]) => void;
+  /** Called when a row created a brand-new catalogue item. */
+  onItemsChange: (items: ActivityItem[]) => void;
 }
 
 interface DraftRow {
   id: string;
+  /** A catalogue key, or CUSTOM while a new item's name is being typed. */
   itemKey: string;
+  customLabel: string;
   count: number;
   note: string;
 }
@@ -32,9 +40,9 @@ function toNumber(value: string): number {
 }
 
 /**
- * Records what one member did in one session. Kept as a list rather than one
- * row per catalogue item so a month with two activities doesn't present a dozen
- * empty boxes.
+ * Records what one member did in one session. Full screen with a row per
+ * activity — a month often has several, and the old centred box showed about
+ * two before it had to scroll.
  */
 export function ActivityEntryDialog({
   open,
@@ -44,6 +52,7 @@ export function ActivityEntryDialog({
   entries,
   onClose,
   onSave,
+  onItemsChange,
 }: Props) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
@@ -61,16 +70,29 @@ export function ActivityEntryDialog({
     // Seed from the saved entries every time it opens, so cancelling really cancels.
     // eslint-disable-next-line react-hooks/set-state-in-effect -- dialog draft, not derived render state
     setRows(
-      entries.map((e) => ({ id: e.id, itemKey: e.itemKey, count: e.count, note: e.note }))
+      entries.map((e) => ({
+        id: e.id,
+        itemKey: e.itemKey,
+        customLabel: "",
+        count: e.count,
+        note: e.note,
+      }))
     );
   }, [open, entries]);
 
   const options = selectableActivityItems(items);
 
   const addRow = () => {
-    const first = options[0];
-    if (!first) return;
-    setRows((prev) => [...prev, { id: generateId(), itemKey: first.key, count: 1, note: "" }]);
+    setRows((prev) => [
+      ...prev,
+      {
+        id: generateId(),
+        itemKey: options[0]?.key ?? CUSTOM,
+        customLabel: "",
+        count: 1,
+        note: "",
+      },
+    ]);
   };
 
   const patchRow = (id: string, patch: Partial<DraftRow>) => {
@@ -78,16 +100,36 @@ export function ActivityEntryDialog({
   };
 
   const handleSave = () => {
+    // Activities are tallied by catalogue key, so a name typed here has to
+    // become a real item before an entry can point at it. New items go to the
+    // Pr.활동사항 line; Pr.활동사항 관리 moves them if that is wrong.
+    let catalogue = items;
+    const resolved = rows.map((row) => {
+      if (row.itemKey !== CUSTOM) return { ...row, resolvedKey: row.itemKey };
+      const label = row.customLabel.trim();
+      if (!label) return { ...row, resolvedKey: "" };
+      const existing = catalogue.find((item) => item.label === label);
+      if (existing) return { ...row, resolvedKey: existing.key };
+      const created = createActivityItem(label, "praesidium", catalogue.length);
+      catalogue = [...catalogue, created];
+      return { ...row, resolvedKey: created.key };
+    });
+
+    if (catalogue !== items) {
+      storage.setActivityItems(catalogue);
+      onItemsChange(catalogue);
+    }
+
     onSave(
-      rows
-        .filter((r) => r.count > 0)
-        .map((r) => ({
-          id: r.id,
+      resolved
+        .filter((row) => row.count > 0 && row.resolvedKey !== "")
+        .map((row) => ({
+          id: row.id,
           personId: "",
           sessionNumber,
-          itemKey: r.itemKey,
-          count: r.count,
-          note: r.note,
+          itemKey: row.resolvedKey,
+          count: row.count,
+          note: row.note,
         }))
     );
   };
@@ -101,71 +143,114 @@ export function ActivityEntryDialog({
         onClose();
       }}
     >
-      <h2 className={styles.title}>{t("secretaryReport.activityDialogTitle")}</h2>
-      <p className={styles.subtitle}>
-        {personLabel} · {sessionNumber}
-        {t("week.sessionNumberUnit")}
-      </p>
+      <div className={styles.screen}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>{t("secretaryReport.activityDialogTitle")}</h2>
+          <p className={styles.subtitle}>
+            {personLabel} · {sessionNumber}
+            {t("week.sessionNumberUnit")}
+          </p>
+        </div>
 
-      {rows.length === 0 ? (
-        <p className={styles.empty}>{t("secretaryReport.activityDialogEmpty")}</p>
-      ) : (
-        <ul className={styles.rows}>
-          {rows.map((row) => (
-            <li key={row.id} className={styles.row}>
-              <select
-                className={styles.select}
-                value={row.itemKey}
-                aria-label={t("secretaryReport.activityItemLabel")}
-                onChange={(e) => patchRow(row.id, { itemKey: e.target.value })}
-              >
-                {options.map((item) => (
-                  <option key={item.key} value={item.key}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                inputMode="numeric"
-                className={styles.count}
-                value={row.count}
-                onFocus={selectOnFocus}
-                aria-label={t("secretaryReport.activityCountLabel")}
-                onChange={(e) => patchRow(row.id, { count: toNumber(e.target.value) })}
-              />
-              <input
-                type="text"
-                className={styles.note}
-                value={row.note}
-                placeholder={t("secretaryReport.activityNotePlaceholder")}
-                aria-label={t("secretaryReport.activityNoteLabel")}
-                onChange={(e) => patchRow(row.id, { note: e.target.value })}
-              />
-              <button
-                type="button"
-                className={styles.removeButton}
-                onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}
-              >
-                {t("common.delete")}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+        <div className={styles.content}>
+          {rows.length === 0 ? (
+            <p className={styles.empty}>{t("secretaryReport.activityDialogEmpty")}</p>
+          ) : (
+            <div className={styles.tableScroll}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>{t("secretaryReport.activityItemLabel")}</th>
+                    <th className={styles.countColumn}>
+                      {t("secretaryReport.activityCountLabel")}
+                    </th>
+                    <th>{t("secretaryReport.activityNoteLabel")}</th>
+                    <th>
+                      <span className={styles.srOnly}>{t("common.delete")}</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.id}>
+                      <td data-label={t("secretaryReport.activityItemLabel")}>
+                        <select
+                          className={styles.select}
+                          value={row.itemKey}
+                          aria-label={t("secretaryReport.activityItemLabel")}
+                          onChange={(e) => patchRow(row.id, { itemKey: e.target.value })}
+                        >
+                          {options.map((item) => (
+                            <option key={item.key} value={item.key}>
+                              {item.label}
+                            </option>
+                          ))}
+                          <option value={CUSTOM}>
+                            {t("secretaryReport.activityCustomOption")}
+                          </option>
+                        </select>
+                        {row.itemKey === CUSTOM && (
+                          <input
+                            type="text"
+                            className={styles.customLabel}
+                            value={row.customLabel}
+                            placeholder={t("secretaryReport.activityCustomPlaceholder")}
+                            aria-label={t("secretaryReport.activityCustomPlaceholder")}
+                            onChange={(e) => patchRow(row.id, { customLabel: e.target.value })}
+                          />
+                        )}
+                      </td>
+                      <td data-label={t("secretaryReport.activityCountLabel")}>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          className={styles.count}
+                          value={row.count}
+                          onFocus={selectOnFocus}
+                          aria-label={t("secretaryReport.activityCountLabel")}
+                          onChange={(e) => patchRow(row.id, { count: toNumber(e.target.value) })}
+                        />
+                      </td>
+                      <td data-label={t("secretaryReport.activityNoteLabel")}>
+                        <input
+                          type="text"
+                          className={styles.note}
+                          value={row.note}
+                          placeholder={t("secretaryReport.activityNotePlaceholder")}
+                          aria-label={t("secretaryReport.activityNoteLabel")}
+                          onChange={(e) => patchRow(row.id, { note: e.target.value })}
+                        />
+                      </td>
+                      <td className={styles.removeCell}>
+                        <button
+                          type="button"
+                          className={styles.removeButton}
+                          onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}
+                        >
+                          {t("common.delete")}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-      <p className={styles.hint}>{t("secretaryReport.activityNoteHint")}</p>
+          <button type="button" className={styles.addButton} onClick={addRow}>
+            {t("secretaryReport.activityAddRow")}
+          </button>
+          <p className={styles.hint}>{t("secretaryReport.activityNoteHint")}</p>
+        </div>
 
-      <div className={styles.actions}>
-        <button type="button" className={styles.secondaryButton} onClick={addRow}>
-          {t("secretaryReport.activityAddRow")}
-        </button>
-        <button type="button" className={styles.secondaryButton} onClick={onClose}>
-          {t("common.cancel")}
-        </button>
-        <button type="button" className={styles.primaryButton} onClick={handleSave}>
-          {t("common.save")}
-        </button>
+        <div className={styles.actions}>
+          <button type="button" className={styles.secondaryButton} onClick={onClose}>
+            {t("common.cancel")}
+          </button>
+          <button type="button" className={styles.primaryButton} onClick={handleSave}>
+            {t("common.save")}
+          </button>
+        </div>
       </div>
     </dialog>
   );

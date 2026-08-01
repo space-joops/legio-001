@@ -224,8 +224,8 @@ export function findPersonInReport(
 
 /**
  * Pulls current names from the live roster into an existing report. Only
- * refreshes rows that already exist — adding or removing rows here would
- * discard attendance and prayer numbers the secretary already entered.
+ * refreshes rows that already exist — adding and removing rows is
+ * syncReportWithRoster's job.
  */
 export function resyncNamesFromRoster(
   report: MonthlyReport,
@@ -240,6 +240,117 @@ export function resyncNamesFromRoster(
     next = { ...next, ...renamePersonInReport(next, person.id, live.name, live.baptismalName) };
   }
   return { roster: next.roster, attendanceRoll: next.attendanceRoll, prayerRoll: next.prayerRoll };
+}
+
+/**
+ * Brings a report's rows in line with the live roster: names refreshed, people
+ * who joined given a row, people who left taken out.
+ *
+ * The report keeps its own roster snapshot, so before this the two drifted
+ * apart the moment a report was created and only a manual button reconciled
+ * them. Returns null when nothing differs — the editor runs this from an
+ * effect, and patching unconditionally would loop.
+ */
+export function syncReportWithRoster(
+  report: MonthlyReport,
+  roster: PraesidiumRoster
+): Partial<MonthlyReport> | null {
+  const renamed = resyncNamesFromRoster(report, roster);
+  const next: MonthlyReport = { ...report, ...renamed };
+
+  const live = rosterPersons(roster);
+  const liveIds = new Set(live.map((p) => p.id));
+  const presentIds = new Set(next.attendanceRoll.map((r) => r.personId));
+  const numbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
+
+  const added = live.filter((person) => !presentIds.has(person.id));
+  const removedIds = next.attendanceRoll
+    .map((r) => r.personId)
+    .filter((id) => !liveIds.has(id));
+
+  const namesChanged =
+    renamed.attendanceRoll !== report.attendanceRoll || renamed.roster !== report.roster;
+  if (added.length === 0 && removedIds.length === 0 && !namesChanged) return null;
+
+  const keep = <T extends { personId: string }>(rows: T[]) =>
+    rows.filter((row) => liveIds.has(row.personId));
+
+  const attendanceRoll = [
+    ...keep(next.attendanceRoll),
+    ...added.map((person) => ({
+      personId: person.id,
+      personLabel: person.label,
+      isOfficer: person.isOfficer,
+      sessions: Object.fromEntries(numbers.map((n) => [n, false])),
+    })),
+  ];
+  const prayerRoll = [
+    ...keep(next.prayerRoll),
+    ...added.map((person) => ({
+      personId: person.id,
+      personLabel: person.label,
+      sessions: Object.fromEntries(numbers.map((n) => [n, { ...EMPTY_COUNTS }])),
+    })),
+  ];
+
+  return {
+    // The snapshot follows the live roster so findPersonInReport keeps
+    // resolving every row, including the ones just added.
+    roster: structuredClone(roster),
+    attendanceRoll,
+    prayerRoll,
+    attendance: computeAttendanceSummary(attendanceRoll),
+    // Entries for someone no longer on the roster would keep counting toward
+    // the report's activity lines with no row left to show them.
+    activityEntries: (next.activityEntries ?? []).filter((e) => liveIds.has(e.personId)),
+  };
+}
+
+/**
+ * Applies "reported numbers means they were there" to the sessions named in
+ * `targets`, leaving every other cell as the secretary left it.
+ *
+ * Shared so the grid and the pasted-report import agree: the import used to
+ * write prayer numbers without touching attendance, which was invisible only
+ * because everyone defaulted to present.
+ */
+export function markAttendanceFromPrayers(
+  attendanceRoll: AttendanceRecord[],
+  prayerRoll: PrayerSessionEntry[],
+  targets: { personId: string; sessionNumber: number }[]
+): AttendanceRecord[] {
+  if (targets.length === 0) return attendanceRoll;
+  const prayers = new Map(prayerRoll.map((entry) => [entry.personId, entry.sessions]));
+  return attendanceRoll.map((record) => {
+    const mine = targets.filter((target) => target.personId === record.personId);
+    if (mine.length === 0) return record;
+    const sessions = { ...record.sessions };
+    for (const { sessionNumber } of mine) {
+      const counts = prayers.get(record.personId)?.[sessionNumber];
+      sessions[sessionNumber] = counts
+        ? Object.values(counts).some((v) => (v ?? 0) > 0)
+        : false;
+    }
+    return { ...record, sessions };
+  });
+}
+
+/**
+ * Schema 1 seeded every session present. Clears the ones that hold no prayer
+ * numbers, which is what the screen has always said the checkbox means.
+ */
+export function clearUnreportedAttendance(report: MonthlyReport): MonthlyReport {
+  const prayers = new Map(report.prayerRoll.map((entry) => [entry.personId, entry.sessions]));
+  const attendanceRoll = report.attendanceRoll.map((record) => {
+    const sessions: Record<number, boolean> = {};
+    for (const [key, present] of Object.entries(record.sessions)) {
+      const counts = prayers.get(record.personId)?.[Number(key)];
+      const reported = counts ? Object.values(counts).some((v) => (v ?? 0) > 0) : false;
+      sessions[Number(key)] = present && reported;
+    }
+    return { ...record, sessions };
+  });
+  return { ...report, attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) };
 }
 
 /**
@@ -273,7 +384,7 @@ export function addMemberToReport(
       personId,
       personLabel: label,
       isOfficer: false,
-      sessions: Object.fromEntries(numbers.map((n) => [n, true])),
+      sessions: Object.fromEntries(numbers.map((n) => [n, false])),
     },
   ];
   const prayerRoll = [
@@ -299,8 +410,10 @@ export function buildAttendanceRoll(
   sessionEnd: number
 ): AttendanceRecord[] {
   const numbers = sessionRangeNumbers(sessionStart, sessionEnd);
+  // Absent until something says otherwise — entering any prayer number marks
+  // the member present, and the checkbox stays live for the exceptions.
   const emptySessions = (): Record<number, boolean> =>
-    Object.fromEntries(numbers.map((n) => [n, true]));
+    Object.fromEntries(numbers.map((n) => [n, false]));
 
   return rosterPersons(roster).map((person) => ({
     personId: person.id,
@@ -362,7 +475,7 @@ export function resyncAttendanceSessions(
   return roll.map((record) => {
     const sessions: Record<number, boolean> = {};
     for (const n of numbers) {
-      sessions[n] = record.sessions[n] ?? true;
+      sessions[n] = record.sessions[n] ?? false;
     }
     return { ...record, sessions };
   });

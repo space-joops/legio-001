@@ -51,13 +51,23 @@ export function createActivityItem(label: string, line: ActivityLine, order: num
   return { id: generateId(), key: generateId(), label, line, order, hidden: false };
 }
 
+/**
+ * Catalogue order. This is what the report's activity lines print in, so it
+ * follows the order the praesidium has always written them (연도, 장례미사, …)
+ * rather than the alphabetical order the screens show.
+ */
 export function sortActivityItems(items: ActivityItem[]): ActivityItem[] {
   return [...items].sort((a, b) => a.order - b.order);
 }
 
+/** 가나다순 — for finding an item in a list, not for printing one. */
+export function sortActivityItemsByName(items: ActivityItem[]): ActivityItem[] {
+  return [...items].sort((a, b) => a.label.localeCompare(b.label, "ko"));
+}
+
 /** Hidden items stay out of the picker but keep totalling in old reports. */
 export function selectableActivityItems(items: ActivityItem[]): ActivityItem[] {
-  return sortActivityItems(items).filter((item) => !item.hidden);
+  return sortActivityItemsByName(items).filter((item) => !item.hidden);
 }
 
 export function findActivityItem(items: ActivityItem[], key: string): ActivityItem | null {

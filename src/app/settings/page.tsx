@@ -25,7 +25,7 @@ import { formatMeetingDateTime } from "@/lib/reportUtils";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
 import type { ExportedData, Profile } from "@/lib/types";
-import { APP_VERSION, BUILD_TIME } from "@/lib/version";
+import { APP_VERSION, BUILD_TIME, formatBuildStamp } from "@/lib/version";
 import styles from "./page.module.css";
 
 /** Nag only once the user has enough recorded to lose. */
@@ -326,21 +326,17 @@ export default function SettingsPage() {
         </button>
       </details>
 
-      <div className={styles.versionText}>
-        <p>
-          {t("settings.appVersionLabel")} {APP_VERSION}
-        </p>
-        {BUILD_TIME && (
-          <p>
-            {t("settings.buildTimeLabel")} {formatMeetingDateTime(BUILD_TIME, language)}
-          </p>
-        )}
-        <p>
-          <a href={SITE_URL} className={styles.siteLink}>
-            {SITE_URL.replace(/^https?:\/\//, "")}
-          </a>
-        </p>
-      </div>
+      {/* One line, no labels: "v0.6.0(20260802120712) https://legio.diginori.com".
+          It gets read out over the phone when something looks wrong. */}
+      <p className={styles.versionText}>
+        <span>
+          v{APP_VERSION}
+          {BUILD_TIME && `(${formatBuildStamp(BUILD_TIME)})`}
+        </span>{" "}
+        <a href={SITE_URL} className={styles.siteLink}>
+          {SITE_URL}
+        </a>
+      </p>
     </PageShell>
   );
 }

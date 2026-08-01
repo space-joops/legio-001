@@ -23,7 +23,6 @@ import {
   MAX_ATTENDANCE_SESSIONS,
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
-  addMemberToReport,
   applySubmissionsToPrayerRoll,
   computeAttendanceSummary,
   computeMassCommunion,
@@ -32,11 +31,11 @@ import {
   findPersonInReport,
   formatMonthlyShareText,
   formatYearMonthLabel,
-  renamePersonInReport,
+  markAttendanceFromPrayers,
   resyncAttendanceSessions,
-  resyncNamesFromRoster,
   resyncPrayerRollSessions,
   sessionRangeNumbers,
+  syncReportWithRoster,
   type SubmissionDecision,
 } from "@/lib/monthlyReportUtils";
 import { selectOnFocus } from "@/lib/selectOnFocus";
@@ -83,6 +82,13 @@ const MEMBER_COUNT_BUCKETS = [
   { key: "memberCountsIncrease", labelKey: "secretaryReport.increaseLabel" },
   { key: "memberCountsDecrease", labelKey: "secretaryReport.decreaseLabel" },
 ] as const satisfies readonly { key: keyof MonthlyReport; labelKey: string }[];
+
+/** "민경국(마르코)" — one column instead of two, read-only; names are edited
+    in 명단 관리 and reach the report through syncReportWithRoster. */
+function personDisplayName(person: { name: string; baptismalName: string }): string {
+  if (!person.name) return "";
+  return person.baptismalName ? `${person.name}(${person.baptismalName})` : person.name;
+}
 
 /** "5/29" — enough for the secretary to recognise the window at a glance. */
 function formatDay(date: Date): string {
@@ -173,9 +179,10 @@ function ReportPageContent() {
   const [activeSession, setActiveSession] = useState(report?.sessionRangeStart ?? 0);
   const [activityTarget, setActivityTarget] = useState<string | null>(null);
   const [expenseTarget, setExpenseTarget] = useState<number | null>(null);
-  // Read once per render from storage: the catalogues are edited on other
-  // screens and this page has no reason to re-render when they change.
-  const activityItems = storage.getActivityItems();
+  // Held in state rather than read per render because the activity dialog can
+  // create a catalogue item, and the report lines below have to show it at once.
+  const [activityItems, setActivityItems] = useState(() => storage.getActivityItems());
+  // Read per render — nothing on this page adds an expense item.
   const expenseItems = storage.getExpenseItems();
   const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
   const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
@@ -191,6 +198,18 @@ function ReportPageContent() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- clamps tab selection when the session range (external, storage-backed) shrinks past it
     setActiveSession((prev) => (numbers.includes(prev) ? prev : numbers[0]));
   }, [report?.sessionRangeStart, report?.sessionRangeEnd]);
+
+  /**
+   * Keeps the grid in step with 명단 관리. A report snapshots the roster when
+   * it is created, so before this an edit over there never reached a report
+   * that already existed and the secretary had to press two buttons. Returns
+   * null when nothing differs, which is what stops this from looping.
+   */
+  useEffect(() => {
+    if (!report) return;
+    const changes = syncReportWithRoster(report, storage.getRoster());
+    if (changes) updateReport(report.id, changes);
+  }, [report, updateReport]);
 
   if (!reportsReady || !historyReady) return null;
 
@@ -225,10 +244,11 @@ function ReportPageContent() {
     });
   };
 
-  /** True when a session holds anything the secretary actually entered, so
+  /** True when a session holds anything the secretary actually entered — a
+      ticked attendance box, a prayer number, an activity or a ledger line — so
       narrowing the range past it asks before throwing the work away. */
   const sessionHasUserInput = (n: number) =>
-    report.attendanceRoll.some((record) => record.sessions[n] === false) ||
+    report.attendanceRoll.some((record) => record.sessions[n] === true) ||
     report.prayerRoll.some((entry) => {
       const counts = entry.sessions[n];
       return counts ? Object.values(counts).some((v) => v > 0) : false;
@@ -276,24 +296,7 @@ function ReportPageContent() {
     patch({ attendanceRoll, attendance: computeAttendanceSummary(attendanceRoll) });
   };
 
-  /**
-   * One rename updates the roster snapshot and both rolls together. Editing any
-   * single one of them used to leave the same person under two different names
-   * inside one report.
-   */
-  const renamePerson = (personId: string, field: "name" | "baptismalName", value: string) => {
-    const next = { ...findPersonInReport(report, personId), [field]: value };
-    patch(renamePersonInReport(report, personId, next.name, next.baptismalName));
-  };
 
-  const handleResyncNames = () => {
-    patch(resyncNamesFromRoster(report, storage.getRoster()));
-    showToast(t("secretaryReport.resyncNamesDone"));
-  };
-
-  const handleAddPerson = () => {
-    patch(addMemberToReport(report, "", ""));
-  };
 
   const handleExportRtf = async () => {
     const rtf = buildMonthlyReportRtf(report, language);
@@ -343,13 +346,9 @@ function ReportPageContent() {
           }
         : entry
     );
-    const updated = prayerRoll.find((e) => e.personId === personId)?.sessions[sessionNumber];
-    const reported = updated ? Object.values(updated).some((v) => (v ?? 0) > 0) : false;
-    const attendanceRoll = report.attendanceRoll.map((record) =>
-      record.personId === personId
-        ? { ...record, sessions: { ...record.sessions, [sessionNumber]: reported } }
-        : record
-    );
+    const attendanceRoll = markAttendanceFromPrayers(report.attendanceRoll, prayerRoll, [
+      { personId, sessionNumber },
+    ]);
     patch({
       prayerRoll,
       prayerCounts: computePrayerCountsFromRoll(prayerRoll),
@@ -595,12 +594,6 @@ function ReportPageContent() {
         <div className={styles.sectionHeaderRow}>
           <h3 className={styles.sectionTitle}>{t("secretaryReport.activityReportGrid")}</h3>
           <div className={styles.topActions}>
-            <button type="button" className={styles.secondaryButton} onClick={handleResyncNames}>
-              {t("secretaryReport.resyncNames")}
-            </button>
-            <button type="button" className={styles.secondaryButton} onClick={handleAddPerson}>
-              {t("secretaryReport.addPerson")}
-            </button>
             <button
               type="button"
               className={styles.secondaryButton}
@@ -622,7 +615,6 @@ function ReportPageContent() {
             <thead>
               <tr>
                 <th>{t("secretaryReport.personColumnLabel")}</th>
-                <th>{t("secretaryRoster.baptismalNameLabel")}</th>
                 {PRAYER_ITEMS.map((item) => (
                   <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
                 ))}
@@ -637,27 +629,9 @@ function ReportPageContent() {
                 const activityCount = personActivityCount(report, record.personId, activeSession);
                 return (
                   <tr key={record.personId}>
-                    <td>
-                      <input
-                        type="text"
-                        className={styles.attendanceNameInput}
-                        value={person.name}
-                        aria-label={t("secretaryReport.personColumnLabel")}
-                        placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
-                        onChange={(e) => renamePerson(record.personId, "name", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className={styles.attendanceNameInput}
-                        value={person.baptismalName}
-                        aria-label={t("secretaryRoster.baptismalNameLabel")}
-                        onChange={(e) =>
-                          renamePerson(record.personId, "baptismalName", e.target.value)
-                        }
-                      />
-                    </td>
+                    <th scope="row" className={styles.personCell}>
+                      {personDisplayName(person)}
+                    </th>
                     {PRAYER_ITEMS.map((item) => (
                       <td key={item.key}>
                         <input
@@ -692,7 +666,7 @@ function ReportPageContent() {
                       <input
                         type="checkbox"
                         className={styles.attendanceCheckbox}
-                        checked={record.sessions[activeSession] ?? true}
+                        checked={record.sessions[activeSession] ?? false}
                         onChange={() => toggleAttendance(record.personId, activeSession)}
                         aria-label={`${person.name || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
                       />
@@ -1095,6 +1069,7 @@ function ReportPageContent() {
         )}
         onClose={() => setActivityTarget(null)}
         onSave={(entries) => activityTarget && saveActivityEntries(activityTarget, entries)}
+        onItemsChange={setActivityItems}
       />
 
       <TreasuryExpenseDialog
@@ -1116,7 +1091,19 @@ function ReportPageContent() {
         onCancel={() => setImportOpen(false)}
         onApply={(decisions: SubmissionDecision[]) => {
           const prayerRoll = applySubmissionsToPrayerRoll(report.prayerRoll, decisions);
-          patch({ prayerRoll, prayerCounts: computePrayerCountsFromRoll(prayerRoll) });
+          // A pasted report is a report — it marks the member present for the
+          // sessions it covers, same as typing the numbers by hand would.
+          const attendanceRoll = markAttendanceFromPrayers(
+            report.attendanceRoll,
+            prayerRoll,
+            decisions.map((d) => ({ personId: d.personId, sessionNumber: d.sessionNumber }))
+          );
+          patch({
+            prayerRoll,
+            prayerCounts: computePrayerCountsFromRoll(prayerRoll),
+            attendanceRoll,
+            attendance: computeAttendanceSummary(attendanceRoll),
+          });
           setImportOpen(false);
           showToast(t("secretaryReport.importApplied"));
         }}
