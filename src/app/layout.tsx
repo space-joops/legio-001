@@ -3,6 +3,7 @@ import { Nanum_Gothic } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 import { Providers } from "./providers";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 // Google splits Nanum Gothic into ~276 unicode-range slices (2.9MB all told).
 // preload:false is deliberate and load-bearing: preload tags ignore
@@ -63,7 +64,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className={nanumGothic.variable}>
       <body>
-        <Providers>{children}</Providers>
+        <AppRouterCacheProvider>
+          <Providers>{children}</Providers>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

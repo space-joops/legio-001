@@ -11,29 +11,35 @@ import { StorageFailureNotice } from "@/components/StorageFailureNotice";
 import { ToastProvider } from "@/components/ToastProvider";
 import { UpdateAvailableNotice } from "@/components/UpdateAvailableNotice";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "./theme";
 import styles from "./providers.module.css";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <LanguageProvider>
-      <DisplayPreferencesProvider>
-        <ToastProvider>
-          <StorageBootstrap />
-          <StorageFailureNotice />
-          <div className={styles.noticeStack} data-app-chrome>
-            <InAppBrowserNotice />
-            <UpdateAvailableNotice />
-          </div>
-          {/* Sibling of OnboardingGate, not a child: the gate renders nothing
-              until hydrated, so the splash must sit outside it to also cover
-              the onboarding screen. */}
-          <SplashOverlay />
-          <OnboardingGate>
-            <ScheduleReminderChecker />
-            {children}
-          </OnboardingGate>
-        </ToastProvider>
-      </DisplayPreferencesProvider>
-    </LanguageProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <LanguageProvider>
+        <DisplayPreferencesProvider>
+          <ToastProvider>
+            <StorageBootstrap />
+            <StorageFailureNotice />
+            <div className={styles.noticeStack} data-app-chrome>
+              <InAppBrowserNotice />
+              <UpdateAvailableNotice />
+            </div>
+            {/* Sibling of OnboardingGate, not a child: the gate renders nothing
+                until hydrated, so the splash must sit outside it to also cover
+                the onboarding screen. */}
+            <SplashOverlay />
+            <OnboardingGate>
+              <ScheduleReminderChecker />
+              {children}
+            </OnboardingGate>
+          </ToastProvider>
+        </DisplayPreferencesProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }

@@ -12,6 +12,14 @@ import { ShareButton } from "@/components/ShareButton";
 import { SHOW_SPLASH_EVENT } from "@/components/SplashOverlay";
 import { SplashToggle } from "@/components/SplashToggle";
 import { useToast } from "@/components/ToastProvider";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
@@ -151,49 +159,43 @@ export default function SettingsPage() {
 
   return (
     <PageShell title={t("settings.title")}>
-      <section className={styles.section}>
-        <label className={styles.field}>
-          <span className={styles.label}>{t("settings.nameLabel")}</span>
-          <input
-            type="text"
-            className={styles.input}
-            value={profile.name}
-            placeholder={t("settings.namePlaceholder")}
-            onChange={(e) => handleProfileChange("name", e.target.value)}
-          />
-        </label>
-        <label className={styles.field}>
-          <span className={styles.label}>{t("settings.baptismalNameLabel")}</span>
-          <input
-            type="text"
-            className={styles.input}
-            value={profile.baptismalName}
-            placeholder={t("settings.baptismalNamePlaceholder")}
-            onChange={(e) => handleProfileChange("baptismalName", e.target.value)}
-          />
-        </label>
-        <label className={styles.field}>
-          <span className={styles.label}>{t("settings.praesidiumNameLabel")}</span>
-          <input
-            type="text"
-            className={styles.input}
-            value={profile.praesidiumName}
-            placeholder={t("settings.praesidiumNamePlaceholder")}
-            onChange={(e) => handleProfileChange("praesidiumName", e.target.value)}
-          />
-        </label>
-        <label className={styles.field}>
-          <span className={styles.label}>{t("settings.parishNameLabel")}</span>
-          <input
-            type="text"
-            className={styles.input}
-            value={profile.parishName}
-            placeholder={t("settings.parishNamePlaceholder")}
-            onChange={(e) => handleProfileChange("parishName", e.target.value)}
-          />
-        </label>
-        <p className={styles.description}>{t("common.autoSaveNotice")}</p>
-      </section>
+      <Box component="section" sx={{ display: "flex", flexDirection: "column", gap: 3, mb: 4 }}>
+        <TextField
+          label={t("settings.nameLabel")}
+          value={profile.name}
+          placeholder={t("settings.namePlaceholder")}
+          onChange={(e) => handleProfileChange("name", e.target.value)}
+          fullWidth
+          variant="outlined"
+        />
+        <TextField
+          label={t("settings.baptismalNameLabel")}
+          value={profile.baptismalName}
+          placeholder={t("settings.baptismalNamePlaceholder")}
+          onChange={(e) => handleProfileChange("baptismalName", e.target.value)}
+          fullWidth
+          variant="outlined"
+        />
+        <TextField
+          label={t("settings.praesidiumNameLabel")}
+          value={profile.praesidiumName}
+          placeholder={t("settings.praesidiumNamePlaceholder")}
+          onChange={(e) => handleProfileChange("praesidiumName", e.target.value)}
+          fullWidth
+          variant="outlined"
+        />
+        <TextField
+          label={t("settings.parishNameLabel")}
+          value={profile.parishName}
+          placeholder={t("settings.parishNamePlaceholder")}
+          onChange={(e) => handleProfileChange("parishName", e.target.value)}
+          fullWidth
+          variant="outlined"
+        />
+        <Typography variant="body2" color="text.secondary">
+          {t("common.autoSaveNotice")}
+        </Typography>
+      </Box>
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.languageLabel")}</span>
@@ -214,13 +216,14 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.splashLabel")}</span>
         <p className={styles.description}>{t("settings.splashDescription")}</p>
         <SplashToggle />
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 2 }}
           onClick={() => window.dispatchEvent(new Event(SHOW_SPLASH_EVENT))}
         >
           {t("settings.splashPreview")}
-        </button>
+        </Button>
       </section>
 
       <section className={styles.section}>
@@ -243,28 +246,30 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.exportData")}</span>
         <p className={styles.description}>{t("settings.exportDescription")}</p>
         {backupOverdue && <p className={styles.backupNotice}>{t("settings.backupOverdue")}</p>}
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 2 }}
           onClick={() => {
             void handleExport();
           }}
         >
           {t("settings.exportData")}
-        </button>
+        </Button>
       </section>
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.importData")}</span>
         <p className={styles.description}>{t("settings.importDescription")}</p>
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 2 }}
           onClick={() => fileInputRef.current?.click()}
         >
           {t("settings.importData")}
-        </button>
-        {importFile && <p className={styles.description}>{importFile.name}</p>}
+        </Button>
+        {importFile && <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>{importFile.name}</Typography>}
         <input
           ref={fileInputRef}
           type="file"
@@ -306,25 +311,29 @@ export default function SettingsPage() {
       {/* Neither belongs in a member's daily path: the secretary screens are for
           one person, and reset destroys everything. Collapsed at the very end so
           they take a deliberate extra tap. */}
-      <details className={styles.advanced}>
-        <summary className={styles.advancedSummary}>
-          <h2 className={styles.advancedTitle}>{t("settings.secretaryLink")}</h2>
-        </summary>
-        <p className={styles.description}>{t("settings.secretaryLinkDescription")}</p>
-        <Link href="/secretary" className={styles.secondaryButton}>
-          {t("secretary.open")}
-        </Link>
-      </details>
+      <Accordion elevation={0} variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ fontWeight: "bold" }}>{t("settings.secretaryLink")}</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Typography variant="body2" color="text.secondary">{t("settings.secretaryLinkDescription")}</Typography>
+          <Button component={Link} href="/secretary" variant="outlined" fullWidth>
+            {t("secretary.open")}
+          </Button>
+        </AccordionDetails>
+      </Accordion>
 
-      <details className={styles.advanced}>
-        <summary className={styles.advancedSummary}>
-          <h2 className={styles.advancedTitle}>{t("settings.resetData")}</h2>
-        </summary>
-        <p className={styles.description}>{t("settings.resetDescription")}</p>
-        <button type="button" className={styles.dangerButton} onClick={() => setResetOpen(true)}>
-          {t("settings.resetData")}
-        </button>
-      </details>
+      <Accordion elevation={0} variant="outlined" sx={{ mb: 4, borderRadius: 2 }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography sx={{ fontWeight: "bold" }} color="error">{t("settings.resetData")}</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Typography variant="body2" color="text.secondary">{t("settings.resetDescription")}</Typography>
+          <Button variant="contained" color="error" fullWidth disableElevation onClick={() => setResetOpen(true)}>
+            {t("settings.resetData")}
+          </Button>
+        </AccordionDetails>
+      </Accordion>
 
       {/* One line, no labels: "v0.6.0(20260802120712) https://legio.diginori.com".
           It gets read out over the phone when something looks wrong. */}

@@ -1,20 +1,24 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import styles from "./ConfirmDialog.module.css";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 interface ConfirmDialogProps {
   open: boolean;
   title: string;
   body: string;
-  /** Extra line under the body — e.g. a summary of the file about to be imported. */
   detail?: string;
   confirmLabel: string;
   cancelLabel: string;
   onConfirm: () => void;
   onCancel: () => void;
   danger?: boolean;
-  /** Safer alternative offered alongside the destructive action (e.g. "back up first"). */
   altLabel?: string;
   onAlt?: () => void;
 }
@@ -32,44 +36,50 @@ export function ConfirmDialog({
   altLabel,
   onAlt,
 }: ConfirmDialogProps) {
-  const ref = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
-
   return (
-    <dialog
-      ref={ref}
-      className={styles.dialog}
-      onCancel={(e) => {
-        e.preventDefault();
-        onCancel();
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      sx={{
+        "& .MuiDialog-paper": { borderRadius: 3, p: 1 }
       }}
     >
-      <h2 className={styles.title}>{title}</h2>
-      <p className={styles.body}>{body}</p>
-      {detail && <p className={styles.detail}>{detail}</p>}
-      {altLabel && onAlt && (
-        <button type="button" className={styles.altButton} onClick={onAlt}>
-          {altLabel}
-        </button>
-      )}
-      <div className={styles.actions}>
-        <button type="button" className={styles.cancelButton} onClick={onCancel}>
+      <DialogTitle sx={{ pb: 1, fontWeight: "bold" }}>{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ color: "text.primary", mb: detail ? 2 : 0 }}>
+          {body}
+        </DialogContentText>
+        {detail && (
+          <DialogContentText variant="body2" sx={{ color: "text.secondary" }}>
+            {detail}
+          </DialogContentText>
+        )}
+        {altLabel && onAlt && (
+          <Box sx={{ mt: 3 }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={onAlt}
+              sx={{ borderRadius: 2 }}
+            >
+              {altLabel}
+            </Button>
+          </Box>
+        )}
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onCancel} color="inherit">
           {cancelLabel}
-        </button>
-        <button
-          type="button"
-          className={`${styles.confirmButton} ${danger ? styles.danger : ""}`}
+        </Button>
+        <Button
           onClick={onConfirm}
+          color={danger ? "secondary" : "primary"}
+          variant="contained"
+          disableElevation
         >
           {confirmLabel}
-        </button>
-      </div>
-    </dialog>
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

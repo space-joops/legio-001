@@ -9,6 +9,9 @@ import { WeekSessionForm } from "@/components/WeekSessionForm";
 import { useCurrentReport } from "@/hooks/useCurrentReport";
 import { useHistory } from "@/hooks/useHistory";
 import { useTranslation } from "@/i18n/useTranslation";
+import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import {
   formatMeetingDateTime,
   formatSessionLabel,
@@ -137,17 +140,21 @@ export default function HomePage() {
             onDecrement={(key) => incrementCount(key, -1)}
             onSetValue={(key, value) => setCount(key, value)}
           />
-          <label className={styles.noteField}>
-            <span className={styles.sectionTitle}>{t("home.activityNoteLabel")}</span>
-            <textarea
-              className={styles.noteInput}
-              rows={5}
+          <Box sx={{ mt: 4, mb: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              {t("home.activityNoteLabel")}
+            </Typography>
+            <TextField
+              multiline
+              rows={4}
+              fullWidth
               value={noteDraft}
               placeholder={t("home.activityNotePlaceholder")}
               onChange={(e) => setNoteDraft(e.target.value)}
               onBlur={() => setActivityNote(noteDraft)}
+              variant="outlined"
             />
-          </label>
+          </Box>
 
           <SubmitReportButton onConfirmSubmit={handleSubmit} />
         </>

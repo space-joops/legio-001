@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { ConfirmDialog } from "./ConfirmDialog";
-import styles from "./SubmitReportButton.module.css";
+import Button from "@mui/material/Button";
+import SendIcon from "@mui/material/Icon"; // Can use a send icon or similar, or just basic Button
 
 export function SubmitReportButton({
   onConfirmSubmit,
@@ -15,9 +16,16 @@ export function SubmitReportButton({
 
   return (
     <>
-      <button type="button" className={styles.button} onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        fullWidth
+        sx={{ mt: 2, height: 56, borderRadius: 3, fontSize: '1.1rem' }}
+        onClick={() => setOpen(true)}
+      >
         {t("home.submit")}
-      </button>
+      </Button>
       <ConfirmDialog
         open={open}
         title={t("home.submitConfirmTitle")}
