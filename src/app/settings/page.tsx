@@ -21,6 +21,7 @@ import {
   type ImportSummary,
 } from "@/lib/exportData";
 import { formatMeetingDateTime } from "@/lib/reportUtils";
+import { fetchSampleData, isDemoMode } from "@/lib/sampleData";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
 import type { ExportedData, Profile } from "@/lib/types";
@@ -39,6 +40,7 @@ export default function SettingsPage() {
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
   const [backupOverdue, setBackupOverdue] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function SettingsPage() {
     const lastExportedAt = storage.getLastExportedAt();
     const hasRecords = storage.getHistory().length > 0;
     setBackupOverdue(hasRecords && Date.now() - lastExportedAt > BACKUP_REMINDER_AFTER_MS);
+    setDemoMode(isDemoMode());
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [ready]);
 
@@ -104,6 +107,25 @@ export default function SettingsPage() {
     }
     setImportFile(file);
     setImportSummary(check.summary);
+  };
+
+  /**
+   * Loads public/sample-data.json through the ordinary import flow, so a
+   * reviewer gets a filled-in praesidium in one tap instead of retyping a year
+   * of data. Reached only via ?demo=1.
+   */
+  const handleLoadSample = async () => {
+    const data = await fetchSampleData();
+    if (!data) {
+      showToast(t("settings.importError"));
+      return;
+    }
+    // Route it through the normal confirm dialog so the overwrite warning and
+    // the file summary still appear.
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    setImportFile(new File([blob], "sample-data.json", { type: "application/json" }));
+    const check = inspectImportFile(data);
+    if (check.ok) setImportSummary(check.summary);
   };
 
   const handleImportConfirm = async () => {
@@ -264,6 +286,17 @@ export default function SettingsPage() {
         >
           {t("settings.importData")}
         </button>
+        {demoMode && (
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => {
+              void handleLoadSample();
+            }}
+          >
+            {t("settings.loadSampleData")}
+          </button>
+        )}
         {importFile && <p className={styles.description}>{importFile.name}</p>}
         <input
           ref={fileInputRef}

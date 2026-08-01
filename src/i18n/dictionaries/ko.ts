@@ -122,6 +122,7 @@ export const ko = {
     importSuccess: "데이터를 가져왔습니다.",
     importError: "파일을 읽을 수 없습니다. 올바른 내보내기 파일인지 확인해 주세요.",
     importFutureVersion: "더 새로운 버전에서 만든 파일입니다. 앱을 먼저 업데이트해 주세요.",
+    loadSampleData: "예시 데이터 불러오기 (검토용)",
     installUnavailable:
       "이 브라우저에서는 설치 안내가 나타나지 않습니다. 브라우저 메뉴의 '홈 화면에 추가'를 이용해 주세요.",
     appVersionLabel: "버전",

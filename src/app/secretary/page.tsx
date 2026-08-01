@@ -34,14 +34,18 @@ export default function SecretaryPage() {
 
   const [yearMonth, setYearMonth] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  // Defaults to last year: the annual report is written just after a year ends.
   const [annualYear, setAnnualYear] = useState(() => new Date().getFullYear() - 1);
   const [annualDeleteTarget, setAnnualDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (!reportsReady) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- default derived from storage-backed reports, not pure render state
+    /* eslint-disable react-hooks/set-state-in-effect -- defaults derived from storage-backed reports, not pure render state */
     setYearMonth(reports[0] ? addMonthToYearMonth(reports[0].yearMonth) : currentYearMonth());
+    // Offer the latest year that actually has monthly reports — a year with no
+    // data would just produce an empty annual report.
+    const latestYear = reports[0]?.yearMonth?.slice(0, 4);
+    if (latestYear) setAnnualYear(Number(latestYear));
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [reportsReady, reports]);
 
   if (!reportsReady || !rosterReady || !annualReady || !roster) {

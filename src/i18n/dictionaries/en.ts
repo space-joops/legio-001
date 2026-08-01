@@ -124,6 +124,7 @@ export const en = {
     importSuccess: "Data imported.",
     importError: "Could not read this file. Please check it's a valid export file.",
     importFutureVersion: "This file came from a newer version. Please update the app first.",
+    loadSampleData: "Load sample data (for review)",
     installUnavailable:
       "This browser doesn't offer an install prompt. Use 'Add to Home Screen' from the browser menu.",
     appVersionLabel: "Version",

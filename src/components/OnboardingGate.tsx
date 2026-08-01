@@ -3,6 +3,8 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
+import { importExportedData } from "@/lib/exportData";
+import { fetchSampleData, isDemoMode } from "@/lib/sampleData";
 import { storage } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
 import styles from "./OnboardingGate.module.css";
@@ -27,6 +29,8 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     parishName: "",
   });
 
+  const [demoMode, setDemoMode] = useState(false);
+
   useEffect(() => {
     if (!ready) return;
     const loaded = storage.getProfile();
@@ -34,8 +38,17 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
     /* eslint-disable react-hooks/set-state-in-effect */
     setProfile(loaded);
     setDraft(loaded);
+    setDemoMode(isDemoMode());
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [ready]);
+
+  const handleLoadSample = async () => {
+    const data = await fetchSampleData();
+    if (!data) return;
+    importExportedData(data);
+    // Full reload: this gate reads the profile once on mount.
+    window.location.href = "/";
+  };
 
   if (!ready || !profile) return null;
 
@@ -111,6 +124,20 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
         <button type="submit" className={styles.submitButton} disabled={!canSubmit}>
           {t("onboarding.start")}
         </button>
+
+        {/* ?demo=1 only. Without this a reviewer has to type four fields before
+            they can even reach Settings to load the sample data. */}
+        {demoMode && (
+          <button
+            type="button"
+            className={styles.demoButton}
+            onClick={() => {
+              void handleLoadSample();
+            }}
+          >
+            {t("settings.loadSampleData")}
+          </button>
+        )}
       </form>
     </div>
   );

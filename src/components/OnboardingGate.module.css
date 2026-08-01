@@ -48,6 +48,16 @@
   font-size: var(--font-size-base);
 }
 
+.demoButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
 .submitButton {
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);

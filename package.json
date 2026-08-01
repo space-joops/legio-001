@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "postbuild": "node scripts/generate-precache-manifest.mjs",
+    "sample-data": "node scripts/generate-sample-data.mjs",
     "start": "next start",
     "lint": "eslint"
   },

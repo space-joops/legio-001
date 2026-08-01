@@ -15,6 +15,8 @@ const SKIP_FILES = new Set([
   "precache-manifest.json",
   // Only ever fetched by link-preview crawlers, never by the app itself.
   "og-image.png",
+  // Review-only fixture, fetched on demand from the demo screen.
+  "sample-data.json",
 ]);
 
 /** Nanum Gothic ships as ~276 unicode-range slices (2.9MB). Precaching them all
