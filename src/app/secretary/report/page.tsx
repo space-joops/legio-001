@@ -10,6 +10,7 @@ import { PrayerSubmissionImportDialog } from "@/components/PrayerSubmissionImpor
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
 import { useToast } from "@/components/ToastProvider";
+import { TreasuryExpenseDialog } from "@/components/TreasuryExpenseDialog";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -40,6 +41,13 @@ import {
 } from "@/lib/monthlyReportUtils";
 import { selectOnFocus } from "@/lib/selectOnFocus";
 import { storage } from "@/lib/storage";
+import {
+  computeTreasuryLedger,
+  deriveTreasury,
+  formatExpenseBreakdown,
+  formatWon,
+  resyncTreasuryLedger,
+} from "@/lib/treasury";
 import type {
   ActivityEntry,
   AgendaItem,
@@ -48,6 +56,8 @@ import type {
   MonthlyReport,
   PrayerCounts,
   PrayerItemKey,
+  TreasuryExpense,
+  TreasurySessionEntry,
 } from "@/lib/types";
 import styles from "./page.module.css";
 
@@ -77,6 +87,45 @@ const MEMBER_COUNT_BUCKETS = [
 /** "5/29" — enough for the secretary to recognise the window at a glance. */
 function formatDay(date: Date): string {
   return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+/** "의연금 70,000" — with "외 1건" appended when the session had more. */
+function summariseExpenses(expenses: TreasuryExpense[], moreSuffix: string): string {
+  const [first, ...rest] = expenses;
+  if (!first) return "";
+  const head = `${first.label} ${formatWon(first.amount)}`;
+  return rest.length === 0 ? head : `${head} ${moreSuffix.replace("{n}", String(rest.length))}`;
+}
+
+/**
+ * Money field. `type="number"` can't show thousands separators, and six- and
+ * seven-digit won amounts are hard to read without them for the members this
+ * app is built for. Focus selects the whole value (selectOnFocus), so grouping
+ * as you type never leaves the caret stranded mid-number.
+ */
+function CurrencyInput({
+  value,
+  onChange,
+  className,
+  ariaLabel,
+}: {
+  value: number;
+  onChange: (value: string) => void;
+  className: string;
+  ariaLabel: string;
+}) {
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      className={className}
+      value={value === 0 ? "" : formatWon(value)}
+      placeholder="0"
+      aria-label={ariaLabel}
+      onFocus={selectOnFocus}
+      onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ""))}
+    />
+  );
 }
 
 function toNumber(value: string): number {
@@ -123,9 +172,11 @@ function ReportPageContent() {
   // scroll independently, which let the two halves of one row disagree.
   const [activeSession, setActiveSession] = useState(report?.sessionRangeStart ?? 0);
   const [activityTarget, setActivityTarget] = useState<string | null>(null);
-  // Read once per render from storage: the catalogue is edited on another
-  // screen and this page has no reason to re-render when it changes.
+  const [expenseTarget, setExpenseTarget] = useState<number | null>(null);
+  // Read once per render from storage: the catalogues are edited on other
+  // screens and this page has no reason to re-render when they change.
   const activityItems = storage.getActivityItems();
+  const expenseItems = storage.getExpenseItems();
   const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
   const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -148,29 +199,44 @@ function ReportPageContent() {
   }
 
   const sessionNumbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
+  const treasury = computeTreasuryLedger(report);
+  // The stored ledger can lag the session range until the next edit; work from
+  // the resynced rows so a freshly widened range already has entries to patch.
+  const treasuryLedger = treasury.rows.map((row) => ({
+    sessionNumber: row.sessionNumber,
+    offering: row.offering,
+    expenses: row.expenses,
+  }));
 
   const patch = (p: Partial<MonthlyReport>) => updateReport(report.id, p);
 
   const applySessionRange = (start: number, end: number) => {
     const attendanceRoll = resyncAttendanceSessions(report.attendanceRoll, start, end);
     const prayerRoll = resyncPrayerRollSessions(report.prayerRoll, start, end);
+    const treasuryLedger = resyncTreasuryLedger(report.treasuryLedger, start, end);
     patch({
       sessionRangeStart: start,
       sessionRangeEnd: end,
       attendanceRoll,
       prayerRoll,
       attendance: computeAttendanceSummary(attendanceRoll),
+      treasuryLedger,
+      treasury: deriveTreasury({ ...report, sessionRangeStart: start, sessionRangeEnd: end }, treasuryLedger),
     });
   };
 
-  /** True when a session holds anything the secretary actually entered — an
-      unchecked attendance box or a nonzero prayer count. */
+  /** True when a session holds anything the secretary actually entered, so
+      narrowing the range past it asks before throwing the work away. */
   const sessionHasUserInput = (n: number) =>
     report.attendanceRoll.some((record) => record.sessions[n] === false) ||
     report.prayerRoll.some((entry) => {
       const counts = entry.sessions[n];
       return counts ? Object.values(counts).some((v) => v > 0) : false;
-    });
+    }) ||
+    report.activityEntries.some((entry) => entry.sessionNumber === n && entry.count > 0) ||
+    report.treasuryLedger.some(
+      (entry) => entry.sessionNumber === n && (entry.offering > 0 || entry.expenses.length > 0)
+    );
 
   const handleSessionRangeChange = (
     field: "sessionRangeStart" | "sessionRangeEnd",
@@ -303,19 +369,34 @@ function ReportPageContent() {
     setActivityTarget(null);
   };
 
-  const patchTreasury = (
-    field: "broughtForward" | "income" | "expense" | "balance" | "expenseBreakdown",
-    value: string
-  ) => {
-    if (field === "expenseBreakdown") {
-      patch({ treasury: { ...report.treasury, expenseBreakdown: value } });
-      return;
-    }
-    const next = { ...report.treasury, [field]: toNumber(value) };
-    if (field !== "balance") {
-      next.balance = next.broughtForward + next.income - next.expense;
-    }
-    patch({ treasury: next });
+  /**
+   * The ledger and the four figures the form asks for have to move together:
+   * two patch() calls in one handler both close over this same `report`, so the
+   * second would undo the first.
+   */
+  const patchLedger = (ledger: TreasurySessionEntry[], broughtForward?: number) => {
+    const base =
+      broughtForward === undefined
+        ? report
+        : { ...report, treasury: { ...report.treasury, broughtForward } };
+    patch({ treasuryLedger: ledger, treasury: deriveTreasury(base, ledger) });
+  };
+
+  const patchOffering = (sessionNumber: number, value: string) => {
+    patchLedger(
+      treasuryLedger.map((entry) =>
+        entry.sessionNumber === sessionNumber ? { ...entry, offering: toNumber(value) } : entry
+      )
+    );
+  };
+
+  const saveSessionExpenses = (sessionNumber: number, expenses: TreasuryExpense[]) => {
+    patchLedger(
+      treasuryLedger.map((entry) =>
+        entry.sessionNumber === sessionNumber ? { ...entry, expenses } : entry
+      )
+    );
+    setExpenseTarget(null);
   };
 
   const patchMemberCountBucket = (
@@ -786,64 +867,86 @@ function ReportPageContent() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
-        <div className={styles.row}>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.broughtForwardLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.treasury.broughtForward}
-              onFocus={selectOnFocus}
-              onChange={(e) => patchTreasury("broughtForward", e.target.value)}
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.incomeLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.treasury.income}
-              onFocus={selectOnFocus}
-              onChange={(e) => patchTreasury("income", e.target.value)}
-            />
-          </label>
+        <div className={styles.sectionHeaderRow}>
+          <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
+          <Link href="/secretary/expense-items" className={styles.secondaryButton}>
+            {t("secretaryReport.manageExpenseItems")}
+          </Link>
         </div>
-        <div className={styles.row}>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.expenseLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.treasury.expense}
-              onFocus={selectOnFocus}
-              onChange={(e) => patchTreasury("expense", e.target.value)}
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.balanceLabel")}</span>
-            <input
-              type="number"
-              inputMode="numeric"
-              className={styles.input}
-              value={report.treasury.balance}
-              onFocus={selectOnFocus}
-              onChange={(e) => patchTreasury("balance", e.target.value)}
-            />
-          </label>
-        </div>
+        <p className={styles.hint}>{t("secretaryReport.treasuryHint")}</p>
+
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.expenseBreakdownLabel")}</span>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            value={report.treasury.expenseBreakdown}
-            onChange={(e) => patchTreasury("expenseBreakdown", e.target.value)}
+          <span className={styles.label}>{t("secretaryReport.broughtForwardLabel")}</span>
+          <CurrencyInput
+            value={report.treasury.broughtForward}
+            className={styles.input}
+            ariaLabel={t("secretaryReport.broughtForwardLabel")}
+            onChange={(value) => patchLedger(treasuryLedger, toNumber(value))}
           />
         </label>
+
+        <div className={styles.tableScroll}>
+          <table className={`${styles.sessionTable} ${styles.treasuryTable}`}>
+            <thead>
+              <tr>
+                <th>{t("secretaryReport.sessionColumn")}</th>
+                <th>{t("secretaryReport.offeringColumn")}</th>
+                <th>{t("secretaryReport.expenseLabel")}</th>
+                <th>{t("secretaryReport.balanceLabel")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {treasury.rows.map((row) => (
+                <tr key={row.sessionNumber}>
+                  <th scope="row">{row.sessionNumber}</th>
+                  <td>
+                    <CurrencyInput
+                      value={row.offering}
+                      className={styles.moneyInput}
+                      ariaLabel={`${row.sessionNumber}${t("week.sessionNumberUnit")} ${t("secretaryReport.offeringColumn")}`}
+                      onChange={(value) => patchOffering(row.sessionNumber, value)}
+                    />
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className={styles.expenseButton}
+                      aria-label={`${row.sessionNumber}${t("week.sessionNumberUnit")} ${t("secretaryReport.expenseLabel")}`}
+                      onClick={() => setExpenseTarget(row.sessionNumber)}
+                    >
+                      {row.expenses.length === 0 ? (
+                        "+"
+                      ) : (
+                        <>
+                          {/* A phone has no room for both; the item names are
+                              spelled out in 중요 지출 내역 just below. */}
+                          <span className={styles.expenseNamed}>
+                            {summariseExpenses(row.expenses, t("secretaryReport.expenseMoreSuffix"))}
+                          </span>
+                          <span className={styles.expenseAmountOnly}>{formatWon(row.expense)}</span>
+                        </>
+                      )}
+                    </button>
+                  </td>
+                  <td className={styles.moneyCell}>{formatWon(row.balance)}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">{t("secretaryReport.treasuryTotalRow")}</th>
+                <td className={styles.moneyCell}>{formatWon(treasury.income)}</td>
+                <td className={styles.moneyCell}>{formatWon(treasury.expense)}</td>
+                <td className={styles.moneyCell}>{formatWon(treasury.balance)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <span className={styles.label}>{t("secretaryReport.expenseBreakdownLabel")}</span>
+        <output className={styles.autoLine}>
+          {formatExpenseBreakdown(treasury.breakdown) || "-"}
+        </output>
       </section>
 
       <section className={styles.section}>
@@ -992,6 +1095,19 @@ function ReportPageContent() {
         )}
         onClose={() => setActivityTarget(null)}
         onSave={(entries) => activityTarget && saveActivityEntries(activityTarget, entries)}
+      />
+
+      <TreasuryExpenseDialog
+        open={expenseTarget !== null}
+        sessionNumber={expenseTarget ?? 0}
+        items={expenseItems}
+        expenses={
+          treasuryLedger.find((entry) => entry.sessionNumber === expenseTarget)?.expenses ?? []
+        }
+        onClose={() => setExpenseTarget(null)}
+        onSave={(expenses) =>
+          expenseTarget !== null && saveSessionExpenses(expenseTarget, expenses)
+        }
       />
 
       <PrayerSubmissionImportDialog

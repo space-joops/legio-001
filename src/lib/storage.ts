@@ -1,7 +1,10 @@
 import { createDefaultActivityItems } from "./activityItems";
 import { DATA_SCHEMA_VERSION } from "./constants";
+import { createDefaultExpenseItems } from "./expenseItems";
+import { migrateLegacyTreasury } from "./treasury";
 import type {
   ActivityItem,
+  ExpenseItem,
   Language,
   MemberCounts,
   MonthlyReport,
@@ -21,6 +24,7 @@ const KEYS = {
   praesidiumRoster: "legioMariae.praesidiumRoster",
   monthlyReports: "legioMariae.monthlyReports",
   activityItems: "legioMariae.activityItems",
+  expenseItems: "legioMariae.expenseItems",
   dataSchemaVersion: "legioMariae.dataSchemaVersion",
   // Kept in KEYS so resetAll() still clears it on devices that used the
   // splash cooldown this app no longer has.
@@ -107,6 +111,7 @@ const EMPTY_MONTHLY_REPORT_DEFAULTS = {
   prayerRoll: [],
   agendaItems: [],
   activityEntries: [],
+  treasuryLedger: [],
   sundayMassTotal: 0,
   evangelization: EMPTY_EVANGELIZATION,
   memberCountsPrevMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
@@ -122,6 +127,17 @@ const EMPTY_MONTHLY_REPORT_DEFAULTS = {
   meetingTime: "",
   meetingLocation: "",
 } satisfies Partial<MonthlyReport>;
+
+/**
+ * Reports saved before a field existed would otherwise surface `undefined`
+ * deep inside the print view; MonthlyReport is too big to hand-check.
+ */
+function normalizeMonthlyReport(stored: MonthlyReport): MonthlyReport {
+  // Ordering matters: the treasury migration decides by whether the ledger
+  // field is *absent*, so it has to see the record before the defaults below
+  // would hand it an empty one.
+  return { ...EMPTY_MONTHLY_REPORT_DEFAULTS, ...migrateLegacyTreasury(stored) };
+}
 
 export const DEFAULT_ROSTER: PraesidiumRoster = {
   praesidiumName: "",
@@ -207,9 +223,7 @@ export const storage = {
   getMonthlyReports(): MonthlyReport[] {
     const stored = readJson<MonthlyReport[]>(KEYS.monthlyReports, []);
     if (!Array.isArray(stored)) return [];
-    // Reports saved before a field existed would otherwise surface `undefined`
-    // deep inside the print view; MonthlyReport is too big to hand-check.
-    return stored.map((report) => ({ ...EMPTY_MONTHLY_REPORT_DEFAULTS, ...report }));
+    return stored.map(normalizeMonthlyReport);
   },
   setMonthlyReports(reports: MonthlyReport[]): void {
     writeJson(KEYS.monthlyReports, reports);
@@ -223,6 +237,15 @@ export const storage = {
   },
   setActivityItems(items: ActivityItem[]): void {
     writeJson(KEYS.activityItems, items);
+  },
+
+  getExpenseItems(): ExpenseItem[] {
+    const stored = readJson<ExpenseItem[]>(KEYS.expenseItems, []);
+    if (!Array.isArray(stored) || stored.length === 0) return createDefaultExpenseItems();
+    return stored;
+  },
+  setExpenseItems(items: ExpenseItem[]): void {
+    writeJson(KEYS.expenseItems, items);
   },
 
   /** Epoch ms of the last successful export; 0 means never backed up. */

@@ -2,6 +2,7 @@ import { dictionaries } from "@/i18n/dictionaries";
 import { buildActivityLines } from "./activityReport";
 import { PRAYER_ITEMS } from "./constants";
 import { storage } from "./storage";
+import { formatWon } from "./treasury";
 import {
   OFFICER_ROLES,
   WEEKDAY_LABEL_KEYS,
@@ -221,10 +222,10 @@ export function buildMonthlyReportRtf(report: MonthlyReport, language: Language)
 
   body.push(
     para(
-      `7. ${sr.treasurySection} :  ${sr.broughtForwardLabel} ${report.treasury.broughtForward.toLocaleString()}` +
-        `   ${sr.incomeLabel} ${report.treasury.income.toLocaleString()}` +
-        `   ${sr.expenseLabel} ${report.treasury.expense.toLocaleString()}` +
-        `   ${sr.balanceLabel} ${report.treasury.balance.toLocaleString()}`
+      `7. ${sr.treasurySection} :  ${sr.broughtForwardLabel} ${formatWon(report.treasury.broughtForward)}원` +
+        `   ${sr.incomeLabel} ${formatWon(report.treasury.income)}원` +
+        `   ${sr.expenseLabel} ${formatWon(report.treasury.expense)}원` +
+        `   ${sr.balanceLabel} ${formatWon(report.treasury.balance)}원`
     )
   );
   body.push(para(`   ${sr.expenseBreakdownLabel} : ${report.treasury.expenseBreakdown || ""}`));

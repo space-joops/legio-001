@@ -157,6 +157,38 @@ export interface ActivityEntry {
   note: string;
 }
 
+/**
+ * A name the treasurer can pick from when recording an expense. No stable key:
+ * expenses store the label itself, so this list is only a typing shortcut.
+ */
+export interface ExpenseItem {
+  id: string;
+  label: string;
+  order: number;
+  /** Kept out of the picker without disturbing months that already used it. */
+  hidden: boolean;
+}
+
+/** A single expense line recorded against one session. */
+export interface TreasuryExpense {
+  id: string;
+  /**
+   * The item name as it stood when it was recorded. Stored rather than
+   * referenced so renaming or hiding an entry in the catalogue can never
+   * change a month that has already been submitted.
+   */
+  label: string;
+  amount: number;
+}
+
+/** One session's page of the treasurer's ledger. */
+export interface TreasurySessionEntry {
+  sessionNumber: number;
+  /** 비밀헌금 reported at this session. */
+  offering: number;
+  expenses: TreasuryExpense[];
+}
+
 export interface MonthlyReport {
   id: string;
   yearMonth: string; // "2026-06"
@@ -181,12 +213,21 @@ export interface MonthlyReport {
   memberCountsDecrease: MemberCounts;
   agendaItems: AgendaItem[];
   treasury: {
+    /** Opening balance for the month. The only figure here that is typed in. */
     broughtForward: number;
+    /**
+     * income / expense / balance / expenseBreakdown are derived from
+     * treasuryLedger and stored alongside it, the same way prayerCounts is
+     * derived from prayerRoll. The print view, the RTF export and the share
+     * text read these, so they must be rewritten on every ledger edit.
+     */
     income: number;
     expense: number;
     balance: number;
     expenseBreakdown: string;
   };
+  /** Per-session ledger the four treasury figures are computed from. */
+  treasuryLedger: TreasurySessionEntry[];
   prayerCounts: PrayerCounts;
   /** Per-member activity records; totalled into the form's activity lines. */
   activityEntries: ActivityEntry[];
