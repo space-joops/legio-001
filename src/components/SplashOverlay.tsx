@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useDisplayPreferences } from "./DisplayPreferencesProvider";
-import { useToast } from "./ToastProvider";
 import { useTranslation } from "@/i18n/useTranslation";
 import { storage } from "@/lib/storage";
 import styles from "./SplashOverlay.module.css";
@@ -26,8 +24,6 @@ function isTypingTarget(el: Element | null): boolean {
 
 export function SplashOverlay() {
   const { t } = useTranslation();
-  const { setSplashEnabled } = useDisplayPreferences();
-  const { showToast } = useToast();
   const [phase, setPhase] = useState<Phase>("hidden");
   const ref = useRef<HTMLDialogElement>(null);
   const phaseRef = useRef<Phase>("hidden");
@@ -89,13 +85,9 @@ export function SplashOverlay() {
     if (!open && dialog.open) dialog.close();
   }, [phase]);
 
+  // No buttons by design: a tap anywhere (or Esc, or the 5s timer) closes it.
+  // Turning the splash off entirely lives in Settings > 시작 화면 성화.
   const dismiss = () => setPhase((current) => (current === "visible" ? "leaving" : current));
-
-  const handleDontShowAgain = () => {
-    setSplashEnabled(false);
-    dismiss();
-    showToast(t("splash.reEnableHint"));
-  };
 
   return (
     <dialog
@@ -110,34 +102,10 @@ export function SplashOverlay() {
     >
       {phase !== "hidden" && (
         <div className={styles.screen}>
-          <div className={styles.frame}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
-            <img className={styles.image} src="/splash.jpg" alt={t("splash.imageAlt")} />
-            <div className={styles.scrim} />
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.closeButton}
-                autoFocus
-                onClick={(e) => {
-                  e.stopPropagation();
-                  dismiss();
-                }}
-              >
-                {t("common.close")}
-              </button>
-              <button
-                type="button"
-                className={styles.dontShowButton}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDontShowAgain();
-                }}
-              >
-                {t("splash.dontShowAgain")}
-              </button>
-            </div>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
+          <img className={styles.backdrop} src="/splash.jpg" alt="" aria-hidden="true" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
+          <img className={styles.image} src="/splash.jpg" alt={t("splash.imageAlt")} />
         </div>
       )}
     </dialog>

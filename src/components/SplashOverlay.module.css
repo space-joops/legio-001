@@ -25,80 +25,40 @@
 }
 
 .screen {
+  position: relative;
   height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
-  padding-top: max(var(--space-4), env(safe-area-inset-top));
-  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-}
-
-/* Sized from the artwork's own 474x718 ratio so the frame hugs the picture with
-   no letterboxing — that's what lets the buttons sit ON the image. Width is the
-   driver: never wider than the screen or the source, and never so wide that the
-   derived height would overflow the viewport (minus the screen padding). */
-.frame {
-  position: relative;
-  width: min(100%, 474px, calc((100dvh - 5rem) * 474 / 718));
-  aspect-ratio: 474 / 718;
-  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(46, 32, 18, 0.35);
-  animation: riseIn 400ms ease-out both;
+  padding: var(--space-3);
+  padding-top: max(var(--space-3), env(safe-area-inset-top));
+  padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
 }
 
-.image {
-  display: block;
+/* The artwork itself, blown up and blurred, fills whatever the screen ratio is
+   — no cream margins, and nothing of the real artwork gets cropped. The scale
+   hides the blur's soft edges. */
+.backdrop {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: blur(24px) brightness(0.88);
+  transform: scale(1.12);
 }
 
-/* Darkens the lower part of the artwork so the white button text stays readable
-   no matter what the picture has there. */
-.scrim {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 45%;
-  background: linear-gradient(transparent, rgba(24, 14, 4, 0.78));
-  pointer-events: none;
-}
-
-.actions {
-  position: absolute;
-  inset: auto 0 0 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4);
-}
-
-.closeButton {
-  min-height: var(--min-tap-target);
-  min-width: min(100%, 16rem);
-  padding: 0 var(--space-5);
-  border: none;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.94);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.dontShowButton {
-  min-height: var(--min-tap-target);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-md);
-  background: rgba(24, 14, 4, 0.45);
-  color: #ffffff;
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  white-space: nowrap;
+/* Full artwork, uncropped, floating over its own blurred glow. An <img> with
+   both max constraints keeps its intrinsic 474:718 ratio on any screen. */
+.image {
+  position: relative;
+  max-width: min(100%, 474px);
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.5);
+  animation: riseIn 400ms ease-out both;
 }
 
 @keyframes fadeIn {
@@ -135,7 +95,7 @@
 @media (prefers-reduced-motion: reduce) {
   .dialog,
   .leaving,
-  .frame {
+  .image {
     animation: none;
   }
 }
