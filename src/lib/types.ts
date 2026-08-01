@@ -38,11 +38,13 @@ export type Language = "ko" | "en";
 
 export type FontScale = "small" | "medium" | "large" | "xlarge";
 export type FontFamily = "system" | "nanum";
+export type Theme = "classic" | "modern-dark" | "glassmorphism" | "monochrome";
 
 export interface Settings {
   language: Language;
   fontScale: FontScale;
   fontFamily: FontFamily;
+  theme: Theme;
   /** Show the Legion of Mary splash image on app open (at most once every few hours). */
   splashEnabled: boolean;
 }

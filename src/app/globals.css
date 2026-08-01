@@ -34,6 +34,71 @@
   --space-5: 32px;
 }
 
+/* Modern Dark Theme */
+html[data-theme="modern-dark"] {
+  --color-background: #121212;
+  --color-surface: #1e1e1e;
+  --color-surface-alt: #2c2c2c;
+  --color-text: #e0e0e0;
+  --color-text-muted: #a0a0a0;
+  --color-primary: #bb86fc;
+  --color-primary-strong: #9965f4;
+  --color-primary-contrast: #121212;
+  --color-accent-secondary: #03dac6;
+  --color-border: #333333;
+  --color-danger: #cf6679;
+  --color-danger-contrast: #000000;
+}
+
+/* Glassmorphism Theme */
+html[data-theme="glassmorphism"] {
+  --color-background: #f0f4f8; /* Soft blueish white */
+  --color-surface: rgba(255, 255, 255, 0.6);
+  --color-surface-alt: rgba(255, 255, 255, 0.8);
+  --color-text: #1f2937;
+  --color-text-muted: #4b5563;
+  --color-primary: #3b82f6;
+  --color-primary-strong: #2563eb;
+  --color-primary-contrast: #ffffff;
+  --color-accent-secondary: #10b981;
+  --color-border: rgba(255, 255, 255, 0.4);
+  --color-danger: #ef4444;
+  --color-danger-contrast: #ffffff;
+}
+
+html[data-theme="glassmorphism"] body {
+  background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+  background-attachment: fixed;
+}
+
+html[data-theme="glassmorphism"] header, 
+html[data-theme="glassmorphism"] nav, 
+html[data-theme="glassmorphism"] section,
+html[data-theme="glassmorphism"] .pageShell,
+html[data-theme="glassmorphism"] dialog,
+html[data-theme="glassmorphism"] form,
+html[data-theme="glassmorphism"] button,
+html[data-theme="glassmorphism"] input {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Monochrome Theme */
+html[data-theme="monochrome"] {
+  --color-background: #ffffff;
+  --color-surface: #f9f9f9;
+  --color-surface-alt: #f0f0f0;
+  --color-text: #000000;
+  --color-text-muted: #666666;
+  --color-primary: #000000;
+  --color-primary-strong: #333333;
+  --color-primary-contrast: #ffffff;
+  --color-accent-secondary: #666666;
+  --color-border: #000000;
+  --color-danger: #000000;
+  --color-danger-contrast: #ffffff;
+}
+
 * {
   box-sizing: border-box;
 }

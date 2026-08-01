@@ -11,6 +11,7 @@ import { PageShell } from "@/components/PageShell";
 import { ShareButton } from "@/components/ShareButton";
 import { SHOW_SPLASH_EVENT } from "@/components/SplashOverlay";
 import { SplashToggle } from "@/components/SplashToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
@@ -208,6 +209,11 @@ export default function SettingsPage() {
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.fontFamilyLabel")}</span>
         <FontFamilyToggle />
+      </section>
+
+      <section className={styles.section}>
+        <span className={styles.label}>{t("settings.themeLabel")}</span>
+        <ThemeToggle />
       </section>
 
       <section className={styles.section}>

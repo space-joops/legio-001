@@ -86,6 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "ko",
   fontScale: "medium",
   fontFamily: "system",
+  theme: "classic",
   splashEnabled: true,
 };
 const EMPTY_MEMBER_COUNTS_DEFAULT: MemberCounts = {
