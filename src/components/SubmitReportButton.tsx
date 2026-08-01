@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { ConfirmDialog } from "./ConfirmDialog";
-import styles from "./SubmitReportButton.module.css";
+import { Button } from "@/components/ui/button";
 
 export function SubmitReportButton({
   onConfirmSubmit,
@@ -15,9 +15,9 @@ export function SubmitReportButton({
 
   return (
     <>
-      <button type="button" className={styles.button} onClick={() => setOpen(true)}>
+      <Button size="lg" className="w-full mt-4 h-16 text-xl rounded-2xl" onClick={() => setOpen(true)}>
         {t("home.submit")}
-      </button>
+      </Button>
       <ConfirmDialog
         open={open}
         title={t("home.submitConfirmTitle")}

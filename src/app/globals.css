@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --color-background: #fafaf5;
   --color-surface: #efe8dc;
@@ -11,6 +15,28 @@
   --color-border: #4a3a2a;
   --color-danger: #a3342c;
   --color-danger-contrast: #ffffff;
+
+  /* shadcn/ui variables */
+  --background: 60 30% 98%;      /* #fafaf5 in HSL */
+  --foreground: 30 28% 23%;      /* #4a3a2a in HSL */
+  --card: 40 33% 90%;
+  --card-foreground: 30 28% 23%;
+  --popover: 60 30% 98%;
+  --popover-foreground: 30 28% 23%;
+  --primary: 207 25% 40%;        /* #4d6980 in HSL */
+  --primary-foreground: 60 30% 98%;
+  --secondary: 40 33% 90%;       /* #efe8dc in HSL */
+  --secondary-foreground: 30 28% 23%;
+  --muted: 40 33% 86%;           /* #e4dac4 in HSL */
+  --muted-foreground: 32 26% 29%;/* #5c4a36 in HSL */
+  --accent: 40 33% 90%;
+  --accent-foreground: 30 28% 23%;
+  --destructive: 4 58% 41%;      /* #a3342c in HSL */
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 28% 23%;
+  --input: 30 28% 23%;
+  --ring: 207 25% 40%;
+  --radius: 0.875rem;
 
   /* rem so they grow with the font-size setting below — at px the nav clipped
      its own icons and labels once a user picked a larger text size. */

@@ -2,6 +2,7 @@
 
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { useTranslation } from "@/i18n/useTranslation";
+import { Button } from "@/components/ui/button";
 import styles from "./InstallPromptButton.module.css";
 
 export function InstallPromptButton() {
@@ -22,8 +23,8 @@ export function InstallPromptButton() {
   }
 
   return (
-    <button type="button" className={styles.button} onClick={promptInstall}>
+    <Button variant="outline" className="w-full h-12 text-base rounded-xl mt-2" onClick={promptInstall}>
       {t("settings.install")}
-    </button>
+    </Button>
   );
 }
