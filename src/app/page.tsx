@@ -9,6 +9,7 @@ import { WeekSessionForm } from "@/components/WeekSessionForm";
 import { useCurrentReport } from "@/hooks/useCurrentReport";
 import { useHistory } from "@/hooks/useHistory";
 import { useTranslation } from "@/i18n/useTranslation";
+import { Textarea } from "@/components/ui/textarea";
 import {
   formatMeetingDateTime,
   formatSessionLabel,
@@ -139,9 +140,8 @@ export default function HomePage() {
           />
           <label className={styles.noteField}>
             <span className={styles.sectionTitle}>{t("home.activityNoteLabel")}</span>
-            <textarea
-              className={styles.noteInput}
-              rows={5}
+            <Textarea
+              className="mt-2 text-base min-h-[120px] rounded-xl"
               value={noteDraft}
               placeholder={t("home.activityNotePlaceholder")}
               onChange={(e) => setNoteDraft(e.target.value)}

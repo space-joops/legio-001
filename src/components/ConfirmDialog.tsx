@@ -1,7 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import styles from "./ConfirmDialog.module.css";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -32,44 +39,30 @@ export function ConfirmDialog({
   altLabel,
   onAlt,
 }: ConfirmDialogProps) {
-  const ref = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
-
   return (
-    <dialog
-      ref={ref}
-      className={styles.dialog}
-      onCancel={(e) => {
-        e.preventDefault();
-        onCancel();
-      }}
-    >
-      <h2 className={styles.title}>{title}</h2>
-      <p className={styles.body}>{body}</p>
-      {detail && <p className={styles.detail}>{detail}</p>}
-      {altLabel && onAlt && (
-        <button type="button" className={styles.altButton} onClick={onAlt}>
-          {altLabel}
-        </button>
-      )}
-      <div className={styles.actions}>
-        <button type="button" className={styles.cancelButton} onClick={onCancel}>
-          {cancelLabel}
-        </button>
-        <button
-          type="button"
-          className={`${styles.confirmButton} ${danger ? styles.danger : ""}`}
-          onClick={onConfirm}
-        >
-          {confirmLabel}
-        </button>
-      </div>
-    </dialog>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>
+            {body}
+          </DialogDescription>
+        </DialogHeader>
+        {detail && <p className="text-sm text-muted-foreground mt-2">{detail}</p>}
+        {altLabel && onAlt && (
+          <Button variant="outline" className="w-full mt-4" onClick={onAlt}>
+            {altLabel}
+          </Button>
+        )}
+        <DialogFooter className="mt-4 sm:justify-end gap-2">
+          <Button variant="secondary" onClick={onCancel}>
+            {cancelLabel}
+          </Button>
+          <Button variant={danger ? "destructive" : "default"} onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

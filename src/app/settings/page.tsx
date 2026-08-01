@@ -12,6 +12,8 @@ import { ShareButton } from "@/components/ShareButton";
 import { SHOW_SPLASH_EVENT } from "@/components/SplashOverlay";
 import { SplashToggle } from "@/components/SplashToggle";
 import { useToast } from "@/components/ToastProvider";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
@@ -154,9 +156,8 @@ export default function SettingsPage() {
       <section className={styles.section}>
         <label className={styles.field}>
           <span className={styles.label}>{t("settings.nameLabel")}</span>
-          <input
+          <Input
             type="text"
-            className={styles.input}
             value={profile.name}
             placeholder={t("settings.namePlaceholder")}
             onChange={(e) => handleProfileChange("name", e.target.value)}
@@ -164,9 +165,8 @@ export default function SettingsPage() {
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{t("settings.baptismalNameLabel")}</span>
-          <input
+          <Input
             type="text"
-            className={styles.input}
             value={profile.baptismalName}
             placeholder={t("settings.baptismalNamePlaceholder")}
             onChange={(e) => handleProfileChange("baptismalName", e.target.value)}
@@ -174,9 +174,8 @@ export default function SettingsPage() {
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{t("settings.praesidiumNameLabel")}</span>
-          <input
+          <Input
             type="text"
-            className={styles.input}
             value={profile.praesidiumName}
             placeholder={t("settings.praesidiumNamePlaceholder")}
             onChange={(e) => handleProfileChange("praesidiumName", e.target.value)}
@@ -184,9 +183,8 @@ export default function SettingsPage() {
         </label>
         <label className={styles.field}>
           <span className={styles.label}>{t("settings.parishNameLabel")}</span>
-          <input
+          <Input
             type="text"
-            className={styles.input}
             value={profile.parishName}
             placeholder={t("settings.parishNamePlaceholder")}
             onChange={(e) => handleProfileChange("parishName", e.target.value)}
@@ -214,13 +212,13 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.splashLabel")}</span>
         <p className={styles.description}>{t("settings.splashDescription")}</p>
         <SplashToggle />
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="secondary"
+          className="w-full mt-2"
           onClick={() => window.dispatchEvent(new Event(SHOW_SPLASH_EVENT))}
         >
           {t("settings.splashPreview")}
-        </button>
+        </Button>
       </section>
 
       <section className={styles.section}>
@@ -243,27 +241,27 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.exportData")}</span>
         <p className={styles.description}>{t("settings.exportDescription")}</p>
         {backupOverdue && <p className={styles.backupNotice}>{t("settings.backupOverdue")}</p>}
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="secondary"
+          className="w-full mt-2"
           onClick={() => {
             void handleExport();
           }}
         >
           {t("settings.exportData")}
-        </button>
+        </Button>
       </section>
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.importData")}</span>
         <p className={styles.description}>{t("settings.importDescription")}</p>
-        <button
-          type="button"
-          className={styles.secondaryButton}
+        <Button
+          variant="secondary"
+          className="w-full mt-2"
           onClick={() => fileInputRef.current?.click()}
         >
           {t("settings.importData")}
-        </button>
+        </Button>
         {importFile && <p className={styles.description}>{importFile.name}</p>}
         <input
           ref={fileInputRef}
@@ -321,9 +319,9 @@ export default function SettingsPage() {
           <h2 className={styles.advancedTitle}>{t("settings.resetData")}</h2>
         </summary>
         <p className={styles.description}>{t("settings.resetDescription")}</p>
-        <button type="button" className={styles.dangerButton} onClick={() => setResetOpen(true)}>
+        <Button variant="destructive" className="w-full mt-2" onClick={() => setResetOpen(true)}>
           {t("settings.resetData")}
-        </button>
+        </Button>
       </details>
 
       <div className={styles.versionText}>
