@@ -4,18 +4,13 @@
   gap: var(--space-2);
 }
 
+/* M3 segmented button. */
 .option {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
-  background: var(--color-surface);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--color-text);
+  composes: chip from "@/styles/m3.module.css";
+  flex: 1;
 }
 
 .active {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  composes: chipSelected from "@/styles/m3.module.css";
+  flex: 1;
 }

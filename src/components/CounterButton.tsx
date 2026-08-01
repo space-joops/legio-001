@@ -70,7 +70,11 @@ export function CounterButton({
             onClick={onIncrement}
             aria-label={`${label} ${t("counters.tapToRecord")}`}
           >
-            <span className={styles.count}>{count}</span>
+            {/* Announced on change: the tap has no other confirmation, so a
+                screen-reader user had no way to tell it had registered. */}
+            <span className={styles.count} aria-live="polite">
+              {count}
+            </span>
           </button>
           <div className={styles.controls}>
             <button

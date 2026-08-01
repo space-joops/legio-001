@@ -1,17 +1,17 @@
 .dialog {
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: var(--space-4);
   width: calc(100vw - 32px);
   max-width: 900px;
   max-height: calc(100dvh - 48px);
   background: var(--color-surface);
   color: var(--color-text);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--elevation-3);
 }
 
 .dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-scrim);
 }
 
 .title {
@@ -144,25 +144,17 @@
 .primaryButton,
 .secondaryButton,
 .dangerButton {
+  composes: buttonDanger from "@/styles/m3.module.css";
   flex: 1;
   min-width: 8rem;
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  padding: 0 var(--space-3);
 }
 
 .secondaryButton {
-  border: 2px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .primaryButton {
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  composes: buttonFilled from "@/styles/m3.module.css";
 }
 
 .primaryButton:disabled {
@@ -170,7 +162,5 @@
 }
 
 .dangerButton {
-  border: none;
-  background: var(--color-danger);
-  color: var(--color-danger-contrast);
+  composes: buttonDanger from "@/styles/m3.module.css";
 }

@@ -14,7 +14,7 @@
 }
 
 .dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-scrim);
 }
 
 .screen {
@@ -165,18 +165,12 @@
 .primaryButton,
 .secondaryButton,
 .removeButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  padding: 0 var(--space-3);
+  composes: buttonDanger from "@/styles/m3.module.css";
 }
 
 .addButton {
+  composes: buttonFilled from "@/styles/m3.module.css";
   align-self: flex-start;
-  border: 2px dashed var(--color-primary);
-  background: transparent;
-  color: var(--color-primary);
 }
 
 .actions {
@@ -191,24 +185,19 @@
 
 .primaryButton,
 .secondaryButton {
+  composes: buttonOutlined from "@/styles/m3.module.css";
   flex: 1;
 }
 
 .secondaryButton {
-  border: 2px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .primaryButton {
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  composes: buttonFilled from "@/styles/m3.module.css";
 }
 
 .removeButton {
-  border: 2px solid var(--color-danger);
-  background: transparent;
-  color: var(--color-danger);
+  composes: buttonDanger from "@/styles/m3.module.css";
   white-space: nowrap;
 }

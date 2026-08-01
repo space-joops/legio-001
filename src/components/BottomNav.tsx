@@ -15,7 +15,9 @@ import styles from "./BottomNav.module.css";
 
 export function BottomNav() {
   const { t } = useTranslation();
-  const pathname = usePathname();
+  // trailingSlash is on, so every route arrives as "/secretary/" — the exact
+  // comparison below never matched and the secretary home showed no active tab.
+  const pathname = usePathname().replace(/(.)\/$/, "$1");
   const isSecretary = pathname.startsWith("/secretary");
 
   const defaultItems = [
@@ -71,7 +73,9 @@ export function BottomNav() {
           }`}
           aria-current={isActive ? "page" : undefined}
         >
-          <Icon className={styles.icon} />
+          <span className={styles.iconWrap}>
+            <Icon className={styles.icon} />
+          </span>
           <span>{label}</span>
         </Link>
       ))}
@@ -82,7 +86,9 @@ export function BottomNav() {
           className={`${styles.item} ${styles.secretaryOnly} ${isActive ? styles.itemActive : ""}`}
           aria-current={isActive ? "page" : undefined}
         >
-          <Icon className={styles.icon} />
+          <span className={styles.iconWrap}>
+            <Icon className={styles.icon} />
+          </span>
           <span>{label}</span>
         </Link>
       ))}

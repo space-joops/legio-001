@@ -1,12 +1,30 @@
-/* Warm amber tone marks the secretary-only section. The primary is darker than
-   the obvious #d97706 so white button text clears WCAG AA, and --color-border is
-   deliberately left to inherit the global dark brown: the pale amber it used to
-   be sat at 1.4:1 on white, which made the attendance table's gridlines vanish. */
+/* The secretary-only section shifts to the M3 tertiary family so it still reads
+   as a different place, without leaving the palette.
+
+   --m3-outline is deliberately NOT re-tinted: the monthly report draws real
+   gridlines with it, and the pale amber this used to be sat at 1.4:1, which
+   made the attendance table's rules vanish. Keep any override here well above
+   3:1 against the surfaces below. */
 .themed {
-  --color-primary: #b45309;
-  --color-primary-strong: #8a3f07;
-  --color-primary-contrast: #ffffff;
-  --color-background: #fdf6ec;
-  --color-surface: #ffffff;
-  --color-surface-alt: #fbebd1;
+  --m3-primary: var(--m3-tertiary);
+  --m3-on-primary: var(--m3-on-tertiary);
+  --m3-secondary-container: var(--m3-tertiary-container);
+  --m3-on-secondary-container: var(--m3-on-tertiary-container);
+  --m3-surface: #fff8f8;
+  --m3-surface-container-low: #fdf1f4;
+  --m3-surface-container: #faeaef;
+  --m3-surface-container-high: #f7e4ea;
+  --m3-surface-container-highest: #f4dee5;
+
+  /* The mapped names have to be re-derived. A custom property whose value is a
+     var() is substituted where it is *declared*, so :root's --color-primary
+     already resolved against :root's --m3-primary and inherits down unchanged.
+     Properties inside the m3 recipes read --m3-* directly and do follow. */
+  --color-primary: var(--m3-primary);
+  --color-primary-strong: var(--m3-on-tertiary-container);
+  --color-primary-contrast: var(--m3-on-primary);
+  --color-background: var(--m3-surface);
+  --color-surface: var(--m3-surface-container-low);
+  --color-surface-alt: var(--m3-surface-container-high);
+  --color-accent-secondary: var(--m3-primary);
 }

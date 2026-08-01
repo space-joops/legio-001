@@ -1,16 +1,71 @@
+/*
+ * Material 3 token layer.
+ *
+ * The M3 role tokens are the source of truth; the app's original token names
+ * (--color-surface, --color-primary, …) are kept and mapped onto them. That
+ * mapping is what re-skins all 38 CSS modules at once — not one of them writes
+ * a colour literal, so they all follow from here.
+ *
+ * Deliberate deviations from the M3 spec, for a 50+ audience:
+ *   body text     19px, not M3's 16px
+ *   touch target  56px, not M3's 48dp
+ *   field labels  fixed above the field at 19px, not floating and shrinking
+ *   font weight   600–800, not M3's 400/500
+ * These are legibility floors, not style choices. See the PR body.
+ */
 :root {
-  --color-background: #fafaf5;
-  --color-surface: #efe8dc;
-  --color-surface-alt: #e4dac4;
-  --color-text: #4a3a2a;
-  --color-text-muted: #5c4a36;
-  --color-primary: #4d6980;
-  --color-primary-strong: #394f5c;
-  --color-primary-contrast: #fafaf5;
-  --color-accent-secondary: #8a4a12;
-  --color-border: #4a3a2a;
-  --color-danger: #a3342c;
-  --color-danger-contrast: #ffffff;
+  /* ── M3 baseline tonal palette (source #6750A4) ─────────────────────── */
+  --m3-primary: #6750a4;
+  --m3-on-primary: #ffffff;
+  --m3-primary-container: #eaddff;
+  --m3-on-primary-container: #21005d;
+  --m3-primary-fixed-dim: #4f378b;
+
+  --m3-secondary: #625b71;
+  --m3-on-secondary: #ffffff;
+  --m3-secondary-container: #e8def8;
+  --m3-on-secondary-container: #1d192b;
+
+  --m3-tertiary: #7d5260;
+  --m3-on-tertiary: #ffffff;
+  --m3-tertiary-container: #ffd8e4;
+  --m3-on-tertiary-container: #31111d;
+
+  --m3-error: #b3261e;
+  --m3-on-error: #ffffff;
+  --m3-error-container: #f9dedc;
+  --m3-on-error-container: #410e0b;
+
+  --m3-surface: #fef7ff;
+  --m3-surface-container-lowest: #ffffff;
+  --m3-surface-container-low: #f7f2fa;
+  --m3-surface-container: #f3edf7;
+  --m3-surface-container-high: #ece6f0;
+  --m3-surface-container-highest: #e6e0e9;
+  --m3-on-surface: #1d1b20;
+  --m3-on-surface-variant: #49454f;
+
+  /* Outline is the darker of the two: this app draws real gridlines with it
+     (the monthly report tables), where outline-variant vanishes. */
+  --m3-outline: #79747e;
+  --m3-outline-variant: #cac4d0;
+
+  --m3-inverse-surface: #322f35;
+  --m3-inverse-on-surface: #f5eff7;
+
+  /* ── The app's original names, mapped onto the roles above ──────────── */
+  --color-background: var(--m3-surface);
+  --color-surface: var(--m3-surface-container-low);
+  --color-surface-alt: var(--m3-surface-container-high);
+  --color-text: var(--m3-on-surface);
+  --color-text-muted: var(--m3-on-surface-variant);
+  --color-primary: var(--m3-primary);
+  --color-primary-strong: var(--m3-primary-fixed-dim);
+  --color-primary-contrast: var(--m3-on-primary);
+  --color-accent-secondary: var(--m3-tertiary);
+  --color-border: var(--m3-outline);
+  --color-danger: var(--m3-error);
+  --color-danger-contrast: var(--m3-on-error);
 
   /* rem so they grow with the font-size setting below — at px the nav clipped
      its own icons and labels once a user picked a larger text size. */
@@ -24,14 +79,40 @@
   --font-size-xl: 1.875rem;
   --font-size-sm: 1rem;
 
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  /* ── M3 shape scale ─────────────────────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
 
   --space-1: 8px;
   --space-2: 12px;
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 32px;
+
+  /* ── M3 elevation ───────────────────────────────────────────────────── */
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --elevation-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --elevation-3: 0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --elevation-4: 0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px rgba(0, 0, 0, 0.3);
+  --elevation-5: 0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px rgba(0, 0, 0, 0.3);
+  --color-scrim: rgba(0, 0, 0, 0.32);
+
+  /* ── M3 motion ──────────────────────────────────────────────────────── */
+  --motion-short: 100ms;
+  --motion-medium: 200ms;
+  --motion-long: 400ms;
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --easing-decelerate: cubic-bezier(0, 0, 0, 1);
+
+  /* ── M3 state layer opacities ───────────────────────────────────────── */
+  --state-hover: 0.08;
+  --state-focus: 0.1;
+  --state-pressed: 0.1;
 }
 
 * {
@@ -66,8 +147,11 @@ body {
   padding: 0;
   color: var(--color-text);
   background: var(--color-background);
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR",
-    "Malgun Gothic", Roboto, Helvetica, Arial, sans-serif;
+  /* Roboto first for Latin; Korean falls through to Noto Sans KR, which is the
+     system face on Android anyway — so M3's Korean typography needs no webfont
+     and adds nothing to the install. */
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR",
+    "Malgun Gothic", Helvetica, Arial, sans-serif;
   font-size: var(--font-size-base);
   font-weight: 500;
   line-height: 1.5;
@@ -107,14 +191,29 @@ button {
 
 button:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: 0.38;
 }
 
-/* Keyboard focus needs to be obvious against the cream/beige surfaces — the
-   browser default ring is far too faint on this palette. */
+/* Two rings: the inner one keeps the indicator visible when focus lands on a
+   filled button, where a single primary-coloured ring is the same colour as
+   the fill it sits on. */
 :focus-visible {
-  outline: 3px solid var(--color-primary);
+  outline: 3px solid var(--m3-on-surface);
   outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--m3-surface);
+}
+
+/* Everything below is new motion; without a global guard it would ignore the
+   OS setting (only the splash overlay had one before). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* A phone held sideways has very little height to spare, so the fixed chrome
@@ -137,8 +236,18 @@ button:disabled {
   }
 }
 
+/* Elevation is screen-only: a printed report must not carry grey smudges where
+   the shadows were. */
 @media print {
   [data-app-chrome] {
     display: none !important;
+  }
+
+  :root {
+    --elevation-1: none;
+    --elevation-2: none;
+    --elevation-3: none;
+    --elevation-4: none;
+    --elevation-5: none;
   }
 }

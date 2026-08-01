@@ -1,10 +1,6 @@
 .card {
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  composes: cardElevated from "@/styles/m3.module.css";
   padding: var(--space-3);
-  display: flex;
-  flex-direction: column;
   gap: var(--space-2);
 }
 
@@ -44,25 +40,34 @@
 }
 
 .tapArea {
+  composes: stateLayer from "@/styles/m3.module.css";
   width: 100%;
   min-height: 96px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  background: var(--m3-primary);
+  color: var(--m3-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .tapArea:active {
-  background: var(--color-primary-strong);
+  box-shadow: var(--elevation-2);
 }
 
+/* The count is the only confirmation a tap ever gets, so it moves: a brief
+   lift makes the change visible even to someone who wasn't looking straight
+   at the digits. */
 .count {
   font-size: 3rem;
   font-weight: 800;
   line-height: 1;
+  transition: transform var(--motion-medium) var(--easing-decelerate);
+}
+
+.tapArea:active .count {
+  transform: scale(1.12);
 }
 
 .controls {
@@ -73,26 +78,15 @@
 }
 
 .minusButton {
+  composes: buttonTonal from "@/styles/m3.module.css";
   min-width: var(--min-tap-target);
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 3px solid var(--color-accent-secondary);
-  background: var(--color-surface-alt);
-  color: var(--color-accent-secondary);
+  padding: 0;
   font-size: 1.75rem;
-  font-weight: 700;
   line-height: 1;
 }
 
 .linkButton {
-  min-height: var(--min-tap-target);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  border: 3px solid var(--color-accent-secondary);
-  background: transparent;
-  color: var(--color-accent-secondary);
-  font-weight: 700;
-  font-size: var(--font-size-base);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .numericRow {
@@ -101,26 +95,14 @@
 }
 
 .numberInput {
+  composes: fieldOutlined from "@/styles/m3.module.css";
   flex: 1;
-  min-width: 0;
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-primary);
-  background: var(--color-surface);
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
-  padding: 0 var(--space-2);
 }
 
 .applyButton {
+  composes: buttonFilled from "@/styles/m3.module.css";
   min-width: var(--min-tap-target);
-  min-height: var(--min-tap-target);
-  padding: 0 var(--space-3);
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
-  font-weight: 700;
-  font-size: var(--font-size-base);
 }

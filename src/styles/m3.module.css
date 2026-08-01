@@ -1,0 +1,191 @@
+/*
+ * Shared Material 3 component recipes.
+ *
+ * Before this, the same button was re-declared ~45 times across 24 files, with
+ * outline widths drifting between 1px, 2px and 3px for the same semantic role.
+ * Modules pull these in with `composes: buttonFilled from "@/styles/m3.module.css";`
+ * and add only what is genuinely local (width, grid placement, …).
+ *
+ * Sizes stay on the app's tokens, not M3's: --min-tap-target is 56px and
+ * --font-size-base is 19px, both above spec, deliberately.
+ */
+
+/* ── State layer ──────────────────────────────────────────────────────────
+   M3 signals a press by overlaying the content colour at 10%. This app had
+   exactly one :active rule in it before, so a tap left no trace at all — the
+   number changed and nothing else did. currentColor makes one rule work on
+   filled, tonal and outlined buttons alike. */
+.stateLayer {
+  position: relative;
+  isolation: isolate;
+  transition: box-shadow var(--motion-medium) var(--easing-standard);
+}
+
+.stateLayer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-short) var(--easing-standard);
+}
+
+/* Hover first, press second: with a mouse both apply at once, and the press
+   has to be the one that shows. */
+@media (hover: hover) {
+  .stateLayer:hover::after {
+    opacity: var(--state-hover);
+  }
+}
+
+.stateLayer:active::after {
+  opacity: var(--state-pressed);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.buttonBase {
+  composes: stateLayer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-align: center;
+}
+
+.buttonFilled {
+  composes: buttonBase;
+  border: none;
+  background: var(--m3-primary);
+  color: var(--m3-on-primary);
+}
+
+.buttonFilled:active {
+  box-shadow: var(--elevation-1);
+}
+
+/* Tonal: the M3 answer to "important, but not the one true action". */
+.buttonTonal {
+  composes: buttonBase;
+  border: none;
+  background: var(--m3-secondary-container);
+  color: var(--m3-on-secondary-container);
+}
+
+.buttonOutlined {
+  composes: buttonBase;
+  border: 1px solid var(--m3-outline);
+  background: transparent;
+  color: var(--m3-primary);
+}
+
+.buttonText {
+  composes: buttonBase;
+  padding: 0 var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--m3-primary);
+}
+
+.buttonDanger {
+  composes: buttonBase;
+  border: 1px solid var(--m3-error);
+  background: transparent;
+  color: var(--m3-error);
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────── */
+.cardBase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+/* Filled is M3's default card and the closest match to how this app already
+   groups things — a tinted block, no outline. */
+.cardFilled {
+  composes: cardBase;
+  background: var(--m3-surface-container-highest);
+  border: none;
+}
+
+.cardElevated {
+  composes: cardBase;
+  background: var(--m3-surface-container-low);
+  border: none;
+  box-shadow: var(--elevation-1);
+}
+
+.cardOutlined {
+  composes: cardBase;
+  background: var(--m3-surface);
+  border: 1px solid var(--m3-outline-variant);
+}
+
+/* ── Chips (the session tabs) ─────────────────────────────────────────── */
+.chip {
+  composes: stateLayer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: var(--min-tap-target);
+  min-width: var(--min-tap-target);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--m3-outline);
+  background: transparent;
+  color: var(--m3-on-surface-variant);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+/* M3 fills a selected chip with secondary-container, which on this palette is
+   ~1.1:1 against the card it sits on — the selected option all but disappears.
+   Filling with primary keeps "which one is on?" answerable at a glance, and the
+   heavier weight carries it in greyscale too. */
+.chipSelected {
+  composes: chip;
+  border-color: transparent;
+  background: var(--m3-primary);
+  color: var(--m3-on-primary);
+  font-weight: 800;
+}
+
+/* ── Text fields ──────────────────────────────────────────────────────────
+   M3 outlined field, minus the floating label. The label stays above the field
+   at full size; M3 shrinks it to 12px once the field has content, which is the
+   single worst thing this design system could do to this app's readers. */
+.fieldOutlined {
+  min-height: var(--min-tap-target);
+  min-width: 0;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--m3-outline);
+  background: var(--m3-surface-container-lowest);
+  color: var(--m3-on-surface);
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-base);
+  transition: border-color var(--motion-short) var(--easing-standard);
+}
+
+.fieldOutlined:focus {
+  border-color: var(--m3-primary);
+  border-width: 2px;
+  /* Compensate so the text doesn't shift by a pixel when the border thickens. */
+  padding: 0 calc(var(--space-3) - 1px);
+  outline: none;
+}
+
+.fieldLabel {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--m3-on-surface-variant);
+}

@@ -1,16 +1,16 @@
 .dialog {
   border: none;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: var(--space-4);
   max-width: 420px;
   width: calc(100vw - 48px);
   background: var(--color-surface);
   color: var(--color-text);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--elevation-3);
 }
 
 .dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-scrim);
 }
 
 .title {
@@ -36,16 +36,9 @@
 }
 
 .altButton {
-  display: block;
+  composes: buttonOutlined from "@/styles/m3.module.css";
   width: 100%;
-  min-height: var(--min-tap-target);
   margin-bottom: var(--space-2);
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-primary);
-  font-size: var(--font-size-base);
-  font-weight: 700;
 }
 
 .actions {
@@ -55,23 +48,16 @@
 
 .cancelButton,
 .confirmButton {
+  composes: buttonFilled from "@/styles/m3.module.css";
   flex: 1;
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: 700;
 }
 
 .cancelButton {
-  border: 2px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .confirmButton {
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  composes: buttonFilled from "@/styles/m3.module.css";
 }
 
 .confirmButton.danger {

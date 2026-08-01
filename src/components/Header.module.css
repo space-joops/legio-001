@@ -1,11 +1,20 @@
+/* M3 top app bar. It sits on the plain surface until content scrolls beneath
+   it, then tints and lifts — that swap is what separates it from the page now
+   that the 2px outline is gone. */
 .header {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--color-background);
-  border-bottom: 2px solid var(--color-border);
+  background: var(--m3-surface);
   /* Horizontal padding lives on .inner so its box matches <main>'s exactly. */
   padding: var(--space-3) 0;
+  transition: background-color var(--motion-medium) var(--easing-standard),
+    box-shadow var(--motion-medium) var(--easing-standard);
+}
+
+.scrolled {
+  background: var(--m3-surface-container);
+  box-shadow: var(--elevation-2);
 }
 
 .inner {

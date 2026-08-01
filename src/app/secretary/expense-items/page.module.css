@@ -10,25 +10,11 @@
 }
 
 .secondaryButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-primary);
-  background: transparent;
-  color: var(--color-primary);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  padding: 0 var(--space-3);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .primaryButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  padding: 0 var(--space-3);
+  composes: buttonFilled from "@/styles/m3.module.css";
 }
 
 .hint {
@@ -42,12 +28,9 @@
 }
 
 .section {
-  display: flex;
+  composes: cardFilled from "@/styles/m3.module.css";
   flex-direction: column;
   gap: var(--space-3);
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
 
@@ -62,14 +45,10 @@
 }
 
 .input {
+  composes: fieldOutlined from "@/styles/m3.module.css";
   min-height: var(--min-tap-target);
   min-width: 0;
   flex: 1;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
-  background: var(--color-background);
-  color: var(--color-text);
-  padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-base);
 }
 
@@ -102,11 +81,6 @@
 }
 
 .moveButton {
-  min-height: var(--min-tap-target);
+  composes: buttonOutlined from "@/styles/m3.module.css";
   min-width: var(--min-tap-target);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text);
-  font-size: var(--font-size-base);
 }

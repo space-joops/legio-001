@@ -1,11 +1,5 @@
 .editButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-lg);
-  border: 2px solid var(--color-border);
-  background: var(--color-surface-alt);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  composes: buttonTonal from "@/styles/m3.module.css";
 }
 
 .editActions {
@@ -15,45 +9,23 @@
 
 .cancelButton,
 .saveButton {
+  composes: buttonFilled from "@/styles/m3.module.css";
   flex: 1;
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-base);
-  font-weight: 700;
 }
 
 .cancelButton {
-  border: 2px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .saveButton {
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  composes: buttonFilled from "@/styles/m3.module.css";
 }
 
 .backLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-lg);
-  border: 2px solid var(--color-border);
-  background: transparent;
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  composes: buttonTonal from "@/styles/m3.module.css";
 }
 
 /* Outlined rather than filled: destructive, but must not compete with Share. */
 .deleteButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-lg);
-  border: 2px solid var(--color-danger);
-  background: transparent;
-  color: var(--color-danger);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  composes: buttonDanger from "@/styles/m3.module.css";
 }

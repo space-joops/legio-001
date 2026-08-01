@@ -18,8 +18,8 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
           alignItems: "center",
           justifyContent: "center",
           padding: "1.5rem",
-          background: "#fafaf5",
-          color: "#4a3a2a",
+          background: "#fef7ff",
+          color: "#1d1b20",
           fontFamily:
             '-apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif',
         }}
@@ -44,7 +44,7 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
               padding: "0 2rem",
               border: "none",
               borderRadius: "0.875rem",
-              background: "#4d6980",
+              background: "#6750a4",
               color: "#ffffff",
               fontSize: "1.1875rem",
               fontWeight: 800,

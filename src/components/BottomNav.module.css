@@ -1,3 +1,5 @@
+/* M3 navigation bar: surface-container tint instead of an outline, and the
+   active tab carries a pill indicator behind its icon. */
 .nav {
   position: fixed;
   left: 0;
@@ -7,8 +9,7 @@
      added on top of the nav height rather than eating into it. */
   min-height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
   display: flex;
-  background: var(--color-surface);
-  border-top: 2px solid var(--color-border);
+  background: var(--m3-surface-container);
   z-index: 20;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -22,7 +23,7 @@
   gap: 2px;
   min-height: var(--min-tap-target);
   padding: var(--space-1) 4px;
-  color: var(--color-text);
+  color: var(--m3-on-surface-variant);
   font-size: var(--font-size-sm);
   font-weight: 600;
   text-align: center;
@@ -33,12 +34,30 @@
 }
 
 /* Active state must survive grayscale — the active and inactive text colours
-   differ by less than 2:1, so shape and weight carry the signal too. */
+   differ by less than 2:1, so the pill and the heavier weight carry the signal
+   too. Do not reduce this to colour alone. */
 .itemActive {
-  color: var(--color-primary);
+  color: var(--m3-on-surface);
   font-weight: 800;
-  background: var(--color-surface-alt);
-  box-shadow: inset 0 3px 0 var(--color-primary);
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 2rem;
+  border-radius: var(--radius-full);
+  transition: background-color var(--motion-medium) var(--easing-standard);
+}
+
+/* M3 puts secondary-container here, but on this palette that lands within
+   ~1.1:1 of the bar itself — invisible in greyscale, which this nav has a
+   standing requirement not to be. The filled indicator is the deviation that
+   keeps the active tab findable. */
+.itemActive .iconWrap {
+  background: var(--m3-primary);
+  color: var(--m3-on-primary);
 }
 
 .icon {
@@ -54,6 +73,17 @@
     flex-direction: row;
     gap: var(--space-1);
     padding: 4px var(--space-1);
+  }
+
+  /* The pill would eat the width the label needs when they sit side by side. */
+  .iconWrap {
+    width: auto;
+    height: auto;
+    background: none;
+  }
+
+  .itemActive .iconWrap {
+    background: none;
   }
 }
 

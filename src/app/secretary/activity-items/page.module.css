@@ -16,12 +16,9 @@
 }
 
 .section {
-  display: flex;
+  composes: cardFilled from "@/styles/m3.module.css";
   flex-direction: column;
   gap: var(--space-3);
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
 
@@ -90,12 +87,9 @@
 
 .input,
 .textarea {
+  composes: fieldOutlined from "@/styles/m3.module.css";
   min-height: var(--min-tap-target);
   min-width: 0;
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
-  background: var(--color-background);
-  padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-base);
 }
 
@@ -134,35 +128,16 @@
 }
 
 .removeButton {
+  composes: buttonDanger from "@/styles/m3.module.css";
   align-self: flex-end;
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-danger);
-  background: transparent;
-  color: var(--color-danger);
-  font-size: var(--font-size-sm);
-  padding: 0 var(--space-3);
 }
 
 .primaryButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  composes: buttonFilled from "@/styles/m3.module.css";
 }
 
 .secondaryButton {
-  min-height: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-primary);
-  background: transparent;
-  color: var(--color-primary);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  padding: 0 var(--space-3);
+  composes: buttonOutlined from "@/styles/m3.module.css";
 }
 
 .attendanceSummary {
@@ -177,23 +152,13 @@
   padding-bottom: var(--space-1);
 }
 
+/* M3 filter chip. */
 .sessionTab {
-  flex-shrink: 0;
-  min-height: var(--min-tap-target);
-  min-width: var(--min-tap-target);
-  border-radius: var(--radius-md);
-  border: 2px solid var(--color-border);
-  background: var(--color-background);
-  color: var(--color-text);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  padding: 0 var(--space-3);
+  composes: chip from "@/styles/m3.module.css";
 }
 
 .sessionTabActive {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
+  composes: chipSelected from "@/styles/m3.module.css";
 }
 
 .tableScroll {
