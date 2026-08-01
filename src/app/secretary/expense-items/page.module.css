@@ -1,0 +1,112 @@
+.topActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.topActions > a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.secondaryButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.primaryButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.autoSaveNotice {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.input {
+  min-height: var(--min-tap-target);
+  min-width: 0;
+  flex: 1;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-2);
+  font-size: var(--font-size-base);
+  text-align: left;
+}
+
+.checkbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  accent-color: var(--color-primary);
+}
+
+.orderCell {
+  white-space: nowrap;
+}
+
+.moveButton {
+  min-height: var(--min-tap-target);
+  min-width: var(--min-tap-target);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}

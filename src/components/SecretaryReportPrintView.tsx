@@ -2,6 +2,7 @@ import { buildActivityLines } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
 import { storage } from "@/lib/storage";
+import { formatWon } from "@/lib/treasury";
 import type {
   EvangelizationTallies,
   MemberCounts,
@@ -241,15 +242,15 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
             <tbody>
               <tr>
                 <th>{t("secretaryReport.broughtForwardLabel")}</th>
-                <td>{report.treasury.broughtForward.toLocaleString()}</td>
+                <td>{formatWon(report.treasury.broughtForward)}</td>
                 <th>{t("secretaryReport.incomeLabel")}</th>
-                <td>{report.treasury.income.toLocaleString()}</td>
+                <td>{formatWon(report.treasury.income)}</td>
               </tr>
               <tr>
                 <th>{t("secretaryReport.expenseLabel")}</th>
-                <td>{report.treasury.expense.toLocaleString()}</td>
+                <td>{formatWon(report.treasury.expense)}</td>
                 <th>{t("secretaryReport.balanceLabel")}</th>
-                <td>{report.treasury.balance.toLocaleString()}</td>
+                <td>{formatWon(report.treasury.balance)}</td>
               </tr>
               <tr>
                 <th>{t("secretaryReport.expenseBreakdownLabel")}</th>

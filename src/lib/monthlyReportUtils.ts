@@ -622,6 +622,9 @@ export function createMonthlyReport(
     },
     agendaItems: [],
     treasury: { broughtForward, income: 0, expense: 0, balance: broughtForward, expenseBreakdown: "" },
+    // Filled in lazily — computeTreasuryLedger() derives a row per session from
+    // the range, so an empty ledger already renders the right number of rows.
+    treasuryLedger: [],
     prayerCounts: computePrayerCountsFromRoll(prayerRoll),
     dioceseInstructions: "",
     parishInstructions: "",

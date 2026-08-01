@@ -253,6 +253,95 @@
   text-align: center;
 }
 
+/* min-height only takes on a link once it is not inline. */
+a.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Money reads right-aligned — the digits line up column-wise so a stray zero
+   is obvious. Kept narrow so all four columns fit a phone without the balance
+   sliding off the edge, which is the one figure the treasurer reads aloud. */
+.moneyInput {
+  min-height: var(--min-tap-target);
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  padding: 0 var(--space-1);
+  font-size: var(--font-size-base);
+  text-align: right;
+}
+
+.moneyCell {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Truncates instead of widening the column: the full list is one tap away. */
+.expenseButton {
+  min-height: var(--min-tap-target);
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treasuryTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.treasuryTable th:first-child,
+.treasuryTable td:first-child {
+  width: 3.2rem;
+}
+
+/* Every pixel of padding here comes out of a money column, and a clipped
+   amount is worse than a tight one. */
+.treasuryTable th,
+.treasuryTable td {
+  padding: var(--space-1) 2px;
+}
+
+.treasuryTable .moneyInput,
+.treasuryTable .expenseButton {
+  padding: 0 2px;
+}
+
+.expenseNamed {
+  display: none;
+}
+
+@media (min-width: 700px) {
+  .expenseNamed {
+    display: inline;
+  }
+
+  .expenseAmountOnly {
+    display: none;
+  }
+}
+
+/* The totals line is the number that actually gets filed. */
+.treasuryTable tfoot th,
+.treasuryTable tfoot td {
+  background: var(--color-surface-alt);
+  font-weight: 800;
+}
+
 .section > summary {
   cursor: pointer;
   list-style: none;

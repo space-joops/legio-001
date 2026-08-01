@@ -1,0 +1,126 @@
+.dialog {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  width: calc(100vw - 32px);
+  max-width: 640px;
+  max-height: calc(100dvh - 48px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+}
+
+.subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.empty {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
+.rows {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+/* Wraps on a phone rather than forcing a horizontal scroll inside a dialog. */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+}
+
+.select,
+.customLabel,
+.amount {
+  min-height: var(--min-tap-target);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  padding: 0 var(--space-2);
+}
+
+.select {
+  flex: 1 1 9rem;
+}
+
+.customLabel {
+  flex: 1 1 8rem;
+}
+
+/* Fixed rather than growing, so the delete button stays on the same line
+   instead of wrapping under a stretched amount field. */
+.amount {
+  flex: 0 1 8rem;
+  text-align: right;
+}
+
+.total {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-align: right;
+  margin-bottom: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.primaryButton,
+.secondaryButton,
+.removeButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  min-width: 7rem;
+}
+
+.secondaryButton {
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.primaryButton {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.removeButton {
+  border: 2px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
+}
