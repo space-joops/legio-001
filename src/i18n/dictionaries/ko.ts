@@ -140,8 +140,6 @@ export const ko = {
   },
   splash: {
     imageAlt: "레지오 마리애 성화 (레지오의 기)",
-    dontShowAgain: "다시 보지 않기",
-    reEnableHint: "설정에서 다시 켤 수 있습니다.",
   },
   schedule: {
     title: "일정",

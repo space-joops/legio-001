@@ -142,8 +142,6 @@ export const en = {
   },
   splash: {
     imageAlt: "Legion of Mary devotional image (the Vexillum)",
-    dontShowAgain: "Don't show again",
-    reEnableHint: "You can turn it back on in Settings.",
   },
   schedule: {
     title: "Schedule",
