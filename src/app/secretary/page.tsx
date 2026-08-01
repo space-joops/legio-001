@@ -57,6 +57,10 @@ export default function SecretaryPage() {
             {t("secretary.rosterLink")}
           </Link>
           <p className={styles.description}>{t("secretary.rosterLinkDescription")}</p>
+          <Link href="/secretary/activity-items" className={styles.secondaryButton}>
+            {t("secretaryActivityItems.link")}
+          </Link>
+          <p className={styles.description}>{t("secretaryActivityItems.linkDescription")}</p>
         </section>
 
         <section className={styles.section}>

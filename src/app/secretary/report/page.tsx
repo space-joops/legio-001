@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { ActivityEntryDialog } from "@/components/ActivityEntryDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { PrayerSubmissionImportDialog } from "@/components/PrayerSubmissionImportDialog";
@@ -12,6 +13,7 @@ import { useToast } from "@/components/ToastProvider";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
+import { buildActivityLines, personActivityCount } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { shareOrDownloadFile } from "@/lib/exportData";
 import { generateId } from "@/lib/id";
@@ -24,6 +26,7 @@ import {
   applySubmissionsToPrayerRoll,
   computeAttendanceSummary,
   computeMassCommunion,
+  computeSundayMassBasis,
   computePrayerCountsFromRoll,
   findPersonInReport,
   formatMonthlyShareText,
@@ -38,10 +41,12 @@ import {
 import { selectOnFocus } from "@/lib/selectOnFocus";
 import { storage } from "@/lib/storage";
 import type {
+  ActivityEntry,
   AgendaItem,
   EvangelizationTallies,
   MemberCounts,
   MonthlyReport,
+  PrayerCounts,
   PrayerItemKey,
 } from "@/lib/types";
 import styles from "./page.module.css";
@@ -68,6 +73,11 @@ const MEMBER_COUNT_BUCKETS = [
   { key: "memberCountsIncrease", labelKey: "secretaryReport.increaseLabel" },
   { key: "memberCountsDecrease", labelKey: "secretaryReport.decreaseLabel" },
 ] as const satisfies readonly { key: keyof MonthlyReport; labelKey: string }[];
+
+/** "5/29" — enough for the secretary to recognise the window at a glance. */
+function formatDay(date: Date): string {
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+}
 
 function toNumber(value: string): number {
   const n = Number.parseInt(value, 10);
@@ -109,10 +119,13 @@ function ReportPageContent() {
     searchParams.get("mode") === "preview" ? "preview" : "edit"
   );
   const report = reportsReady && id ? findById(id) : null;
-  const [activeAttendanceSession, setActiveAttendanceSession] = useState(
-    report?.sessionRangeStart ?? 0
-  );
-  const [activePrayerSession, setActivePrayerSession] = useState(report?.sessionRangeStart ?? 0);
+  // One tab drives the whole 활동보고 table; attendance and prayers used to
+  // scroll independently, which let the two halves of one row disagree.
+  const [activeSession, setActiveSession] = useState(report?.sessionRangeStart ?? 0);
+  const [activityTarget, setActivityTarget] = useState<string | null>(null);
+  // Read once per render from storage: the catalogue is edited on another
+  // screen and this page has no reason to re-render when it changes.
+  const activityItems = storage.getActivityItems();
   const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
   const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -124,10 +137,8 @@ function ReportPageContent() {
     if (start === undefined || end === undefined) return;
     const numbers = sessionRangeNumbers(start, end);
     if (numbers.length === 0) return;
-    /* eslint-disable react-hooks/set-state-in-effect -- clamps tab selection when the session range (external, storage-backed) shrinks past it */
-    setActiveAttendanceSession((prev) => (numbers.includes(prev) ? prev : numbers[0]));
-    setActivePrayerSession((prev) => (numbers.includes(prev) ? prev : numbers[0]));
-    /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- clamps tab selection when the session range (external, storage-backed) shrinks past it
+    setActiveSession((prev) => (numbers.includes(prev) ? prev : numbers[0]));
   }, [report?.sessionRangeStart, report?.sessionRangeEnd]);
 
   if (!reportsReady || !historyReady) return null;
@@ -227,7 +238,29 @@ function ReportPageContent() {
     if (outcome === "downloaded") showToast(t("secretaryReport.exportDocumentSaved"));
   };
 
-  const patchPrayerRollCell = (
+  const activityLines = buildActivityLines(report, activityItems, {
+    massCommunion: t("secretaryReport.massCommunionLabel"),
+    prayer: Object.fromEntries(PRAYER_ITEMS.map((i) => [i.key, t(i.labelKey)])),
+  });
+  const sundayBasis = computeSundayMassBasis(
+    report.yearMonth,
+    report.meetingWeekday,
+    report.prayerRoll.length
+  );
+
+  const prayerCountsFor = (personId: string, sessionNumber: number): Partial<PrayerCounts> =>
+    report.prayerRoll.find((e) => e.personId === personId)?.sessions[sessionNumber] ?? {};
+
+  /**
+   * Prayer numbers and attendance move together in one patch.
+   *
+   * Two separate patches would each capture `report` from this render, so the
+   * second would overwrite the first. It also implements the rule that
+   * reporting numbers means the member was at the meeting: any nonzero count
+   * marks them present, all-zero marks them absent. The checkbox stays live for
+   * the cases that don't follow the rule.
+   */
+  const patchActivityCell = (
     personId: string,
     sessionNumber: number,
     itemKey: PrayerItemKey,
@@ -244,7 +277,30 @@ function ReportPageContent() {
           }
         : entry
     );
-    patch({ prayerRoll, prayerCounts: computePrayerCountsFromRoll(prayerRoll) });
+    const updated = prayerRoll.find((e) => e.personId === personId)?.sessions[sessionNumber];
+    const reported = updated ? Object.values(updated).some((v) => (v ?? 0) > 0) : false;
+    const attendanceRoll = report.attendanceRoll.map((record) =>
+      record.personId === personId
+        ? { ...record, sessions: { ...record.sessions, [sessionNumber]: reported } }
+        : record
+    );
+    patch({
+      prayerRoll,
+      prayerCounts: computePrayerCountsFromRoll(prayerRoll),
+      attendanceRoll,
+      attendance: computeAttendanceSummary(attendanceRoll),
+    });
+  };
+
+  /** Replaces this person's entries for the session with what the dialog returns. */
+  const saveActivityEntries = (personId: string, entries: ActivityEntry[]) => {
+    const kept = (report.activityEntries ?? []).filter(
+      (e) => !(e.personId === personId && e.sessionNumber === activeSession)
+    );
+    patch({
+      activityEntries: [...kept, ...entries.map((e) => ({ ...e, personId }))],
+    });
+    setActivityTarget(null);
   };
 
   const patchTreasury = (
@@ -443,7 +499,7 @@ function ReportPageContent() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.attendanceSection")}</h2>
+        <h2 className={styles.sectionTitle}>{t("secretaryReport.activityReportSection")}</h2>
         <div className={styles.row}>
           <p className={styles.attendanceSummary}>
             {t("secretaryReport.officersPresentLabel")} {report.attendance.officersPresent}/
@@ -456,26 +512,29 @@ function ReportPageContent() {
         </div>
 
         <div className={styles.sectionHeaderRow}>
-          <h3 className={styles.sectionTitle}>{t("secretaryReport.attendanceGridSection")}</h3>
+          <h3 className={styles.sectionTitle}>{t("secretaryReport.activityReportGrid")}</h3>
           <div className={styles.topActions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={handleResyncNames}
-            >
+            <button type="button" className={styles.secondaryButton} onClick={handleResyncNames}>
               {t("secretaryReport.resyncNames")}
             </button>
             <button type="button" className={styles.secondaryButton} onClick={handleAddPerson}>
               {t("secretaryReport.addPerson")}
             </button>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => setImportOpen(true)}
+            >
+              {t("secretaryReport.importOpen")}
+            </button>
           </div>
         </div>
-        <p className={styles.hint}>{t("secretaryReport.attendanceDefaultHint")}</p>
+        <p className={styles.hint}>{t("secretaryReport.activityReportHint")}</p>
         <p className={styles.hint}>{t("secretaryReport.nameEditHint")}</p>
         <SessionTabBar
           sessions={sessionNumbers}
-          active={activeAttendanceSession}
-          onSelect={setActiveAttendanceSession}
+          active={activeSession}
+          onSelect={setActiveSession}
         />
         <div className={styles.tableScroll}>
           <table className={styles.sessionTable}>
@@ -483,42 +542,83 @@ function ReportPageContent() {
               <tr>
                 <th>{t("secretaryReport.personColumnLabel")}</th>
                 <th>{t("secretaryRoster.baptismalNameLabel")}</th>
+                {PRAYER_ITEMS.map((item) => (
+                  <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
+                ))}
+                <th>{t("secretaryReport.activityColumn")}</th>
                 <th>{t("secretaryReport.attendance")}</th>
               </tr>
             </thead>
             <tbody>
-              {report.attendanceRoll.map((record) => (
-                <tr key={record.personId}>
-                  <td>
-                    <input
-                      type="text"
-                      className={styles.attendanceNameInput}
-                      value={findPersonInReport(report, record.personId).name}
-                      aria-label={t("secretaryReport.personColumnLabel")}
-                      placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
-                      onChange={(e) => renamePerson(record.personId, "name", e.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="text"
-                      className={styles.attendanceNameInput}
-                      value={findPersonInReport(report, record.personId).baptismalName}
-                      aria-label={t("secretaryRoster.baptismalNameLabel")}
-                      onChange={(e) => renamePerson(record.personId, "baptismalName", e.target.value)}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      className={styles.attendanceCheckbox}
-                      checked={record.sessions[activeAttendanceSession] ?? true}
-                      onChange={() => toggleAttendance(record.personId, activeAttendanceSession)}
-                      aria-label={`${record.personLabel || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeAttendanceSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
-                    />
-                  </td>
-                </tr>
-              ))}
+              {report.attendanceRoll.map((record) => {
+                const person = findPersonInReport(report, record.personId);
+                const counts = prayerCountsFor(record.personId, activeSession);
+                const activityCount = personActivityCount(report, record.personId, activeSession);
+                return (
+                  <tr key={record.personId}>
+                    <td>
+                      <input
+                        type="text"
+                        className={styles.attendanceNameInput}
+                        value={person.name}
+                        aria-label={t("secretaryReport.personColumnLabel")}
+                        placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
+                        onChange={(e) => renamePerson(record.personId, "name", e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className={styles.attendanceNameInput}
+                        value={person.baptismalName}
+                        aria-label={t("secretaryRoster.baptismalNameLabel")}
+                        onChange={(e) =>
+                          renamePerson(record.personId, "baptismalName", e.target.value)
+                        }
+                      />
+                    </td>
+                    {PRAYER_ITEMS.map((item) => (
+                      <td key={item.key}>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          className={styles.prayerRollInput}
+                          value={counts[item.key] ?? 0}
+                          onFocus={selectOnFocus}
+                          aria-label={`${person.name} ${t(item.labelKey)}`}
+                          onChange={(e) =>
+                            patchActivityCell(
+                              record.personId,
+                              activeSession,
+                              item.key,
+                              e.target.value
+                            )
+                          }
+                        />
+                      </td>
+                    ))}
+                    <td>
+                      <button
+                        type="button"
+                        className={styles.activityButton}
+                        onClick={() => setActivityTarget(record.personId)}
+                        aria-label={`${person.name} ${t("secretaryReport.activityColumn")}`}
+                      >
+                        {activityCount > 0 ? activityCount : "+"}
+                      </button>
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className={styles.attendanceCheckbox}
+                        checked={record.sessions[activeSession] ?? true}
+                        onChange={() => toggleAttendance(record.personId, activeSession)}
+                        aria-label={`${person.name || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -774,68 +874,20 @@ function ReportPageContent() {
           </label>
         </div>
         <p className={styles.hint}>{t("secretaryReport.sundayMassHint")}</p>
+        {sundayBasis && (
+          <p className={styles.hint}>
+            {t("secretaryReport.sundayMassBasis")}: {formatDay(sundayBasis.from)} ~{" "}
+            {formatDay(sundayBasis.to)} · {t("secretaryReport.sundayCountLabel")}{" "}
+            {sundayBasis.sundayCount} × {sundayBasis.peopleCount}
+            {t("secretaryRoster.memberCountUnit")} = {sundayBasis.total}
+          </p>
+        )}
 
-        <div className={styles.sectionHeaderRow}>
-          <h3 className={styles.sectionTitle}>{t("secretaryReport.prayerRollSection")}</h3>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={() => setImportOpen(true)}
-          >
-            {t("secretaryReport.importOpen")}
-          </button>
-        </div>
-        <SessionTabBar
-          sessions={sessionNumbers}
-          active={activePrayerSession}
-          onSelect={setActivePrayerSession}
-        />
-        <div className={styles.tableScroll}>
-          <table className={styles.sessionTable}>
-            <thead>
-              <tr>
-                <th>{t("secretaryReport.personColumnLabel")}</th>
-                {PRAYER_ITEMS.map((item) => (
-                  <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {report.prayerRoll.map((entry) => (
-                <tr key={entry.personId}>
-                  <td>
-                    <input
-                      type="text"
-                      className={styles.attendanceNameInput}
-                      value={findPersonInReport(report, entry.personId).name}
-                      aria-label={t("secretaryReport.personColumnLabel")}
-                      placeholder={t("secretaryReport.attendanceRowNamePlaceholder")}
-                      onChange={(e) => renamePerson(entry.personId, "name", e.target.value)}
-                    />
-                  </td>
-                  {PRAYER_ITEMS.map((item) => (
-                    <td key={item.key}>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        className={styles.prayerRollInput}
-                        value={entry.sessions[activePrayerSession]?.[item.key] ?? 0}
-                        onFocus={selectOnFocus}
-                        onChange={(e) =>
-                          patchPrayerRollCell(entry.personId, activePrayerSession, item.key, e.target.value)
-                        }
-                      />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.instructionsSection")}</h2>
+        <h2 className={styles.sectionTitle}>{t("secretaryReport.activityDetailSection")}</h2>
+        <p className={styles.hint}>{t("secretaryReport.autoLineHint")}</p>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.dioceseInstructionsLabel")}</span>
           <textarea
@@ -845,6 +897,7 @@ function ReportPageContent() {
             onChange={(e) => patch({ dioceseInstructions: e.target.value })}
           />
         </label>
+        <output className={styles.autoLine}>{activityLines.diocese}</output>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.parishInstructionsLabel")}</span>
           <textarea
@@ -854,6 +907,7 @@ function ReportPageContent() {
             onChange={(e) => patch({ parishInstructions: e.target.value })}
           />
         </label>
+        <output className={styles.autoLine}>{activityLines.parish}</output>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.councilInstructionsLabel")}</span>
           <textarea
@@ -877,6 +931,7 @@ function ReportPageContent() {
             onChange={(e) => patch({ activitySummary: e.target.value })}
           />
         </label>
+        <output className={styles.autoLine}>{activityLines.praesidium}</output>
         <h3 className={styles.sectionTitle}>{t("secretaryReport.evangelizationSection")}</h3>
         {EVANGELIZATION_FIELDS.map(({ key, labelKey }) => (
           <div key={key} className={styles.memberCountRow}>
@@ -926,6 +981,18 @@ function ReportPageContent() {
           />
         </label>
       </section>
+
+      <ActivityEntryDialog
+        open={activityTarget !== null}
+        personLabel={activityTarget ? findPersonInReport(report, activityTarget).name : ""}
+        sessionNumber={activeSession}
+        items={activityItems}
+        entries={(report.activityEntries ?? []).filter(
+          (e) => e.personId === activityTarget && e.sessionNumber === activeSession
+        )}
+        onClose={() => setActivityTarget(null)}
+        onSave={(entries) => activityTarget && saveActivityEntries(activityTarget, entries)}
+      />
 
       <PrayerSubmissionImportDialog
         open={importOpen}

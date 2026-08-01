@@ -132,6 +132,31 @@ export interface EvangelizationTallies {
   praetorium: EvangelizationTally;
 }
 
+/** Which line of the official form an activity is tallied into. */
+export type ActivityLine = "praesidium" | "parish";
+
+export interface ActivityItem {
+  id: string;
+  /** Stable across renames — activity entries reference this. */
+  key: string;
+  label: string;
+  line: ActivityLine;
+  order: number;
+  /** Kept out of the picker but still counted in reports that already use it. */
+  hidden: boolean;
+}
+
+/** One activity a member recorded against a session. */
+export interface ActivityEntry {
+  id: string;
+  personId: string;
+  sessionNumber: number;
+  itemKey: string;
+  count: number;
+  /** For the secretary's own reference; never printed. */
+  note: string;
+}
+
 export interface MonthlyReport {
   id: string;
   yearMonth: string; // "2026-06"
@@ -163,6 +188,8 @@ export interface MonthlyReport {
     expenseBreakdown: string;
   };
   prayerCounts: PrayerCounts;
+  /** Per-member activity records; totalled into the form's activity lines. */
+  activityEntries: ActivityEntry[];
   /**
    * Sunday Masses attended across the whole praesidium this month. Seeded as
    * (people on the prayer roll x Sundays in the month) because members are

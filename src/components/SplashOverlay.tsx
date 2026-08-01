@@ -19,6 +19,13 @@ const FADE_OUT_MS = 600;
 
 type Phase = "hidden" | "visible" | "leaving";
 
+/**
+ * Lets Settings show the image on demand ("지금 보기"). The overlay has no
+ * props and mounts once in providers.tsx, so a global event is the smallest
+ * way in.
+ */
+export const SHOW_SPLASH_EVENT = "legio:show-splash";
+
 function isTypingTarget(el: Element | null): boolean {
   return (
     el instanceof HTMLInputElement ||
@@ -38,6 +45,8 @@ export function SplashOverlay() {
   const ref = useRef<HTMLDialogElement>(null);
   const phaseRef = useRef<Phase>("hidden");
   const hiddenAtRef = useRef<number | null>(null);
+  // When shown on request, wait for a tap instead of timing out.
+  const [pinned, setPinned] = useState(false);
 
   useEffect(() => {
     phaseRef.current = phase;
@@ -73,20 +82,28 @@ export function SplashOverlay() {
     // real navigation away and back, so no away-time check.
     const handlePageShow = () => maybeShow();
 
+    // Bypasses the settings/typing/dialog gates: the user just asked for it.
+    const handleShowRequest = () => {
+      setPinned(true);
+      setPhase("visible");
+    };
+
     maybeShow();
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener(SHOW_SPLASH_EVENT, handleShowRequest);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener(SHOW_SPLASH_EVENT, handleShowRequest);
     };
   }, []);
 
   useEffect(() => {
-    if (phase !== "visible") return;
+    if (phase !== "visible" || pinned) return;
     const timer = window.setTimeout(() => setPhase("leaving"), HOLD_MS);
     return () => window.clearTimeout(timer);
-  }, [phase]);
+  }, [phase, pinned]);
 
   useEffect(() => {
     if (phase !== "leaving") return;
@@ -104,7 +121,10 @@ export function SplashOverlay() {
 
   // No buttons by design: a tap anywhere (or Esc, or the 5s timer) closes it.
   // Turning the splash off entirely lives in Settings > 시작 화면 성화.
-  const dismiss = () => setPhase((current) => (current === "visible" ? "leaving" : current));
+  const dismiss = () => {
+    setPinned(false);
+    setPhase((current) => (current === "visible" ? "leaving" : current));
+  };
 
   return (
     <dialog

@@ -1,14 +1,11 @@
-import {
-  OFFICER_ROLES,
-  WEEKDAY_LABEL_KEYS,
-  computeMassCommunion,
-  formatYearMonthLabel,
-} from "@/lib/monthlyReportUtils";
+import { buildActivityLines } from "@/lib/activityReport";
+import { PRAYER_ITEMS } from "@/lib/constants";
+import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
+import { storage } from "@/lib/storage";
 import type {
   EvangelizationTallies,
   MemberCounts,
   MonthlyReport,
-  PrayerItemKey,
 } from "@/lib/types";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./SecretaryReportPrintView.module.css";
@@ -21,14 +18,6 @@ const MEMBER_COUNT_ROWS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "auxiliaryFemale", labelKey: "secretaryRoster.auxiliaryFemaleLabel" },
   { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
 ];
-
-/** 교구 지시사항 줄에 미사영성체 다음으로 오는 기도 4종 (공식 양식 순서). */
-const DIOCESE_PRAYER_KEYS = [
-  "priestPrayer",
-  "chainPrayer",
-  "rosaryDecades",
-  "aspirations",
-] as const satisfies readonly PrayerItemKey[];
 
 const EVANGELIZATION_ROWS: {
   key: keyof EvangelizationTallies;
@@ -71,15 +60,12 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
   const { t, language } = useTranslation();
   const president = report.roster.officers.find((officer) => officer.role === "president");
 
-  // 교구 지시사항 line: 미사영성체 is derived (weekday Mass + this month's Sundays).
-  const dioceseTally = [
-    `${t("secretaryReport.massCommunionLabel")}(${computeMassCommunion(report)})`,
-    ...DIOCESE_PRAYER_KEYS.map(
-      (key) => `${t(`counters.${key}`)}(${report.prayerCounts[key] ?? 0})`
-    ),
-  ].join(", ");
-
-  const parishTally = `${t("counters.weekdayMass")}(${report.prayerCounts.weekdayMass ?? 0})`;
+  // All three outputs (this view, the editor and the RTF) go through the same
+  // builder so the strings can't drift apart.
+  const lines = buildActivityLines(report, storage.getActivityItems(), {
+    massCommunion: t("secretaryReport.massCommunionLabel"),
+    prayer: Object.fromEntries(PRAYER_ITEMS.map((i) => [i.key, t(i.labelKey)])),
+  });
 
   const evangelizationLine = EVANGELIZATION_ROWS.map(({ key, labelKey }) => {
     const tally = report.evangelization?.[key];
@@ -280,17 +266,17 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
         <h2 className={styles.sectionTitle}>{t("secretaryReport.activityDetailSection")}</h2>
         <TextBlock
           label={t("secretaryReport.dioceseInstructionsLabel")}
-          value={joinLines(report.dioceseInstructions, dioceseTally)}
+          value={joinLines(report.dioceseInstructions, lines.diocese)}
         />
         <TextBlock
           label={t("secretaryReport.parishInstructionsLabel")}
-          value={joinLines(report.parishInstructions, parishTally)}
+          value={joinLines(report.parishInstructions, lines.parish)}
         />
         <TextBlock
           label={t("secretaryReport.councilInstructionsLabel")}
           value={report.councilInstructions}
         />
-        <TextBlock label={t("secretaryReport.activitySummary")} value={report.activitySummary} />
+        <TextBlock label={t("secretaryReport.activitySummary")} value={joinLines(lines.praesidium, report.activitySummary)} />
         <TextBlock
           label={t("secretaryReport.cumulativeEvangelizationLabel")}
           value={joinLines(evangelizationLine, report.cumulativeEvangelization)}

@@ -294,3 +294,36 @@
   font-size: var(--font-size-base);
   font-weight: 700;
 }
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-2);
+  font-size: var(--font-size-base);
+  text-align: left;
+}
+
+.checkbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  accent-color: var(--color-primary);
+}
+
+.orderCell {
+  white-space: nowrap;
+}
+
+.moveButton {
+  min-height: var(--min-tap-target);
+  min-width: var(--min-tap-target);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
