@@ -227,6 +227,14 @@
   accent-color: var(--color-primary);
 }
 
+/* Read-only now — names come from 명단 관리 rather than being typed per report. */
+.personCell {
+  text-align: left;
+  font-weight: 700;
+  white-space: nowrap;
+  padding-right: var(--space-2);
+}
+
 .attendanceNameInput {
   min-height: var(--min-tap-target);
   min-width: 120px;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { clearUnreportedAttendance } from "@/lib/monthlyReportUtils";
 import { storage } from "@/lib/storage";
 
 /**
@@ -10,8 +11,16 @@ import { storage } from "@/lib/storage";
  */
 export function StorageBootstrap() {
   useEffect(() => {
-    // Records which schema wrote this device's data. Nothing migrates today,
-    // but a future version can only branch on it if it was stamped all along.
+    // Reports written under schema 1 seeded every session as present, which
+    // contradicts the rule the edit screen states. Run once, before the stamp
+    // below moves the device to 2 — doing it on every read would undo the
+    // secretary's own ticks.
+    if (storage.getSchemaVersion() < 2) {
+      const reports = storage.getMonthlyReports();
+      if (reports.length > 0) storage.setMonthlyReports(reports.map(clearUnreportedAttendance));
+    }
+
+    // Records which schema wrote this device's data.
     storage.ensureSchemaVersion();
 
     // Safari evicts localStorage for sites left unused for ~7 days. Asking for

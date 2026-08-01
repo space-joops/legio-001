@@ -10,7 +10,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import {
   createActivityItem,
   createDefaultActivityItems,
-  sortActivityItems,
+  sortActivityItemsByName,
 } from "@/lib/activityItems";
 import { storage } from "@/lib/storage";
 import type { ActivityItem, ActivityLine } from "@/lib/types";
@@ -32,17 +32,18 @@ export default function ActivityItemsPage() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
-    if (ready) setItems(sortActivityItems(storage.getActivityItems()));
+    if (ready) setItems(sortActivityItemsByName(storage.getActivityItems()));
   }, [ready]);
 
   if (!ready) {
     return <PageShell title={t("secretaryActivityItems.title")} wide>{null}</PageShell>;
   }
 
+  /** Shown 가나다순; each item keeps its own `order`, which is what the
+      report's activity lines print in. */
   const persist = (next: ActivityItem[]) => {
-    const sorted = sortActivityItems(next);
-    setItems(sorted);
-    storage.setActivityItems(sorted);
+    setItems(sortActivityItemsByName(next));
+    storage.setActivityItems(next);
   };
 
   const patchItem = (id: string, patch: Partial<ActivityItem>) => {
@@ -54,16 +55,6 @@ export default function ActivityItemsPage() {
     if (!label) return;
     persist([...items, createActivityItem(label, draftLine, items.length)]);
     setDraftLabel("");
-  };
-
-  const move = (id: string, delta: number) => {
-    const ordered = sortActivityItems(items);
-    const index = ordered.findIndex((item) => item.id === id);
-    const target = index + delta;
-    if (index < 0 || target < 0 || target >= ordered.length) return;
-    const [moved] = ordered.splice(index, 1);
-    ordered.splice(target, 0, moved);
-    persist(ordered.map((item, i) => ({ ...item, order: i })));
   };
 
   return (
@@ -117,7 +108,6 @@ export default function ActivityItemsPage() {
                 <th>{t("secretaryActivityItems.labelColumn")}</th>
                 <th>{t("secretaryActivityItems.lineColumn")}</th>
                 <th>{t("secretaryActivityItems.visibleColumn")}</th>
-                <th>{t("secretaryActivityItems.orderColumn")}</th>
               </tr>
             </thead>
             <tbody>
@@ -158,24 +148,6 @@ export default function ActivityItemsPage() {
                       aria-label={`${item.label} ${t("secretaryActivityItems.visibleColumn")}`}
                       onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
                     />
-                  </td>
-                  <td className={styles.orderCell}>
-                    <button
-                      type="button"
-                      className={styles.moveButton}
-                      aria-label={`${item.label} ${t("secretaryActivityItems.moveUp")}`}
-                      onClick={() => move(item.id, -1)}
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.moveButton}
-                      aria-label={`${item.label} ${t("secretaryActivityItems.moveDown")}`}
-                      onClick={() => move(item.id, 1)}
-                    >
-                      ↓
-                    </button>
                   </td>
                 </tr>
               ))}

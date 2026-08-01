@@ -124,8 +124,6 @@ export const ko = {
     importFutureVersion: "더 새로운 버전에서 만든 파일입니다. 앱을 먼저 업데이트해 주세요.",
     installUnavailable:
       "이 브라우저에서는 설치 안내가 나타나지 않습니다. 브라우저 메뉴의 '홈 화면에 추가'를 이용해 주세요.",
-    appVersionLabel: "버전",
-    buildTimeLabel: "빌드",
     splashPreview: "지금 보기",
   },
   common: {
@@ -253,9 +251,6 @@ export const ko = {
     labelColumn: "항목 이름",
     lineColumn: "들어갈 줄",
     visibleColumn: "사용",
-    orderColumn: "순서",
-    moveUp: "위로",
-    moveDown: "아래로",
     linePraesidium: "Pr.활동사항",
     lineParish: "본당 지시사항",
     hiddenHint:
@@ -306,12 +301,8 @@ export const ko = {
     membersPresentLabel: "단원 출석",
     attendanceGridSection: "출석부 (회차별)",
     attendanceRowNamePlaceholder: "이름",
-    attendanceDefaultHint: "처음에는 전원 출석으로 표시됩니다. 결석한 분만 체크를 해제해 주세요.",
     nameEditHint:
-      "이름을 고치면 출석부·기도 집계표·간부 명단에 모두 반영됩니다. 보고서마다 따로 저장되므로 이 달 보고서에만 적용됩니다.",
-    resyncNames: "명단에서 이름 다시 불러오기",
-    resyncNamesDone: "명단의 이름을 불러왔습니다.",
-    addPerson: "단원 추가",
+      "이름과 단원 목록은 [명단 관리]를 따라갑니다. 명단에서 고치거나 추가하면 이 표에 바로 반영됩니다.",
     personColumnLabel: "단원명",
     maxSessionsHint:
       "출석·기도 집계표는 최대 6회차까지 기록됩니다. 회차 범위를 줄이면 범위 밖 회차의 입력은 삭제됩니다.",
@@ -391,6 +382,8 @@ export const ko = {
     activityNoteLabel: "내용",
     activityNotePlaceholder: "예: 김요한 형제 상가",
     activityNoteHint: "내용은 앱에서만 참고용으로 보이고 보고서에는 나오지 않습니다.",
+    activityCustomOption: "직접 입력…",
+    activityCustomPlaceholder: "새 활동 이름",
     autoLineHint: "아래 회색 줄은 입력한 값으로 보고서에 실제 인쇄될 내용입니다. 직접 고칠 수 없고, 위 칸과 활동 입력을 바꾸면 따라서 바뀝니다.",
     sundayMassBasis: "계산 구간",
     sundayCountLabel: "일요일",
