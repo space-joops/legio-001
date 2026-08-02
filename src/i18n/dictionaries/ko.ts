@@ -97,6 +97,7 @@ export const ko = {
     install: "앱 설치하기",
     installDescription: "홈 화면에 앱처럼 설치해서 더 편하게 사용하세요.",
     installIosHint: "iOS에서는 공유 버튼을 누른 뒤 '홈 화면에 추가'를 선택하세요.",
+    installAndroidHint: "안드로이드에서는 브라우저 메뉴(⋮)에서 '홈 화면에 추가' 또는 '앱 설치'를 선택하세요.",
     installed: "이미 설치되어 있습니다.",
     shareApp: "앱 공유하기",
     shareAppDescription: "다른 단원에게 이 앱을 소개해 보세요.",

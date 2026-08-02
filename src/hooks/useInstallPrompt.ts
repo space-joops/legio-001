@@ -43,10 +43,16 @@ function detectIos(): boolean {
   return /Macintosh/.test(ua) && window.navigator.maxTouchPoints > 1;
 }
 
+function detectAndroid(): boolean {
+  const ua = window.navigator.userAgent;
+  return /Android/.test(ua);
+}
+
 export function useInstallPrompt() {
   const [deferredEvent, setDeferredEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIos, setIsIos] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
 
   useEffect(() => {
     const sync = () => {
@@ -62,6 +68,7 @@ export function useInstallPrompt() {
     /* eslint-disable react-hooks/set-state-in-effect */
     sync();
     setIsIos(detectIos());
+    setIsAndroid(detectAndroid());
     /* eslint-enable react-hooks/set-state-in-effect */
     return () => {
       listeners.delete(sync);
@@ -84,6 +91,7 @@ export function useInstallPrompt() {
     canInstall: Boolean(deferredEvent),
     installed: isInstalled,
     isIos,
+    isAndroid,
     promptInstall,
   };
 }
