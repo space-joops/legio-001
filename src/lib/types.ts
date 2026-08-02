@@ -45,6 +45,7 @@ export interface Settings {
   fontFamily: FontFamily;
   /** Show the Legion of Mary splash image on app open (at most once every few hours). */
   splashEnabled: boolean;
+  hidePlatformChoicePopup?: boolean;
 }
 
 export interface ScheduleEvent {
