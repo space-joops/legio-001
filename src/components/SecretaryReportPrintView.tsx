@@ -306,7 +306,9 @@ export function SecretaryReportPrintView({
           {t("secretaryRoster.roleLabel.president")} {president?.name || "-"}{" "}
           {president?.baptismalName || ""} ({t("secretaryReport.signature")})
         </p>
-        <p className={styles.formNumber}>{t("secretaryReport.formNumber")}</p>
+        {/* The official form number stays off this sheet on purpose: the app's
+            output is a transcription reference, not the Senatus form itself. */}
+        <p className={styles.referenceNote}>{t("secretaryReport.referenceNote")}</p>
       </footer>
     </div>
   );

@@ -381,7 +381,7 @@ export const ko = {
     directlyUnder: "직속",
     praesidiumSuffix: "쁘레시디움",
     signature: "서명",
-    formNumber: "서울 무염시태 세나뚜스 양식 제6호(2024년 12월 개정)",
+    referenceNote: "※ 참고용 문서 — 공식 보고서는 세나뚜스 양식(한글 문서)에 옮겨 적어 제출합니다.",
     activityReportSection: "활동보고",
     activityReportGrid: "활동보고 (회차별)",
     activityReportHint: "미·사·주·묵·화 숫자를 넣으면 그 회차 출석이 자동으로 체크되고, 모두 0이 되면 해제됩니다. 필요하면 출석은 직접 고칠 수 있습니다.",

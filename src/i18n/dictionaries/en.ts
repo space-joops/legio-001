@@ -383,7 +383,7 @@ export const en = {
     directlyUnder: "(direct)",
     praesidiumSuffix: "Praesidium",
     signature: "signature",
-    formNumber: "Seoul Immaculate Conception Senatus Form No. 6 (rev. Dec 2024)",
+    referenceNote: "※ For reference only — the official report is transcribed onto the Senatus form (HWP document).",
     activityReportSection: "Activity report",
     activityReportGrid: "Activity report (by session)",
     activityReportHint: "Entering any prayer count marks that session present; clearing them all marks it absent. You can still set attendance by hand.",
