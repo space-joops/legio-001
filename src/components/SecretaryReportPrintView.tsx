@@ -57,7 +57,14 @@ function joinLines(...parts: string[]): string {
   return parts.filter((p) => p && p.trim()).join("\n");
 }
 
-export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) {
+export function SecretaryReportPrintView({
+  report,
+  compact,
+}: {
+  report: MonthlyReport;
+  /** One-page A4 tuning shared by print, the PDF button, and the image button. */
+  compact?: boolean;
+}) {
   const { t, language } = useTranslation();
   const president = report.roster.officers.find((officer) => officer.role === "president");
 
@@ -74,7 +81,7 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
   }).join(", ");
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${compact ? styles.compact : ""}`}>
       <header className={styles.header}>
         <p className={styles.orgLine}>{t("app.name")}</p>
         <h1 className={styles.title}>{t("secretaryReport.title")}</h1>
@@ -299,7 +306,9 @@ export function SecretaryReportPrintView({ report }: { report: MonthlyReport }) 
           {t("secretaryRoster.roleLabel.president")} {president?.name || "-"}{" "}
           {president?.baptismalName || ""} ({t("secretaryReport.signature")})
         </p>
-        <p className={styles.formNumber}>{t("secretaryReport.formNumber")}</p>
+        {/* The official form number stays off this sheet on purpose: the app's
+            output is a transcription reference, not the Senatus form itself. */}
+        <p className={styles.referenceNote}>{t("secretaryReport.referenceNote")}</p>
       </footer>
     </div>
   );
