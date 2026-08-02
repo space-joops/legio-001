@@ -10,6 +10,7 @@ export const en = {
     home: "Home",
     history: "History",
     schedule: "Schedule",
+    tessera: "Tessera",
     settings: "Settings",
   },
   counters: {
@@ -175,6 +176,17 @@ export const en = {
     deleteConfirmTitle: "Delete this event?",
     deleteConfirmBody: "This cannot be undone.",
     notifyTitle: "Legio Schedule Reminder",
+  },
+  tessera: {
+    title: "Tessera Prayers",
+    tocLabel: "Jump to",
+    legend: "○ leader · ● response · ◎ all together · † Sign of the Cross",
+    opening: "Opening Prayers",
+    rosary: "The Rosary",
+    catena: "Catena Legionis",
+    closing: "Concluding Prayers",
+    sourceNote:
+      "Based on the Tessera in the official handbook. Wording may vary slightly between printings; where your praesidium's Tessera differs, follow its wording.",
   },
   secretary: {
     title: "Monthly Report (Secretary)",

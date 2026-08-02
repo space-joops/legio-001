@@ -1,0 +1,96 @@
+/* Mirrors PrayerTextDialog's measure so long prayer lines stay readable
+   instead of stretching across the 860px desktop column. */
+.content {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.toc {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+
+/* A phone held sideways (and anything wider) has room for one row of four. */
+@media (min-width: 700px) {
+  .toc {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.tocLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--min-tap-target);
+  padding: var(--space-1) var(--space-2);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+
+.legend {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.chapter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 2px solid var(--color-border);
+  /* The sticky header would otherwise cover the chapter title after a
+     table-of-contents jump; rem so it scales with the font-size setting. */
+  scroll-margin-top: 5rem;
+}
+
+.chapterTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+}
+
+.prayer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.prayerHeading {
+  font-weight: 700;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+}
+
+.line {
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+}
+
+.note {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+/* On paper the page is read top to bottom — jump buttons mean nothing there. */
+@media print {
+  .toc,
+  .legend {
+    display: none;
+  }
+
+  .chapter {
+    border-top: none;
+  }
+}

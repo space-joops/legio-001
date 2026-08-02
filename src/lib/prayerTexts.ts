@@ -13,7 +13,7 @@ export interface PrayerTextEntry {
 
 type PrayerTextMap = Partial<Record<PrayerItemKey, Record<Language, PrayerTextEntry>>>;
 
-const OUR_FATHER_KO = [
+export const OUR_FATHER_KO = [
   "하늘에 계신 우리 아버지,",
   "아버지의 이름이 거룩히 빛나시며 아버지의 나라가 오시며",
   "아버지의 뜻이 하늘에서와 같이 땅에서도 이루어지소서!",
@@ -22,7 +22,7 @@ const OUR_FATHER_KO = [
   "저희를 유혹에 빠지지 않게 하시고 악에서 구하소서. 아멘.",
 ];
 
-const HAIL_MARY_KO = [
+export const HAIL_MARY_KO = [
   "은총이 가득하신 마리아님, 기뻐하소서!",
   "주님께서 함께 계시니 여인 중에 복되시며",
   "태중의 아들 예수님 또한 복되시나이다.",
@@ -30,10 +30,10 @@ const HAIL_MARY_KO = [
   "저희 죄인을 위하여 빌어 주소서. 아멘.",
 ];
 
-const GLORY_BE_KO = ["영광이 성부와 성자와 성령께,", "처음과 같이 이제와 항상 영원히. 아멘."];
+export const GLORY_BE_KO = ["영광이 성부와 성자와 성령께,", "처음과 같이 이제와 항상 영원히. 아멘."];
 
 /** 구원을 비는 기도 — 2011년 주교회의 통일안. */
-const SALVATION_PRAYER_KO = [
+export const SALVATION_PRAYER_KO = [
   "예수님, 저희 죄를 용서하시며",
   "저희를 지옥 불에서 구하시고",
   "연옥 영혼을 돌보시며",
@@ -54,7 +54,7 @@ const APOSTLES_CREED_KO = [
 ];
 
 /** 성모찬송 — 가톨릭 기도서의 현행 공식 문구(마침 계응 포함). */
-const SALVE_REGINA_KO = [
+export const SALVE_REGINA_KO = [
   "모후이시며 사랑이 넘친 어머니,",
   "우리의 생명, 기쁨, 희망이시여.",
   "당신 우러러 하와의 그 자손들이",
@@ -68,7 +68,7 @@ const SALVE_REGINA_KO = [
   "그리스도께서 약속하신 영원한 생명을 얻게 하소서.",
 ];
 
-const OUR_FATHER_EN = [
+export const OUR_FATHER_EN = [
   "Our Father, who art in heaven, hallowed be thy name;",
   "thy kingdom come, thy will be done on earth as it is in heaven.",
   "Give us this day our daily bread,",
@@ -76,7 +76,7 @@ const OUR_FATHER_EN = [
   "and lead us not into temptation, but deliver us from evil. Amen.",
 ];
 
-const HAIL_MARY_EN = [
+export const HAIL_MARY_EN = [
   "Hail Mary, full of grace, the Lord is with thee.",
   "Blessed art thou amongst women,",
   "and blessed is the fruit of thy womb, Jesus.",
@@ -84,12 +84,12 @@ const HAIL_MARY_EN = [
   "now and at the hour of our death. Amen.",
 ];
 
-const GLORY_BE_EN = [
+export const GLORY_BE_EN = [
   "Glory be to the Father, and to the Son, and to the Holy Spirit,",
   "as it was in the beginning, is now, and ever shall be, world without end. Amen.",
 ];
 
-const FATIMA_PRAYER_EN = [
+export const FATIMA_PRAYER_EN = [
   "O my Jesus, forgive us our sins, save us from the fires of hell,",
   "and lead all souls to Heaven,",
   "especially those most in need of thy mercy. Amen.",
@@ -109,7 +109,7 @@ const APOSTLES_CREED_EN = [
   "the resurrection of the body, and life everlasting. Amen.",
 ];
 
-const SALVE_REGINA_EN = [
+export const SALVE_REGINA_EN = [
   "Hail, holy Queen, Mother of mercy,",
   "our life, our sweetness, and our hope.",
   "To thee do we cry, poor banished children of Eve;",
@@ -120,6 +120,93 @@ const SALVE_REGINA_EN = [
   "and after this our exile,",
   "show unto us the blessed fruit of thy womb, Jesus.",
   "O clement, O loving, O sweet Virgin Mary. Amen.",
+];
+
+/** 묵주기도 신비 4종 — 홈 묵주기도 다이얼로그와 뗏세라 페이지가 같은 검수 문구를 공유한다. */
+export const ROSARY_MYSTERY_SECTIONS_KO: PrayerTextSection[] = [
+  {
+    heading: "환희의 신비 (월요일·토요일)",
+    lines: [
+      "1단: 마리아께서 예수님을 잉태하심을 묵상합시다",
+      "2단: 마리아께서 엘리사벳을 찾아보심을 묵상합시다",
+      "3단: 마리아께서 예수님을 낳으심을 묵상합시다",
+      "4단: 마리아께서 예수님을 성전에 바치심을 묵상합시다",
+      "5단: 마리아께서 성전에서 예수님을 찾으심을 묵상합시다",
+    ],
+  },
+  {
+    heading: "고통의 신비 (화요일·금요일)",
+    lines: [
+      "1단: 예수님께서 우리를 위하여 피땀 흘리심을 묵상합시다",
+      "2단: 예수님께서 우리를 위하여 매맞으심을 묵상합시다",
+      "3단: 예수님께서 우리를 위하여 가시관 쓰심을 묵상합시다",
+      "4단: 예수님께서 우리를 위하여 십자가 지심을 묵상합시다",
+      "5단: 예수님께서 우리를 위하여 십자가에 못박혀 돌아가심을 묵상합시다",
+    ],
+  },
+  {
+    heading: "영광의 신비 (수요일·일요일)",
+    lines: [
+      "1단: 예수님께서 부활하심을 묵상합시다",
+      "2단: 예수님께서 승천하심을 묵상합시다",
+      "3단: 예수님께서 성령을 보내심을 묵상합시다",
+      "4단: 예수님께서 마리아를 하늘에 불러올리심을 묵상합시다",
+      "5단: 예수님께서 마리아께 천상 모후의 관을 씌우심을 묵상합시다",
+    ],
+  },
+  {
+    heading: "빛의 신비 (목요일)",
+    lines: [
+      "1단: 예수님께서 세례받으심을 묵상합시다",
+      "2단: 예수님께서 카나에서 첫 기적을 행하심을 묵상합시다",
+      "3단: 예수님께서 하느님 나라를 선포하심을 묵상합시다",
+      "4단: 예수님께서 거룩하게 변모하심을 묵상합시다",
+      "5단: 예수님께서 성체성사를 세우심을 묵상합시다",
+    ],
+  },
+];
+
+export const ROSARY_MYSTERY_SECTIONS_EN: PrayerTextSection[] = [
+  {
+    heading: "Joyful Mysteries (Mon & Sat)",
+    lines: [
+      "1. The Annunciation",
+      "2. The Visitation",
+      "3. The Nativity",
+      "4. The Presentation in the Temple",
+      "5. The Finding in the Temple",
+    ],
+  },
+  {
+    heading: "Sorrowful Mysteries (Tue & Fri)",
+    lines: [
+      "1. The Agony in the Garden",
+      "2. The Scourging at the Pillar",
+      "3. The Crowning with Thorns",
+      "4. The Carrying of the Cross",
+      "5. The Crucifixion",
+    ],
+  },
+  {
+    heading: "Glorious Mysteries (Wed & Sun)",
+    lines: [
+      "1. The Resurrection",
+      "2. The Ascension",
+      "3. The Descent of the Holy Spirit",
+      "4. The Assumption of Mary",
+      "5. The Coronation of Mary",
+    ],
+  },
+  {
+    heading: "Luminous Mysteries (Thu)",
+    lines: [
+      "1. The Baptism of Jesus",
+      "2. The Wedding at Cana",
+      "3. The Proclamation of the Kingdom",
+      "4. The Transfiguration",
+      "5. The Institution of the Eucharist",
+    ],
+  },
 ];
 
 export const PRAYER_TEXTS: PrayerTextMap = {
@@ -189,46 +276,7 @@ export const PRAYER_TEXTS: PrayerTextMap = {
           ],
         },
         { heading: "구원을 비는 기도 (파티마의 기도)", lines: SALVATION_PRAYER_KO },
-        {
-          heading: "환희의 신비 (월요일·토요일)",
-          lines: [
-            "1단: 마리아께서 예수님을 잉태하심을 묵상합시다",
-            "2단: 마리아께서 엘리사벳을 찾아보심을 묵상합시다",
-            "3단: 마리아께서 예수님을 낳으심을 묵상합시다",
-            "4단: 마리아께서 예수님을 성전에 바치심을 묵상합시다",
-            "5단: 마리아께서 성전에서 예수님을 찾으심을 묵상합시다",
-          ],
-        },
-        {
-          heading: "고통의 신비 (화요일·금요일)",
-          lines: [
-            "1단: 예수님께서 우리를 위하여 피땀 흘리심을 묵상합시다",
-            "2단: 예수님께서 우리를 위하여 매맞으심을 묵상합시다",
-            "3단: 예수님께서 우리를 위하여 가시관 쓰심을 묵상합시다",
-            "4단: 예수님께서 우리를 위하여 십자가 지심을 묵상합시다",
-            "5단: 예수님께서 우리를 위하여 십자가에 못박혀 돌아가심을 묵상합시다",
-          ],
-        },
-        {
-          heading: "영광의 신비 (수요일·일요일)",
-          lines: [
-            "1단: 예수님께서 부활하심을 묵상합시다",
-            "2단: 예수님께서 승천하심을 묵상합시다",
-            "3단: 예수님께서 성령을 보내심을 묵상합시다",
-            "4단: 예수님께서 마리아를 하늘에 불러올리심을 묵상합시다",
-            "5단: 예수님께서 마리아께 천상 모후의 관을 씌우심을 묵상합시다",
-          ],
-        },
-        {
-          heading: "빛의 신비 (목요일)",
-          lines: [
-            "1단: 예수님께서 세례받으심을 묵상합시다",
-            "2단: 예수님께서 카나에서 첫 기적을 행하심을 묵상합시다",
-            "3단: 예수님께서 하느님 나라를 선포하심을 묵상합시다",
-            "4단: 예수님께서 거룩하게 변모하심을 묵상합시다",
-            "5단: 예수님께서 성체성사를 세우심을 묵상합시다",
-          ],
-        },
+        ...ROSARY_MYSTERY_SECTIONS_KO,
         { heading: "마침 기도 · 성모찬송", lines: SALVE_REGINA_KO },
       ],
       note: "가톨릭 기도서의 현행 공식 문구를 따랐습니다. ◎ 표시는 함께 바치는 마침 계응입니다.",
@@ -248,46 +296,7 @@ export const PRAYER_TEXTS: PrayerTextMap = {
           ],
         },
         { heading: "Fatima Prayer", lines: FATIMA_PRAYER_EN },
-        {
-          heading: "Joyful Mysteries (Mon & Sat)",
-          lines: [
-            "1. The Annunciation",
-            "2. The Visitation",
-            "3. The Nativity",
-            "4. The Presentation in the Temple",
-            "5. The Finding in the Temple",
-          ],
-        },
-        {
-          heading: "Sorrowful Mysteries (Tue & Fri)",
-          lines: [
-            "1. The Agony in the Garden",
-            "2. The Scourging at the Pillar",
-            "3. The Crowning with Thorns",
-            "4. The Carrying of the Cross",
-            "5. The Crucifixion",
-          ],
-        },
-        {
-          heading: "Glorious Mysteries (Wed & Sun)",
-          lines: [
-            "1. The Resurrection",
-            "2. The Ascension",
-            "3. The Descent of the Holy Spirit",
-            "4. The Assumption of Mary",
-            "5. The Coronation of Mary",
-          ],
-        },
-        {
-          heading: "Luminous Mysteries (Thu)",
-          lines: [
-            "1. The Baptism of Jesus",
-            "2. The Wedding at Cana",
-            "3. The Proclamation of the Kingdom",
-            "4. The Transfiguration",
-            "5. The Institution of the Eucharist",
-          ],
-        },
+        ...ROSARY_MYSTERY_SECTIONS_EN,
         { heading: "Closing · Hail Holy Queen", lines: SALVE_REGINA_EN },
       ],
       note: "The closing 'Hail Holy Queen' is a commonly used version, not a specific official translation. The rest are standard liturgical texts.",

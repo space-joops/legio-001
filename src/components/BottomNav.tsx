@@ -10,6 +10,7 @@ import {
   ReportListIcon,
   SecretarySettingsIcon,
   SettingsIcon,
+  TesseraIcon,
 } from "./icons/NavIcons";
 import styles from "./BottomNav.module.css";
 
@@ -35,6 +36,13 @@ export function BottomNav() {
       Icon: CalendarIcon,
       swappable: true,
       isActive: pathname.startsWith("/schedule"),
+    },
+    {
+      href: "/tessera",
+      label: t("nav.tessera"),
+      Icon: TesseraIcon,
+      swappable: true,
+      isActive: pathname.startsWith("/tessera"),
     },
     {
       href: "/settings",
