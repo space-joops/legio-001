@@ -391,3 +391,42 @@ a.secondaryButton {
   font-size: var(--font-size-base);
   font-weight: 700;
 }
+
+/* Off-screen A4-width sheet that the PDF and image buttons rasterise. In
+   print it swaps in for the screen preview so window.print(), the PDF, and
+   the copied image all come from the identical one-page compact layout. */
+.captureHost {
+  position: fixed;
+  top: 0;
+  left: -200vw;
+  pointer-events: none;
+}
+
+.captureSheet {
+  /* A4 width at 96dpi — the size the compact layout is tuned against. */
+  width: 794px;
+}
+
+@media print {
+  .screenPreview {
+    display: none;
+  }
+
+  .captureHost {
+    position: static;
+    pointer-events: auto;
+  }
+
+  .captureSheet {
+    /* Keep the exact 794px layout the compact styles are tuned for and shrink
+       it as a whole onto the printable area (190mm ≈ 718px at 10mm margins).
+       Narrowing the width instead would re-wrap the text taller and push the
+       form onto a second sheet. */
+    zoom: 90%;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 10mm;
+}

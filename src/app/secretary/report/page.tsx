@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { ActivityEntryDialog } from "@/components/ActivityEntryDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
@@ -18,7 +18,11 @@ import { buildActivityLines, personActivityCount } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { shareOrDownloadFile } from "@/lib/exportData";
 import { generateId } from "@/lib/id";
-import { buildMonthlyReportRtf } from "@/lib/monthlyReportRtf";
+import {
+  buildSinglePageImagePdf,
+  canvasToPngBlob,
+  captureElementToCanvas,
+} from "@/lib/reportCapture";
 import {
   MAX_ATTENDANCE_SESSIONS,
   OFFICER_ROLES,
@@ -187,6 +191,7 @@ function ReportPageContent() {
   const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
   const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const captureRef = useRef<HTMLDivElement>(null);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -298,13 +303,52 @@ function ReportPageContent() {
 
 
 
-  const handleExportRtf = async () => {
-    const rtf = buildMonthlyReportRtf(report, language);
-    // RTF is 7-bit ASCII by construction (Korean goes out as \u escapes).
-    const blob = new Blob([rtf], { type: "application/rtf" });
-    const name = report.roster.praesidiumName || t("app.shortName");
-    const outcome = await shareOrDownloadFile(blob, `${name}_${report.yearMonth}.rtf`);
-    if (outcome === "downloaded") showToast(t("secretaryReport.exportDocumentSaved"));
+  /** Renders the hidden A4-width copy of the form to a canvas. */
+  const captureReportCanvas = () => {
+    const sheet = captureRef.current;
+    if (!sheet) return Promise.reject(new Error("capture host not mounted"));
+    return captureElementToCanvas(sheet, 2);
+  };
+
+  const exportFileName = (ext: string) =>
+    `${report.roster.praesidiumName || t("app.shortName")}_${report.yearMonth}.${ext}`;
+
+  const handleExportPdf = async () => {
+    try {
+      const canvas = await captureReportCanvas();
+      const blob = buildSinglePageImagePdf(canvas);
+      const outcome = await shareOrDownloadFile(blob, exportFileName("pdf"));
+      if (outcome === "downloaded") showToast(t("secretaryReport.pdfSaved"));
+    } catch {
+      showToast(t("secretaryReport.exportFailed"));
+    }
+  };
+
+  /**
+   * ClipboardItem gets the promise, not the finished blob: Safari only honours
+   * clipboard.write() while the tap's user activation is alive, and
+   * rasterising first would spend it. Browsers without image clipboard
+   * support fall back to saving the PNG as a file.
+   */
+  const handleCopyImage = () => {
+    const blobPromise = captureReportCanvas().then(canvasToPngBlob);
+    const fallbackToFile = async () => {
+      try {
+        const blob = await blobPromise;
+        const outcome = await shareOrDownloadFile(blob, exportFileName("png"));
+        if (outcome === "downloaded") showToast(t("secretaryReport.imageSaved"));
+      } catch {
+        showToast(t("secretaryReport.exportFailed"));
+      }
+    };
+    if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) {
+      void fallbackToFile();
+      return;
+    }
+    navigator.clipboard
+      .write([new ClipboardItem({ "image/png": blobPromise })])
+      .then(() => showToast(t("secretaryReport.imageCopied")))
+      .catch(() => void fallbackToFile());
   };
 
   const activityLines = buildActivityLines(report, activityItems, {
@@ -480,26 +524,39 @@ function ReportPageContent() {
           </button>
           <button
             type="button"
+            className={styles.secondaryButton}
+            onClick={() => {
+              void handleExportPdf();
+            }}
+          >
+            {t("secretaryReport.exportPdf")}
+          </button>
+          <button type="button" className={styles.secondaryButton} onClick={handleCopyImage}>
+            {t("secretaryReport.exportImage")}
+          </button>
+          <button
+            type="button"
             className={styles.primaryButton}
             onClick={() => window.print()}
           >
             {t("secretaryReport.print")}
-          </button>
-          <button
-            type="button"
-            className={styles.secondaryButton}
-            onClick={() => {
-              void handleExportRtf();
-            }}
-          >
-            {t("secretaryReport.exportDocument")}
           </button>
           <ShareButton
             title={`${t("app.shortName")} ${formatYearMonthLabel(report.yearMonth, language)}`}
             text={formatMonthlyShareText(report, language)}
           />
         </div>
-        <SecretaryReportPrintView report={report} />
+        <div className={styles.screenPreview}>
+          <SecretaryReportPrintView report={report} />
+        </div>
+        {/* Hidden A4-width copy that the PDF and image buttons rasterise. In
+            print it swaps in for the screen preview (see page.module.css), so
+            print, PDF, and image all come from the identical one-page layout. */}
+        <div className={styles.captureHost} aria-hidden="true">
+          <div ref={captureRef} className={styles.captureSheet}>
+            <SecretaryReportPrintView report={report} compact />
+          </div>
+        </div>
       </>
     );
   }
