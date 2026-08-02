@@ -21,6 +21,16 @@ export interface WeeklyReport {
   parishName?: string;
   activityNote?: string;
   counts: PrayerCounts;
+  /**
+   * Beads tapped toward the current rosary set (0–4). Reaching 5 adds 5 to
+   * `counts.rosaryDecades` and resets to 0, so a half-finished set never lands
+   * in the report. Deliberately a sibling of `counts` rather than a
+   * `PrayerCounts` key: everything that walks `PRAYER_ITEMS` (the monthly form's
+   * prayer table, the diocese line, the LEGIO1 secretary payload) would grow a
+   * column that the official form has no room for.
+   * Always read as `?? 0` — reports saved before this field existed lack it.
+   */
+  rosarySetProgress?: number;
   status: ReportStatus;
   createdAt: string;
   updatedAt: string;

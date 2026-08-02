@@ -24,6 +24,17 @@ export const ko = {
     apply: "확인",
     minus: "빼기",
     viewPrayerText: "기도문 보기",
+    setProgress: "{done} / {total}단",
+  },
+  rosary: {
+    guideLabel: "오늘의 묵주기도",
+    position: "{current}단 / 모두 {total}단",
+    previous: "이전",
+    next: "다음",
+    finish: "마침",
+    recordQuestion: "묵주기도 {count}단을 기록할까요?",
+    record: "기록하기",
+    recorded: "묵주기도 5단을 기록했습니다.",
   },
   week: {
     sessionNumber: "회차",

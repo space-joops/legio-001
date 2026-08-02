@@ -26,6 +26,17 @@ export const en = {
     apply: "Apply",
     minus: "Minus",
     viewPrayerText: "View prayer text",
+    setProgress: "{done} / {total} decades",
+  },
+  rosary: {
+    guideLabel: "Today's Rosary",
+    position: "Decade {current} of {total}",
+    previous: "Back",
+    next: "Next",
+    finish: "Done",
+    recordQuestion: "Record {count} decades of the Rosary?",
+    record: "Record",
+    recorded: "Recorded 5 decades of the Rosary.",
   },
   week: {
     sessionNumber: "Session",

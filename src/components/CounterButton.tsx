@@ -14,6 +14,10 @@ interface CounterButtonProps {
   onDecrement: () => void;
   onSetValue: (value: number) => void;
   onShowText?: () => void;
+  /** When set, taps fill a row of this many beads instead of moving the count. */
+  setSize?: number;
+  /** Beads already filled toward the current set (0 to setSize-1). */
+  setProgress?: number;
 }
 
 export function CounterButton({
@@ -25,6 +29,8 @@ export function CounterButton({
   onDecrement,
   onSetValue,
   onShowText,
+  setSize,
+  setProgress = 0,
 }: CounterButtonProps) {
   const { t } = useTranslation();
   const [numericMode, setNumericMode] = useState(false);
@@ -72,12 +78,31 @@ export function CounterButton({
           >
             <span className={styles.count}>{count}</span>
           </button>
+          {setSize && (
+            /* The bead count is spelled out as well as drawn: filled and empty
+               beads differ only by fill, and shape alone isn't enough here. */
+            <p className={styles.beads}>
+              <span className={styles.beadRow} aria-hidden="true">
+                {Array.from({ length: setSize }, (_, i) => (
+                  <span
+                    key={i}
+                    className={i < setProgress ? styles.beadFilled : styles.bead}
+                  />
+                ))}
+              </span>
+              <span className={styles.beadCaption}>
+                {t("counters.setProgress")
+                  .replace("{done}", String(setProgress))
+                  .replace("{total}", String(setSize))}
+              </span>
+            </p>
+          )}
           <div className={styles.controls}>
             <button
               type="button"
               className={styles.minusButton}
               onClick={onDecrement}
-              disabled={count <= 0}
+              disabled={count <= 0 && setProgress <= 0}
               aria-label={`${label} ${t("counters.minus")}`}
             >
               −

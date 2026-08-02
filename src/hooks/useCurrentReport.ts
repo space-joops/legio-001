@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ROSARY_SET_SIZE } from "@/lib/constants";
 import { createNewReport } from "@/lib/reportUtils";
 import { storage } from "@/lib/storage";
 import type { PrayerItemKey, Profile, WeeklyReport } from "@/lib/types";
@@ -68,6 +69,62 @@ export function useCurrentReport() {
     [report, persist]
   );
 
+  /** Fills one bead; the fifth one commits the whole set at once. */
+  const addRosaryBead = useCallback(() => {
+    if (!report) return;
+    const next = (report.rosarySetProgress ?? 0) + 1;
+    const complete = next >= ROSARY_SET_SIZE;
+    persist({
+      ...report,
+      counts: complete
+        ? { ...report.counts, rosaryDecades: report.counts.rosaryDecades + ROSARY_SET_SIZE }
+        : report.counts,
+      rosarySetProgress: complete ? 0 : next,
+      updatedAt: new Date().toISOString(),
+    });
+  }, [report, persist]);
+
+  /**
+   * The exact inverse of `addRosaryBead`, including across a set boundary:
+   * undoing the tap that completed a set gives the 5단 back and leaves four
+   * beads standing, which is what someone who mis-tapped expects to see.
+   */
+  const removeRosaryBead = useCallback(() => {
+    if (!report) return;
+    const progress = report.rosarySetProgress ?? 0;
+    const count = report.counts.rosaryDecades;
+    let nextProgress = 0;
+    let nextCount = count;
+    if (progress > 0) {
+      nextProgress = progress - 1;
+    } else if (count >= ROSARY_SET_SIZE) {
+      nextCount = count - ROSARY_SET_SIZE;
+      nextProgress = ROSARY_SET_SIZE - 1;
+    } else {
+      // A count typed in by hand that isn't a whole set — just clear it.
+      nextCount = 0;
+    }
+    persist({
+      ...report,
+      counts: { ...report.counts, rosaryDecades: nextCount },
+      rosarySetProgress: nextProgress,
+      updatedAt: new Date().toISOString(),
+    });
+  }, [report, persist]);
+
+  /** Records a full set at once — the prayer guide's "5단을 다 바쳤다" path. */
+  const addRosarySet = useCallback(() => {
+    if (!report) return;
+    persist({
+      ...report,
+      counts: {
+        ...report.counts,
+        rosaryDecades: report.counts.rosaryDecades + ROSARY_SET_SIZE,
+      },
+      updatedAt: new Date().toISOString(),
+    });
+  }, [report, persist]);
+
   const setActivityNote = useCallback(
     (value: string) => {
       if (!report) return;
@@ -85,6 +142,8 @@ export function useCurrentReport() {
     const now = new Date().toISOString();
     const submitted: WeeklyReport = {
       ...report,
+      // A set that never reached five decades doesn't go on the report.
+      rosarySetProgress: 0,
       status: "submitted",
       submittedAt: now,
       updatedAt: now,
@@ -105,6 +164,9 @@ export function useCurrentReport() {
     updateSessionInfo,
     incrementCount,
     setCount,
+    addRosaryBead,
+    removeRosaryBead,
+    addRosarySet,
     setActivityNote,
     submit,
     discard,

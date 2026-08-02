@@ -1,0 +1,101 @@
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-alt);
+}
+
+.mystery {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.decade {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--color-text);
+  /* Three blinks (2 Hz, well under the three-per-second flash limit) then it
+     settles — long enough to catch the eye, short enough to read under. */
+  animation: blink 500ms ease-in-out 3;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decade {
+    animation: none;
+  }
+}
+
+.position {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.recorded {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-accent-secondary);
+}
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.confirmText {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.primaryButton {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.secondaryButton {
+  border: 3px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.45;
+}
