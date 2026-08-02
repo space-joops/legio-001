@@ -67,7 +67,10 @@ export function CounterButton({
           <button
             type="button"
             className={styles.tapArea}
-            onClick={onIncrement}
+            onClick={() => {
+              if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
+              onIncrement();
+            }}
             aria-label={`${label} ${t("counters.tapToRecord")}`}
           >
             <span className={styles.count}>{count}</span>
@@ -76,7 +79,10 @@ export function CounterButton({
             <button
               type="button"
               className={styles.minusButton}
-              onClick={onDecrement}
+              onClick={() => {
+                if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
+                onDecrement();
+              }}
               disabled={count <= 0}
               aria-label={`${label} ${t("counters.minus")}`}
             >
