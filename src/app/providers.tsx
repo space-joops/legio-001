@@ -25,13 +25,16 @@ export function Providers({ children }: { children: ReactNode }) {
             <InAppBrowserNotice />
             <UpdateAvailableNotice />
           </div>
-          <PlatformChoicePopup />
           {/* Sibling of OnboardingGate, not a child: the gate renders nothing
               until hydrated, so the splash must sit outside it to also cover
               the onboarding screen. */}
           <SplashOverlay />
           <OnboardingGate>
             <ScheduleReminderChecker />
+            {/* Child of the gate, unlike the splash: an install prompt on top of
+                the onboarding form interrupts someone mid-typing. The gate only
+                renders children once the profile is filled in. */}
+            <PlatformChoicePopup />
             {children}
           </OnboardingGate>
         </ToastProvider>

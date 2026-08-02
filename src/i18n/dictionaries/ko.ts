@@ -69,11 +69,20 @@ export const ko = {
     start: "시작하기",
   },
   platformChoice: {
-    title: "시작 방식 선택",
-    description: "더 편리한 사용을 위해 앱으로 설치하시겠습니까?",
-    pwa: "PWA로 설치하기",
-    manual: "디바이스에 앱 설치하기",
-    web: "그냥 웹으로 쓰기",
+    // 안드로이드·크롬 계열: 브라우저가 실제 설치 프롬프트를 띄워 준다.
+    installTitle: "앱으로 설치할까요?",
+    installBody:
+      "설치하면 홈 화면 아이콘으로 바로 열 수 있고, 인터넷이 느린 곳에서도 잘 열립니다.",
+    installAction: "앱 설치하기",
+    // 아이폰·아이패드: 사파리 공유 메뉴로만 가능해서 '설치'가 아니라 '추가'로 안내한다.
+    iosTitle: "홈 화면에 추가할까요?",
+    iosBody:
+      "아래 [공유] 버튼을 누른 뒤 '홈 화면에 추가'를 선택하면 앱처럼 쓸 수 있습니다.",
+    // 안드로이드지만 설치 프롬프트가 없는 브라우저(파이어폭스 등).
+    androidManualTitle: "앱으로 설치할까요?",
+    androidManualBody:
+      "브라우저 메뉴(⋮)에서 '앱 설치' 또는 '홈 화면에 추가'를 선택하면 앱처럼 쓸 수 있습니다.",
+    later: "지금은 그냥 쓰기",
     dontShowAgain: "다시 보지 않기",
   },
   settings: {
@@ -135,8 +144,8 @@ export const ko = {
     installUnavailable:
       "이 브라우저에서는 설치 안내가 나타나지 않습니다. 브라우저 메뉴의 '홈 화면에 추가'를 이용해 주세요.",
     splashPreview: "지금 보기",
-    resetPlatformChoice: "앱 설치 안내 팝업 다시 켜기",
-    resetPlatformChoiceDone: "앱 설치 안내 팝업이 다시 나타납니다.",
+    resetPlatformChoice: "앱 설치 안내 다시 보기",
+    resetPlatformChoiceDone: "앱 설치 안내가 다시 나타납니다.",
   },
   common: {
     save: "저장",

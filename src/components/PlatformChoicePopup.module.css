@@ -1,114 +1,74 @@
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  padding: var(--space-4);
-  backdrop-filter: blur(4px);
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
+/* Mirrors ConfirmDialog.module.css: a top-layer <dialog>, so no z-index race
+   with the splash and no manual scroll locking. */
 .dialog {
-  background: var(--color-surface);
+  border: none;
   border-radius: var(--radius-lg);
   padding: var(--space-4);
-  width: 100%;
-  max-width: 400px;
-  box-shadow: var(--shadow-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  animation: slideUp 0.3s ease-out;
+  max-width: 420px;
+  width: calc(100vw - 48px);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog[open] {
+  animation: slideUp 0.25s ease-out;
 }
 
 @keyframes slideUp {
   from {
-    transform: translateY(20px);
+    opacity: 0;
+    transform: translateY(12px);
   }
   to {
+    opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog[open] {
+    animation: none;
   }
 }
 
 .title {
   font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0;
-  text-align: center;
+  font-weight: 800;
+  margin-bottom: var(--space-2);
 }
 
-.description {
+.body {
   font-size: var(--font-size-base);
   color: var(--color-text-muted);
-  text-align: center;
-  margin: 0;
+  margin-bottom: var(--space-4);
 }
 
-.options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+.installButton,
+.laterButton {
+  display: block;
+  width: 100%;
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
 }
 
-.primaryButton {
+.installButton {
+  border: none;
   background: var(--color-primary);
   color: var(--color-primary-contrast);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  text-align: center;
-  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-2);
 }
 
-.secondaryButton {
+.laterButton {
+  border: 2px solid var(--color-border);
   background: transparent;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  text-align: center;
-}
-
-.manualInstall {
-  background: var(--color-background);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.manualInstallTitle {
-  font-size: var(--font-size-sm);
-  font-weight: 700;
   color: var(--color-text);
-}
-
-.hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  margin: 0;
-  line-height: 1.4;
 }
 
 .checkboxLabel {
@@ -116,14 +76,15 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  font-size: var(--font-size-sm);
+  min-height: var(--min-tap-target);
+  font-size: var(--font-size-base);
   color: var(--color-text-muted);
-  margin-top: var(--space-2);
   cursor: pointer;
 }
 
 .checkbox {
-  width: 18px;
-  height: 18px;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
   accent-color: var(--color-primary);
 }
