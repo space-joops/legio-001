@@ -58,3 +58,14 @@ export function SecretarySettingsIcon(props: SVGProps<SVGSVGElement>) {
     </IconBase>
   );
 }
+
+/** 뗏세라 — 펼친 기도서 위에 작은 십자가. */
+export function TesseraIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 6.5C10.3 5.1 8 4.5 4.5 4.5V19c3.5 0 5.8.6 7.5 2 1.7-1.4 4-2 7.5-2V4.5c-3.5 0-5.8.6-7.5 2z" />
+      <path d="M12 6.5V21" />
+      <path d="M16.5 8.5v4.5M14.25 10.5h4.5" />
+    </IconBase>
+  );
+}

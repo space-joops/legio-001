@@ -8,6 +8,7 @@ export const ko = {
     home: "홈",
     history: "기록",
     schedule: "일정",
+    tessera: "뗏세라",
     settings: "설정",
   },
   counters: {
@@ -173,6 +174,17 @@ export const ko = {
     deleteConfirmTitle: "이 일정을 삭제할까요?",
     deleteConfirmBody: "삭제하면 되돌릴 수 없습니다.",
     notifyTitle: "레지오 일정 알림",
+  },
+  tessera: {
+    title: "뗏세라 기도문",
+    tocLabel: "바로가기",
+    legend: "○ 선창 · ● 응답 · ◎ 함께 · † 성호경",
+    opening: "개회 기도",
+    rosary: "묵주기도",
+    catena: "까떼나 레지오니스",
+    closing: "폐회 기도",
+    sourceNote:
+      "공인 교본의 뗏세라를 기준으로 정리한 기도문입니다. 발행 판본에 따라 표현이 조금씩 다를 수 있으니, 소속 쁘레시디움의 뗏세라와 다른 부분은 그 문구를 따르세요.",
   },
   secretary: {
     title: "월례보고서(서기용)",
