@@ -40,7 +40,7 @@ export const SALVATION_PRAYER_KO = [
   "가장 버림받은 영혼을 돌보소서.",
 ];
 
-const APOSTLES_CREED_KO = [
+export const APOSTLES_CREED_KO = [
   "전능하신 천주 성부 천지의 창조주를 저는 믿나이다.",
   "그 외아들 우리 주 예수 그리스도님,",
   "성령으로 인하여 동정 마리아께 잉태되어 나시고",
@@ -95,7 +95,7 @@ export const FATIMA_PRAYER_EN = [
   "especially those most in need of thy mercy. Amen.",
 ];
 
-const APOSTLES_CREED_EN = [
+export const APOSTLES_CREED_EN = [
   "I believe in God, the Father almighty, Creator of heaven and earth,",
   "and in Jesus Christ, his only Son, our Lord,",
   "who was conceived by the Holy Spirit, born of the Virgin Mary,",

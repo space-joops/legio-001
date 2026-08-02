@@ -27,6 +27,9 @@ export default function HomePage() {
     updateSessionInfo,
     incrementCount,
     setCount,
+    addRosaryBead,
+    removeRosaryBead,
+    addRosarySet,
     setActivityNote,
     submit,
   } = useCurrentReport();
@@ -133,9 +136,17 @@ export default function HomePage() {
           <h2 className={styles.sectionTitle}>{t("home.title")}</h2>
           <CounterGrid
             counts={report.counts}
-            onIncrement={(key) => incrementCount(key, 1)}
-            onDecrement={(key) => incrementCount(key, -1)}
+            // 묵주기도 taps fill a bead instead of moving the count; the fifth
+            // one commits all five 단 at once.
+            onIncrement={(key) =>
+              key === "rosaryDecades" ? addRosaryBead() : incrementCount(key, 1)
+            }
+            onDecrement={(key) =>
+              key === "rosaryDecades" ? removeRosaryBead() : incrementCount(key, -1)
+            }
             onSetValue={(key, value) => setCount(key, value)}
+            rosarySetProgress={report.rosarySetProgress ?? 0}
+            onRosaryRecordSet={addRosarySet}
           />
           <label className={styles.noteField}>
             <span className={styles.sectionTitle}>{t("home.activityNoteLabel")}</span>

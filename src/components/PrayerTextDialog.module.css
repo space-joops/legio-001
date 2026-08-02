@@ -45,6 +45,25 @@
   margin: 0 auto;
 }
 
+.fullText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fullTextToggle {
+  min-height: var(--min-tap-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-accent-secondary);
+  cursor: pointer;
+}
+
 .section {
   display: flex;
   flex-direction: column;

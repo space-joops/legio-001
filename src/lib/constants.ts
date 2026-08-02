@@ -4,9 +4,17 @@ export interface PrayerItemConfig {
   key: PrayerItemKey;
   labelKey: string;
   icon: "mass" | "priest" | "chain" | "rosary" | "aspiration";
-  /** true for items that are naturally counted in days (0-7 in a normal week) rather than open-ended taps */
+  /** Unit suffix shown next to the label and in the share text (only 묵주기도 has one: 단). */
   unitLabelKey?: string;
+  /**
+   * Taps fill a set of this many beads before the count moves, instead of
+   * counting one per tap. Only 묵주기도 has one — a rosary is prayed as 5단.
+   */
+  setSize?: number;
 }
+
+/** A rosary is prayed as five decades, so taps commit five 단 at a time. */
+export const ROSARY_SET_SIZE = 5;
 
 export const PRAYER_ITEMS: PrayerItemConfig[] = [
   { key: "weekdayMass", labelKey: "counters.weekdayMass", icon: "mass" },
@@ -17,6 +25,7 @@ export const PRAYER_ITEMS: PrayerItemConfig[] = [
     labelKey: "counters.rosaryDecades",
     icon: "rosary",
     unitLabelKey: "counters.unitDecade",
+    setSize: ROSARY_SET_SIZE,
   },
   { key: "aspirations", labelKey: "counters.aspirations", icon: "aspiration" },
 ];
