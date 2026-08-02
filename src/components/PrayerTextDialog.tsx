@@ -11,7 +11,11 @@ interface PrayerTextDialogProps {
   count: number;
   onIncrement: () => void;
   onClose: () => void;
-  /** Optional panel rendered above the text — 묵주기도 uses it to walk the day's set. */
+  /**
+   * Optional walk-through rendered above the text. When present the full text
+   * folds away behind a disclosure: the guide is the main event and the whole
+   * rosary printed out underneath is reference material.
+   */
   guide?: ReactNode;
   /**
    * Replaces the "tap to record" caption. 묵주기도 needs it: a tap there fills a
@@ -55,19 +59,35 @@ export function PrayerTextDialog({
           <h2 className={styles.title}>{title}</h2>
           <div className={styles.content}>
             {guide}
-            {entry.sections.map((section, i) => (
-              <div key={i} className={styles.section}>
-                {section.heading && (
-                  <span className={styles.sectionHeading}>{section.heading}</span>
-                )}
-                {section.lines.map((line, j) => (
-                  <p key={j} className={styles.line}>
-                    {line}
-                  </p>
-                ))}
-              </div>
-            ))}
-            {entry.note && <p className={styles.note}>{entry.note}</p>}
+            {(() => {
+              const fullText = (
+                <>
+                  {entry.sections.map((section, i) => (
+                    <div key={i} className={styles.section}>
+                      {section.heading && (
+                        <span className={styles.sectionHeading}>{section.heading}</span>
+                      )}
+                      {section.lines.map((line, j) => (
+                        <p key={j} className={styles.line}>
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  ))}
+                  {entry.note && <p className={styles.note}>{entry.note}</p>}
+                </>
+              );
+              return guide ? (
+                <details className={styles.fullText}>
+                  <summary className={styles.fullTextToggle}>
+                    {t("prayerText.showFullText")}
+                  </summary>
+                  {fullText}
+                </details>
+              ) : (
+                fullText
+              );
+            })()}
           </div>
           <div className={styles.footer}>
             <button
