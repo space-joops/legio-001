@@ -107,6 +107,7 @@ export const en = {
     install: "Install app",
     installDescription: "Install to your home screen for easier access.",
     installIosHint: "On iOS, tap the Share button then 'Add to Home Screen'.",
+    installAndroidHint: "On Android, open the browser menu (⋮) and select 'Add to Home screen' or 'Install app'.",
     installed: "Already installed.",
     shareApp: "Share this app",
     shareAppDescription: "Introduce this app to other members.",
