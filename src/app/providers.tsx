@@ -8,6 +8,7 @@ import { ScheduleReminderChecker } from "@/components/ScheduleReminderChecker";
 import { SplashOverlay } from "@/components/SplashOverlay";
 import { StorageBootstrap } from "@/components/StorageBootstrap";
 import { StorageFailureNotice } from "@/components/StorageFailureNotice";
+import { PlatformChoicePopup } from "@/components/PlatformChoicePopup";
 import { ToastProvider } from "@/components/ToastProvider";
 import { UpdateAvailableNotice } from "@/components/UpdateAvailableNotice";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -30,6 +31,10 @@ export function Providers({ children }: { children: ReactNode }) {
           <SplashOverlay />
           <OnboardingGate>
             <ScheduleReminderChecker />
+            {/* Child of the gate, unlike the splash: an install prompt on top of
+                the onboarding form interrupts someone mid-typing. The gate only
+                renders children once the profile is filled in. */}
+            <PlatformChoicePopup />
             {children}
           </OnboardingGate>
         </ToastProvider>

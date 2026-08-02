@@ -43,10 +43,26 @@ function detectIos(): boolean {
   return /Macintosh/.test(ua) && window.navigator.maxTouchPoints > 1;
 }
 
+function detectAndroid(): boolean {
+  const ua = window.navigator.userAgent;
+  return /Android/.test(ua);
+}
+
+const IN_APP_BROWSER_PATTERN = /KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\//i;
+
+/** In-app webviews (KakaoTalk above all — that's how this app gets shared) have
+    no install prompt and no "add to home screen" menu, so any install guidance
+    shown there is a dead end. `InAppBrowserNotice` handles them instead. */
+export function detectInAppBrowser(): boolean {
+  return IN_APP_BROWSER_PATTERN.test(window.navigator.userAgent);
+}
+
 export function useInstallPrompt() {
   const [deferredEvent, setDeferredEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIos, setIsIos] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false);
 
   useEffect(() => {
     const sync = () => {
@@ -62,6 +78,8 @@ export function useInstallPrompt() {
     /* eslint-disable react-hooks/set-state-in-effect */
     sync();
     setIsIos(detectIos());
+    setIsAndroid(detectAndroid());
+    setIsInAppBrowser(detectInAppBrowser());
     /* eslint-enable react-hooks/set-state-in-effect */
     return () => {
       listeners.delete(sync);
@@ -84,6 +102,8 @@ export function useInstallPrompt() {
     canInstall: Boolean(deferredEvent),
     installed: isInstalled,
     isIos,
+    isAndroid,
+    isInAppBrowser,
     promptInstall,
   };
 }

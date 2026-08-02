@@ -70,6 +70,20 @@ export const en = {
     subtitle: "Please enter the following information to use the Legion of Mary weekly report app.",
     start: "Start",
   },
+  platformChoice: {
+    installTitle: "Install the app?",
+    installBody:
+      "Installing puts an icon on your home screen so it opens straight away, even on a slow connection.",
+    installAction: "Install app",
+    iosTitle: "Add to your Home Screen?",
+    iosBody:
+      "Tap the Share button below, then choose 'Add to Home Screen' to use it like an app.",
+    androidManualTitle: "Install the app?",
+    androidManualBody:
+      "Open the browser menu (⋮) and choose 'Install app' or 'Add to Home screen' to use it like an app.",
+    later: "Not now",
+    dontShowAgain: "Don't show this again",
+  },
   settings: {
     title: "Settings",
     nameLabel: "Name",
@@ -99,6 +113,7 @@ export const en = {
     install: "Install app",
     installDescription: "Install to your home screen for easier access.",
     installIosHint: "On iOS, tap the Share button then 'Add to Home Screen'.",
+    installAndroidHint: "On Android, open the browser menu (⋮) and select 'Add to Home screen' or 'Install app'.",
     installed: "Already installed.",
     shareApp: "Share this app",
     shareAppDescription: "Introduce this app to other members.",
@@ -128,6 +143,8 @@ export const en = {
     installUnavailable:
       "This browser doesn't offer an install prompt. Use 'Add to Home Screen' from the browser menu.",
     splashPreview: "Show now",
+    resetPlatformChoice: "Show install guide again",
+    resetPlatformChoiceDone: "The install guide will be shown again.",
   },
   common: {
     save: "Save",

@@ -6,7 +6,7 @@ import styles from "./InstallPromptButton.module.css";
 
 export function InstallPromptButton() {
   const { t } = useTranslation();
-  const { canInstall, installed, isIos, promptInstall } = useInstallPrompt();
+  const { canInstall, installed, isIos, isAndroid, promptInstall } = useInstallPrompt();
 
   if (installed) {
     return <p className={styles.installed}>{t("settings.installed")}</p>;
@@ -16,14 +16,17 @@ export function InstallPromptButton() {
     return <p className={styles.hint}>{t("settings.installIosHint")}</p>;
   }
 
-  // A disabled button with no explanation reads as "broken" — say why.
-  if (!canInstall) {
-    return <p className={styles.hint}>{t("settings.installUnavailable")}</p>;
+  if (canInstall) {
+    return (
+      <button type="button" className={styles.button} onClick={promptInstall}>
+        {t("settings.install")}
+      </button>
+    );
   }
 
-  return (
-    <button type="button" className={styles.button} onClick={promptInstall}>
-      {t("settings.install")}
-    </button>
-  );
+  if (isAndroid) {
+    return <p className={styles.hint}>{t("settings.installAndroidHint")}</p>;
+  }
+
+  return <p className={styles.hint}>{t("settings.installUnavailable")}</p>;
 }

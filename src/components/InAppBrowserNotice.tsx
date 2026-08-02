@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { detectInAppBrowser } from "@/hooks/useInstallPrompt";
 import { useTranslation } from "@/i18n/useTranslation";
 import { useToast } from "./ToastProvider";
 import styles from "./InAppBrowserNotice.module.css";
 
-const IN_APP_BROWSER_PATTERN = /KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\//i;
 const DISMISSED_KEY = "legioMariae.inAppBrowserNoticeDismissed";
 
 export function InAppBrowserNotice() {
@@ -14,7 +14,7 @@ export function InAppBrowserNotice() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const isInAppBrowser = IN_APP_BROWSER_PATTERN.test(window.navigator.userAgent);
+    const isInAppBrowser = detectInAppBrowser();
     const dismissed = window.sessionStorage.getItem(DISMISSED_KEY) === "1";
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time check of browser APIs unavailable at render time
     setVisible(isInAppBrowser && !dismissed);

@@ -237,6 +237,19 @@ export default function SettingsPage() {
         <span className={styles.label}>{t("settings.install")}</span>
         <p className={styles.description}>{t("settings.installDescription")}</p>
         <InstallPromptButton />
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => {
+            const current = storage.getSettings();
+            storage.setSettings({ ...current, hidePlatformChoicePopup: false });
+            showToast(t("settings.resetPlatformChoiceDone"));
+            setTimeout(() => { window.location.reload(); }, 1500);
+          }}
+          style={{ marginTop: "1rem" }}
+        >
+          {t("settings.resetPlatformChoice")}
+        </button>
       </section>
 
       <section className={styles.section}>
