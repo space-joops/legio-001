@@ -1,16 +1,20 @@
 :root {
-  --color-background: #fafaf5;
-  --color-surface: #efe8dc;
-  --color-surface-alt: #e4dac4;
-  --color-text: #4a3a2a;
-  --color-text-muted: #5c4a36;
-  --color-primary: #4d6980;
-  --color-primary-strong: #394f5c;
-  --color-primary-contrast: #fafaf5;
-  --color-accent-secondary: #8a4a12;
-  --color-border: #4a3a2a;
-  --color-danger: #a3342c;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f1f5f9;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  --color-primary: #3b82f6;
+  --color-primary-strong: #2563eb;
+  --color-primary-contrast: #ffffff;
+  --color-accent-secondary: #f59e0b;
+  --color-border: #e2e8f0;
+  --color-danger: #ef4444;
   --color-danger-contrast: #ffffff;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
   /* rem so they grow with the font-size setting below — at px the nav clipped
      its own icons and labels once a user picked a larger text size. */
