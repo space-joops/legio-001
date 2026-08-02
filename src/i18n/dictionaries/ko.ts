@@ -68,6 +68,14 @@ export const ko = {
     subtitle: "레지오 마리애 주간 활동 보고를 사용하려면 아래 정보를 입력해 주세요.",
     start: "시작하기",
   },
+  platformChoice: {
+    title: "시작 방식 선택",
+    description: "더 편리한 사용을 위해 앱으로 설치하시겠습니까?",
+    pwa: "PWA로 설치하기",
+    manual: "디바이스에 앱 설치하기",
+    web: "그냥 웹으로 쓰기",
+    dontShowAgain: "다시 보지 않기",
+  },
   settings: {
     title: "설정",
     nameLabel: "이름",
@@ -126,6 +134,8 @@ export const ko = {
     installUnavailable:
       "이 브라우저에서는 설치 안내가 나타나지 않습니다. 브라우저 메뉴의 '홈 화면에 추가'를 이용해 주세요.",
     splashPreview: "지금 보기",
+    resetPlatformChoice: "앱 설치 안내 팝업 다시 켜기",
+    resetPlatformChoiceDone: "앱 설치 안내 팝업이 다시 나타납니다.",
   },
   common: {
     save: "저장",

@@ -70,6 +70,14 @@ export const en = {
     subtitle: "Please enter the following information to use the Legion of Mary weekly report app.",
     start: "Start",
   },
+  platformChoice: {
+    title: "Choose how to start",
+    description: "Would you like to install the app for a better experience?",
+    pwa: "Install as PWA",
+    manual: "Install on device",
+    web: "Just use on web",
+    dontShowAgain: "Don't show this again",
+  },
   settings: {
     title: "Settings",
     nameLabel: "Name",
@@ -128,6 +136,8 @@ export const en = {
     installUnavailable:
       "This browser doesn't offer an install prompt. Use 'Add to Home Screen' from the browser menu.",
     splashPreview: "Show now",
+    resetPlatformChoice: "Show app install popup again",
+    resetPlatformChoiceDone: "The app install popup will be shown again.",
   },
   common: {
     save: "Save",
