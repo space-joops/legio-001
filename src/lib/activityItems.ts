@@ -34,6 +34,9 @@ const SEED_ITEMS: SeedItem[] = [
   { key: "newFamily", label: "새가족 찾기", line: "parish" },
   { key: "lapsedEncourage", label: "냉담회두 권면", line: "parish" },
   { key: "smallGroupJoin", label: "소공동체 참여", line: "parish" },
+  { key: "bibleReading", label: "성경 읽기 및 필사", line: "praesidium" },
+  { key: "eucharisticAdoration", label: "성체조배", line: "praesidium" },
+  { key: "catechism", label: "교리 공부", line: "praesidium" },
 ];
 
 export function createDefaultActivityItems(): ActivityItem[] {
