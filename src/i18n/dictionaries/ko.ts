@@ -220,10 +220,10 @@ export const ko = {
     title: "뗏세라 기도문",
     tocLabel: "바로가기",
     legend: "○ 선창 · ● 응답 · ◎ 함께 · † 성호경",
-    opening: "개회 기도",
+    opening: "시작 기도",
     rosary: "묵주기도",
     catena: "까떼나 레지오니스",
-    closing: "폐회 기도",
+    closing: "마침 기도",
     sourceNote:
       "공인 교본의 뗏세라를 기준으로 정리한 기도문입니다. 발행 판본에 따라 표현이 조금씩 다를 수 있으니, 소속 쁘레시디움의 뗏세라와 다른 부분은 그 문구를 따르세요.",
   },
