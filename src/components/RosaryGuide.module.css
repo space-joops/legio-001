@@ -1,10 +1,52 @@
 .guide {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   padding: 0 0 var(--space-4);
   margin-bottom: var(--space-4);
   border-bottom: 3px solid var(--color-border);
+}
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text);
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navButton:hover:not(:disabled) {
+  background: var(--color-background);
+}
+
+.navButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.navButtonLeft {
+  left: -24px;
+}
+
+.navButtonRight {
+  right: -24px;
+}
+
+@media (max-width: 768px) {
+  .navButton {
+    display: none;
+  }
 }
 
 /* Keeps the prayer's name at the top of the screen while a long text scrolls

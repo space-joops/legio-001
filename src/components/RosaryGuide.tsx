@@ -29,6 +29,8 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
   const [asking, setAsking] = useState(false);
   const [recorded, setRecorded] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchEnd = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- today's date is unavailable at render time on a static export
@@ -81,12 +83,79 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
     setIndex(0);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchEnd.current = null;
+    touchStart.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEnd.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    };
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart.current || !touchEnd.current) return;
+    const distanceX = touchStart.current.x - touchEnd.current.x;
+    const distanceY = touchStart.current.y - touchEnd.current.y;
+
+    if (Math.abs(distanceX) <= Math.abs(distanceY)) return;
+
+    if (!asking) {
+      if (distanceX > 50) {
+        handleNext();
+      } else if (distanceX < -50 && index > 0) {
+        setIndex(index - 1);
+      }
+    }
+  };
+
   const context = [mysteryHeading, step.decade ? t("rosary.decade").replace("{n}", String(step.decade)) : null]
     .filter(Boolean)
     .join(" · ");
 
+  const handlePrev = () => {
+    if (index > 0) setIndex(index - 1);
+  };
+
   return (
-    <section ref={rootRef} className={styles.guide} aria-label={t("rosary.guideLabel")}>
+    <section
+      ref={rootRef}
+      className={styles.guide}
+      aria-label={t("rosary.guideLabel")}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <button
+        type="button"
+        className={`${styles.navButton} ${styles.navButtonLeft}`}
+        onClick={handlePrev}
+        disabled={index === 0 || asking}
+        aria-label={t("rosary.previous")}
+        title={t("rosary.previous")}
+      >
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        className={`${styles.navButton} ${styles.navButtonRight}`}
+        onClick={handleNext}
+        disabled={asking}
+        aria-label={t("rosary.next")}
+        title={t("rosary.next")}
+      >
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
       <div className={styles.stickyHead}>
         <p className={styles.context}>{context}</p>
         {/* Remounting on index change restarts the blink — the point is to show
@@ -130,20 +199,6 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
       ) : (
         <>
           {recorded && <p className={styles.recorded}>{t("rosary.recorded")}</p>}
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={() => setIndex(index - 1)}
-              disabled={index === 0}
-            >
-              <span aria-hidden="true">←</span> {t("rosary.previous")}
-            </button>
-            <button type="button" className={styles.primaryButton} onClick={handleNext}>
-              {isLast ? t("rosary.finish") : t("rosary.next")}{" "}
-              <span aria-hidden="true">→</span>
-            </button>
-          </div>
           <p className={styles.position}>
             {t("rosary.position")
               .replace("{current}", String(index + 1))
