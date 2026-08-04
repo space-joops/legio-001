@@ -160,8 +160,8 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
         aria-label={t("rosary.previous")}
         title={t("rosary.previous")}
       >
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <polygon points="15,4 5,12 15,20"></polygon>
         </svg>
       </button>
 
@@ -173,8 +173,8 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
         aria-label={t("rosary.next")}
         title={t("rosary.next")}
       >
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <polygon points="9,4 19,12 9,20"></polygon>
         </svg>
       </button>
 
