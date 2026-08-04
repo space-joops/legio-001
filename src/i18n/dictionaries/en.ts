@@ -59,8 +59,8 @@ export const en = {
   },
   home: {
     title: "This week's activity",
-    submit: "Submit weekly report",
-    submitConfirmTitle: "Submit this week's report?",
+    submit: "Close Weekly Activity",
+    submitConfirmTitle: "Close Weekly Activity?",
     submitConfirmBody:
       "Submitting will close this week's record and add it to your history. The report is saved only on this device — use Share afterwards to send it. Start next week from Home with 'Start this week'.",
     activityNoteLabel: "Activity notes",
@@ -166,6 +166,12 @@ export const en = {
     splashPreview: "Show now",
     resetPlatformChoice: "Show install guide again",
     resetPlatformChoiceDone: "The install guide will be shown again.",
+  },
+
+  lab: {
+    title: "Lab",
+    digitalRosary: "Digital Rosary",
+    digitalRosaryDescription: "A digital rosary for praying the rosary.",
   },
   common: {
     save: "Save",
