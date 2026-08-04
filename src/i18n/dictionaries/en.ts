@@ -92,14 +92,14 @@ export const en = {
     start: "Start",
   },
   platformChoice: {
-    installTitle: "Install the app?",
+    installTitle: "Add to your Home Screen?",
     installBody:
       "Installing puts an icon on your home screen so it opens straight away, even on a slow connection.",
     installAction: "Install app",
     iosTitle: "Add to your Home Screen?",
     iosBody:
       "Tap the Share button below, then choose 'Add to Home Screen' to use it like an app.",
-    androidManualTitle: "Install the app?",
+    androidManualTitle: "Add to your Home Screen?",
     androidManualBody:
       "Open the browser menu (⋮) and choose 'Install app' or 'Add to Home screen' to use it like an app.",
     later: "Not now",
