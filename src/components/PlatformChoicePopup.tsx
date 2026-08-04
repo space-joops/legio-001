@@ -5,6 +5,7 @@ import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { storage } from "@/lib/storage";
 import { useTranslation } from "@/i18n/useTranslation";
+import Image from "next/image";
 import styles from "./PlatformChoicePopup.module.css";
 
 /** Give the app a moment to settle before interrupting. */
@@ -99,6 +100,9 @@ export function PlatformChoicePopup() {
         handleClose();
       }}
     >
+      <div className={styles.iconWrapper}>
+        <Image src="/icons/icon-192.png" alt="App Icon" className={styles.appIcon} width={64} height={64} unoptimized />
+      </div>
       <h2 className={styles.title}>{t(copy.title)}</h2>
       <p className={styles.body}>{t(copy.body)}</p>
 
