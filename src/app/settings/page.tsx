@@ -339,6 +339,17 @@ export default function SettingsPage() {
         </button>
       </details>
 
+
+      <details className={styles.advanced}>
+        <summary className={styles.advancedSummary}>
+          <h2 className={styles.advancedTitle}>{t("lab.title")}</h2>
+        </summary>
+        <p className={styles.description}>{t("lab.digitalRosaryDescription")}</p>
+        <Link href="/lab/rosary" className={styles.secondaryButton}>
+          {t("lab.digitalRosary")}
+        </Link>
+      </details>
+
       {/* One line, no labels: "v0.6.0(20260802120712) https://legio.diginori.com".
           It gets read out over the phone when something looks wrong. */}
       <p className={styles.versionText}>

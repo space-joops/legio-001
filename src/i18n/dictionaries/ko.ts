@@ -57,16 +57,16 @@ export const ko = {
   },
   home: {
     title: "이번 주 활동",
-    submit: "주간 보고 제출하기",
-    submitConfirmTitle: "주간 보고를 제출할까요?",
+    submit: "주간 활동 마감",
+    submitConfirmTitle: "주간 활동을 마감할까요?",
     submitConfirmBody:
-      "제출하면 이번 주 기록이 마감되고 기록 목록에 추가됩니다. 보고는 이 기기에만 저장되며, 제출 후 공유하기로 보낼 수 있습니다. 다음 주는 홈에서 '이번 주 시작하기'를 눌러 새로 시작합니다.",
+      "마감하면 이번 주 기록이 저장되고 기록 목록에 추가됩니다. 보고는 이 기기에만 저장되며, 제출 후 공유하기로 보낼 수 있습니다. 다음 주는 홈에서 '이번 주 시작하기'를 눌러 새로 시작합니다.",
     activityNoteLabel: "활동 사항",
     activityNotePlaceholder: "방문, 특이사항 등 이번 주 활동을 자유롭게 적어 주세요.",
   },
   history: {
     title: "지난 활동 기록",
-    empty: "아직 제출된 주간 보고가 없습니다.",
+    empty: "아직 마감된 주간 활동이 없습니다.",
   },
   report: {
     title: "주간 활동 보고",
@@ -167,6 +167,12 @@ export const ko = {
     splashPreview: "지금 보기",
     resetPlatformChoice: "앱 설치 안내 다시 보기",
     resetPlatformChoiceDone: "앱 설치 안내가 다시 나타납니다.",
+  },
+
+  lab: {
+    title: "실험실",
+    digitalRosary: "디지털 묵주",
+    digitalRosaryDescription: "묵주기도를 바칠 때 사용할 수 있는 디지털 묵주입니다.",
   },
   common: {
     save: "저장",
