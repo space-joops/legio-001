@@ -28,7 +28,9 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
   const [index, setIndex] = useState(0);
   const [asking, setAsking] = useState(false);
   const [recorded, setRecorded] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
   const rootRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchEnd = useRef<{ x: number; y: number } | null>(null);
 
@@ -73,6 +75,7 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
       setAsking(true);
       return;
     }
+    setSlideDirection("right");
     setIndex(index + 1);
   };
 
@@ -83,12 +86,22 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
     setIndex(0);
   };
 
+  const handlePrev = () => {
+    if (index > 0) {
+      setSlideDirection("left");
+      setIndex(index - 1);
+    }
+  };
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchEnd.current = null;
     touchStart.current = {
       x: e.targetTouches[0].clientX,
       y: e.targetTouches[0].clientY,
     };
+    if (contentRef.current) {
+      contentRef.current.style.transition = "none";
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -96,9 +109,21 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
       x: e.targetTouches[0].clientX,
       y: e.targetTouches[0].clientY,
     };
+    if (touchStart.current && contentRef.current && !asking) {
+      const distanceX = touchStart.current.x - touchEnd.current.x;
+      const distanceY = Math.abs(touchStart.current.y - touchEnd.current.y);
+      if (Math.abs(distanceX) > distanceY) {
+        contentRef.current.style.transform = `translateX(${-distanceX}px)`;
+      }
+    }
   };
 
   const handleTouchEnd = () => {
+    if (contentRef.current) {
+      contentRef.current.style.transition = "transform 0.3s ease";
+      contentRef.current.style.transform = "translateX(0)";
+    }
+
     if (!touchStart.current || !touchEnd.current) return;
     const distanceX = touchStart.current.x - touchEnd.current.x;
     const distanceY = touchStart.current.y - touchEnd.current.y;
@@ -109,7 +134,7 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
       if (distanceX > 50) {
         handleNext();
       } else if (distanceX < -50 && index > 0) {
-        setIndex(index - 1);
+        handlePrev();
       }
     }
   };
@@ -117,10 +142,6 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
   const context = [mysteryHeading, step.decade ? t("rosary.decade").replace("{n}", String(step.decade)) : null]
     .filter(Boolean)
     .join(" · ");
-
-  const handlePrev = () => {
-    if (index > 0) setIndex(index - 1);
-  };
 
   return (
     <section
@@ -156,56 +177,63 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
           <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
       </button>
-      <div className={styles.stickyHead}>
-        <p className={styles.context}>{context}</p>
-        {/* Remounting on index change restarts the blink — the point is to show
-            that the prayer moved, so it has to replay on every step. */}
-        <p key={index} className={styles.heading}>
-          {step.title}
-          {step.ordinal && <span className={styles.ordinal}>{step.ordinal}</span>}
-        </p>
-      </div>
 
-      {step.lines.length > 0 && (
-        <div className={styles.body}>
-          {step.lines.map((line, i) => (
-            <p key={i} className={styles.line}>
-              {line}
-            </p>
-          ))}
-        </div>
-      )}
-
-      {asking ? (
-        /* Inline rather than a nested <dialog>: stacking two top-layer modals is
-           more fragile than another step in the one already open. */
-        <div className={styles.confirm}>
-          <p className={styles.confirmText}>
-            {t("rosary.recordQuestion").replace("{count}", String(ROSARY_SET_SIZE))}
+      <div
+        ref={contentRef}
+        key={index}
+        className={`${styles.contentWrapper} ${slideDirection === "right" ? styles.slideInRight : styles.slideInLeft}`}
+      >
+        <div className={styles.stickyHead}>
+          <p className={styles.context}>{context}</p>
+          {/* Remounting on index change restarts the blink — the point is to show
+              that the prayer moved, so it has to replay on every step. */}
+          <p key={index} className={styles.heading}>
+            {step.title}
+            {step.ordinal && <span className={styles.ordinal}>{step.ordinal}</span>}
           </p>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.secondaryButton}
-              onClick={() => setAsking(false)}
-            >
-              {t("common.cancel")}
-            </button>
-            <button type="button" className={styles.primaryButton} onClick={handleConfirm}>
-              {t("rosary.record")}
-            </button>
+        </div>
+
+        {step.lines.length > 0 && (
+          <div className={styles.body}>
+            {step.lines.map((line, i) => (
+              <p key={i} className={styles.line}>
+                {line}
+              </p>
+            ))}
           </div>
-        </div>
-      ) : (
-        <>
-          {recorded && <p className={styles.recorded}>{t("rosary.recorded")}</p>}
-          <p className={styles.position}>
-            {t("rosary.position")
-              .replace("{current}", String(index + 1))
-              .replace("{total}", String(steps.length))}
-          </p>
-        </>
-      )}
+        )}
+
+        {asking ? (
+          /* Inline rather than a nested <dialog>: stacking two top-layer modals is
+             more fragile than another step in the one already open. */
+          <div className={styles.confirm}>
+            <p className={styles.confirmText}>
+              {t("rosary.recordQuestion").replace("{count}", String(ROSARY_SET_SIZE))}
+            </p>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setAsking(false)}
+              >
+                {t("common.cancel")}
+              </button>
+              <button type="button" className={styles.primaryButton} onClick={handleConfirm}>
+                {t("rosary.record")}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {recorded && <p className={styles.recorded}>{t("rosary.recorded")}</p>}
+            <p className={styles.position}>
+              {t("rosary.position")
+                .replace("{current}", String(index + 1))
+                .replace("{total}", String(steps.length))}
+            </p>
+          </>
+        )}
+      </div>
     </section>
   );
 }
