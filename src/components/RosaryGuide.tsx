@@ -152,32 +152,6 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
-      <button
-        type="button"
-        className={`${styles.navButton} ${styles.navButtonLeft}`}
-        onClick={handlePrev}
-        disabled={index === 0 || asking}
-        aria-label={t("rosary.previous")}
-        title={t("rosary.previous")}
-      >
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <polygon points="15,4 5,12 15,20"></polygon>
-        </svg>
-      </button>
-
-      <button
-        type="button"
-        className={`${styles.navButton} ${styles.navButtonRight}`}
-        onClick={handleNext}
-        disabled={asking}
-        aria-label={t("rosary.next")}
-        title={t("rosary.next")}
-      >
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-          <polygon points="9,4 19,12 9,20"></polygon>
-        </svg>
-      </button>
-
       <div
         ref={contentRef}
         key={index}
@@ -226,11 +200,38 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
         ) : (
           <>
             {recorded && <p className={styles.recorded}>{t("rosary.recorded")}</p>}
-            <p className={styles.position}>
-              {t("rosary.position")
-                .replace("{current}", String(index + 1))
-                .replace("{total}", String(steps.length))}
-            </p>
+            <div className={styles.bottomNav}>
+              <button
+                type="button"
+                className={styles.bottomNavButton}
+                onClick={handlePrev}
+                disabled={index === 0}
+                aria-label={t("rosary.previous")}
+                title={t("rosary.previous")}
+              >
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                  <polygon points="15,4 5,12 15,20"></polygon>
+                </svg>
+              </button>
+
+              <p className={styles.position}>
+                {t("rosary.position")
+                  .replace("{current}", String(index + 1))
+                  .replace("{total}", String(steps.length))}
+              </p>
+
+              <button
+                type="button"
+                className={styles.bottomNavButton}
+                onClick={handleNext}
+                aria-label={t("rosary.next")}
+                title={t("rosary.next")}
+              >
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                  <polygon points="9,4 19,12 9,20"></polygon>
+                </svg>
+              </button>
+            </div>
           </>
         )}
       </div>
