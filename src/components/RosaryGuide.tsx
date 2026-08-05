@@ -9,6 +9,7 @@ import {
   getMysterySection,
   type MysteryId,
 } from "@/lib/rosaryMysteries";
+import { ROSARY_MEDITATIONS } from "@/lib/rosaryMeditations";
 import styles from "./RosaryGuide.module.css";
 
 interface RosaryGuideProps {
@@ -35,6 +36,8 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchEnd = useRef<{ x: number; y: number } | null>(null);
+  const [selectedDecadeMeditations, setSelectedDecadeMeditations] = useState<string[] | null>(null);
+  const [isModalClosing, setIsModalClosing] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- today's date is unavailable at render time on a static export
@@ -109,6 +112,23 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
       setSlideDirection("left");
       setIndex(index - 1);
     }
+  };
+
+  const handleImageClick = () => {
+    if (step.decade && mysteryId) {
+      const meditations = ROSARY_MEDITATIONS[mysteryId]?.[step.decade - 1];
+      if (meditations) {
+        setSelectedDecadeMeditations(meditations);
+        setIsModalClosing(false);
+      }
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalClosing(true);
+    setTimeout(() => {
+      setSelectedDecadeMeditations(null);
+    }, 300); // 0.3s transition
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -187,7 +207,10 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
 
         {step.image && (
-          <div className={styles.imageWrapper}>
+          <div
+            className={`${styles.imageWrapper} ${step.decade ? styles.clickableImage : ""}`}
+            onClick={step.decade ? handleImageClick : undefined}
+          >
              {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={step.image}
@@ -207,6 +230,31 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
                 {line}
               </p>
             ))}
+          </div>
+        )}
+
+        {selectedDecadeMeditations && (
+          <div className={`${styles.modalOverlay} ${isModalClosing ? styles.fadeOut : styles.fadeIn}`}>
+            <div className={`${styles.modalContent} ${isModalClosing ? styles.slideDown : styles.slideUp}`}>
+              <div className={styles.modalHeader}>
+                <h2 className={styles.modalTitle}>{step.title} {step.ordinal && <span className={styles.ordinal}>{step.ordinal}</span>}</h2>
+                <button className={styles.closeButton} onClick={closeModal} aria-label={t("common.close")}>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                  </svg>
+                </button>
+              </div>
+              <div className={styles.modalBody}>
+                <ul className={styles.meditationList}>
+                  {selectedDecadeMeditations.map((meditation, i) => (
+                    <li key={i} className={styles.meditationItem}>
+                      <span className={styles.meditationNumber}>{i + 1}.</span>
+                      <span className={styles.meditationText}>{meditation}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         )}
 
