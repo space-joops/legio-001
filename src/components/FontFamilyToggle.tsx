@@ -26,6 +26,15 @@ export function FontFamilyToggle() {
       >
         {t("settings.fontFamilyNanum")}
       </button>
+
+      <button
+        type="button"
+        className={`${styles.option} ${fontFamily === "catholic" ? styles.active : ""}`}
+        onClick={() => setFontFamily("catholic")}
+        aria-pressed={fontFamily === "catholic"}
+      >
+        {t("settings.fontFamilyCatholic")}
+      </button>
     </div>
   );
 }

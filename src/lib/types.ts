@@ -47,7 +47,7 @@ export interface Profile {
 export type Language = "ko" | "en";
 
 export type FontScale = "small" | "medium" | "large" | "xlarge";
-export type FontFamily = "system" | "nanum";
+export type FontFamily = "system" | "nanum" | "catholic";
 
 export interface Settings {
   language: Language;

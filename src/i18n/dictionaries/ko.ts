@@ -127,6 +127,7 @@ export const ko = {
     fontFamilyLabel: "폰트",
     fontFamilySystem: "기본 고딕",
     fontFamilyNanum: "나눔고딕",
+    fontFamilyCatholic: "가톨릭서체",
     splashLabel: "시작 화면 성화",
     splashDescription:
       "앱을 열 때와 다른 앱·다른 탭에 갔다가 돌아올 때마다 레지오 마리애 성화를 잠시 보여 줍니다. 화면을 누르면 바로 넘어갑니다.",

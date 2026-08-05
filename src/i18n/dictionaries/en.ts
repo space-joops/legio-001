@@ -126,6 +126,7 @@ export const en = {
     fontFamilyLabel: "Font",
     fontFamilySystem: "Default",
     fontFamilyNanum: "Nanum Gothic",
+    fontFamilyCatholic: "Catholic",
     splashLabel: "Opening image",
     splashDescription:
       "Briefly show the Legion of Mary image when the app opens and each time you come back to it. Tap the screen to skip.",
