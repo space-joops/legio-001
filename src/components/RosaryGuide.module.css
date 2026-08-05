@@ -214,3 +214,19 @@
 .secondaryButton:disabled {
   opacity: 0.45;
 }
+
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  width: 100%;
+}
+
+.mysteryImage {
+  max-width: 100%;
+  max-height: 40vh; /* 화면의 40% 정도만 차지하도록 제한 */
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+}
