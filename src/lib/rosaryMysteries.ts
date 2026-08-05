@@ -368,17 +368,23 @@ export function buildRosarySteps(
   const closing = ko ? SALVE_REGINA_KO : SALVE_REGINA_EN;
   const mystery = getMysterySection(id, language);
 
+  // 성모송 화면들을 만들어내는 함수입니다. (count: 반복 횟수, decade: 현재 몇 단인지)
   const hailMarys = (count: number, decade?: number): RosaryStep[] =>
+    // Array.from을 사용하여 길이가 count인 배열을 생성합니다.
+    // 첫 번째 인자는 배열의 형태({length: count})이고, 두 번째 인자는 각 요소를 생성하는 맵핑 함수입니다.
+    // 파이썬의 리스트 컴프리헨션(예: [f(i) for i in range(count)])과 유사한 역할을 합니다.
     Array.from({ length: count }, (_, i) => {
-      let stepLines = hailMary;
-      if (ko && decade && MYSTERY_MEDITATIONS[id]?.[decade]?.[i]) {
-        stepLines = [MYSTERY_MEDITATIONS[id][decade][i], ...hailMary];
-      }
+      // stepLines 변수에 기본 성모송 텍스트 배열(hailMary)을 할당합니다.
+      // (기존에는 여기서 조건문을 통해 성화 설명/묵상 텍스트를 배열 앞에 추가하는 로직이 있었으나,
+      // 순수하게 성모송 텍스트만 나오도록 해당 로직을 제거했습니다.)
+      const stepLines = hailMary;
+
+      // 화면에 표시될 각 성모송 단계(RosaryStep)의 객체를 반환합니다.
       return {
-        title: labels.hailMary,
-        ordinal: `${i + 1} / ${count}`,
-        lines: stepLines,
-        decade,
+        title: labels.hailMary,           // 제목: "성모송"
+        ordinal: `${i + 1} / ${count}`,   // 순번: 예) "1 / 10", 파이썬의 f-string (f"{i + 1} / {count}")과 같습니다.
+        lines: stepLines,                 // 본문: 성모송 기도문 배열
+        decade,                           // 현재 단 (있는 경우)
       };
     });
 
