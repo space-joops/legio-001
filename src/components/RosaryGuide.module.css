@@ -230,3 +230,101 @@
   object-fit: contain;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
 }
+
+/* Full Screen Image Dialog */
+.fullScreenDialog {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: none;
+  max-height: none;
+}
+
+.fullScreenDialog::backdrop {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.fullScreenContent {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background, #fff);
+  color: var(--color-text, #333);
+}
+
+@media (prefers-color-scheme: dark) {
+  .fullScreenContent {
+    background: var(--color-background, #121212);
+    color: var(--color-text, #f5f5f5);
+  }
+}
+
+.closeFullScreenBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.closeFullScreenBtn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.fullScreenScroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fullScreenTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1.5rem 0 1rem;
+  text-align: center;
+}
+
+.fullScreenImg {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+}
+
+.fullScreenText {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fullScreenLine {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  word-break: keep-all;
+}
