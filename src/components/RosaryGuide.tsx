@@ -31,6 +31,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const [asking, setAsking] = useState(false);
   const [recorded, setRecorded] = useState(false);
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
+  const [fullScreenImage, setFullScreenImage] = useState<{src: string, title: string, explanation: string[]} | null>(null);
   const rootRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -196,6 +197,12 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
+              onClick={() => {
+                if (step.explanation && step.explanation.length > 0) {
+                  setFullScreenImage({ src: step.image!, title: step.title, explanation: step.explanation });
+                }
+              }}
+              style={{ cursor: step.explanation && step.explanation.length > 0 ? 'pointer' : 'default' }}
             />
           </div>
         )}
@@ -268,6 +275,53 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           </>
         )}
       </div>
+      {fullScreenImage && (
+        <dialog
+          className={styles.fullScreenDialog}
+          ref={(el) => {
+            if (el && !el.open) {
+              el.showModal();
+            }
+          }}
+          onCancel={(e) => {
+            e.preventDefault();
+            setFullScreenImage(null);
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setFullScreenImage(null);
+            }
+          }}
+        >
+          <div className={styles.fullScreenContent}>
+            <button
+              className={styles.closeFullScreenBtn}
+              onClick={() => setFullScreenImage(null)}
+              aria-label={t("common.close")}
+            >
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+              </svg>
+            </button>
+            <div className={styles.fullScreenScroll}>
+              <h2 className={styles.fullScreenTitle}>{fullScreenImage.title}</h2>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={fullScreenImage.src}
+                alt={fullScreenImage.title}
+                className={styles.fullScreenImg}
+              />
+              <div className={styles.fullScreenText}>
+                {fullScreenImage.explanation.map((line, i) => (
+                  <p key={i} className={styles.fullScreenLine}>
+                    {i + 1}. {line}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </dialog>
+      )}
     </section>
   );
 }
