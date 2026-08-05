@@ -14,6 +14,8 @@ import styles from "./RosaryGuide.module.css";
 interface RosaryGuideProps {
   /** Adds a whole 5단 set to the counter. */
   onRecordSet: () => void;
+  /** Beads filled toward the current rosary set (0 to 4). */
+  progress?: number;
 }
 
 /**
@@ -22,7 +24,7 @@ interface RosaryGuideProps {
  * weekday, so the day is read on the client: a static export has no "today" at
  * build time.
  */
-export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
+export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const { t, language } = useTranslation();
   const [mysteryId, setMysteryId] = useState<MysteryId | null>(null);
   const [index, setIndex] = useState(0);
@@ -55,6 +57,22 @@ export function RosaryGuide({ onRecordSet }: RosaryGuideProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [mysteryId, language]
   );
+
+
+
+  const initRef = useRef(false);
+  useEffect(() => {
+    if (steps.length > 0 && progress > 0 && !initRef.current) {
+      const targetDecade = progress + 1;
+      const targetIndex = steps.findIndex(s => s.decade === targetDecade);
+      if (targetIndex !== -1) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIndex(targetIndex);
+      }
+      initRef.current = true;
+    }
+  }, [steps, progress]);
+
 
   // Put the title back at the top of the screen on every move — the point of a
   // walk-through is that you never have to hunt for where you are. Scrolling
