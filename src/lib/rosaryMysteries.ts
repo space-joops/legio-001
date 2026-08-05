@@ -10,6 +10,8 @@ import {
   OUR_FATHER_KO,
   ROSARY_MYSTERY_SECTIONS_EN,
   ROSARY_MYSTERY_SECTIONS_KO,
+  ROSARY_MYSTERY_DESCRIPTIONS_KO,
+  ROSARY_MYSTERY_DESCRIPTIONS_EN,
   SALVATION_PRAYER_KO,
   SALVE_REGINA_EN,
   SALVE_REGINA_KO,
@@ -59,6 +61,11 @@ export function getMysterySection(id: MysteryId, language: Language): PrayerText
   return sections[MYSTERY_ORDER.indexOf(id)];
 }
 
+export function getMysteryDescriptions(id: MysteryId, language: Language): string[][] {
+  const descriptions = language === "ko" ? ROSARY_MYSTERY_DESCRIPTIONS_KO : ROSARY_MYSTERY_DESCRIPTIONS_EN;
+  return descriptions[MYSTERY_ORDER.indexOf(id)];
+}
+
 /** One screen of the walk-through: a prayer title and the words to say. */
 export interface RosaryStep {
   title: string;
@@ -99,6 +106,7 @@ export function buildRosarySteps(
   const salvation = ko ? SALVATION_PRAYER_KO : FATIMA_PRAYER_EN;
   const closing = ko ? SALVE_REGINA_KO : SALVE_REGINA_EN;
   const mystery = getMysterySection(id, language);
+  const descriptions = getMysteryDescriptions(id, language);
 
   const hailMarys = (count: number, decade?: number): RosaryStep[] =>
     Array.from({ length: count }, (_, i) => ({
@@ -115,7 +123,7 @@ export function buildRosarySteps(
     { title: labels.gloryBe, lines: gloryBe },
     ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => [
       // The mystery line is the announcement — it is the screen's whole text.
-      { title: mystery.lines[d], lines: [], decade: d + 1 },
+      { title: mystery.lines[d], lines: descriptions[d], decade: d + 1 },
       { title: labels.ourFather, lines: ourFather, decade: d + 1 },
       ...hailMarys(HAIL_MARYS_PER_DECADE, d + 1),
       { title: labels.gloryBe, lines: gloryBe, decade: d + 1 },
