@@ -31,10 +31,23 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const [asking, setAsking] = useState(false);
   const [recorded, setRecorded] = useState(false);
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
+  const [showMeditation, setShowMeditation] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const rootRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchEnd = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (showMeditation && !dialog.open) {
+      dialog.showModal();
+    } else if (!showMeditation && dialog.open) {
+      dialog.close();
+    }
+  }, [showMeditation]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- today's date is unavailable at render time on a static export
@@ -192,7 +205,10 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
             <img
               src={step.image}
               alt={step.title}
-              className={styles.mysteryImage}
+              className={`${styles.mysteryImage} ${step.meditations ? styles.clickableImage : ""}`}
+              onClick={() => {
+                if (step.meditations) setShowMeditation(true);
+              }}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
@@ -268,6 +284,46 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           </>
         )}
       </div>
+      {step.meditations && (
+        <dialog
+          ref={dialogRef}
+          className={styles.meditationDialog}
+          onCancel={(e) => {
+            e.preventDefault();
+            setShowMeditation(false);
+          }}
+          onClick={(e) => {
+            // Close when clicking outside the dialog content
+            if (e.target === dialogRef.current) {
+              setShowMeditation(false);
+            }
+          }}
+        >
+          <div className={styles.meditationDialogContent}>
+            <div className={styles.meditationDialogHeader}>
+              <h3>{step.title}</h3>
+              <button
+                type="button"
+                className={styles.meditationDialogClose}
+                onClick={() => setShowMeditation(false)}
+                aria-label={t("common.close")}
+              >
+                ✕
+              </button>
+            </div>
+            <div className={styles.meditationDialogBody}>
+              {step.meditations.map((line, i) => {
+                const isLast = i === step.meditations!.length - 1;
+                return (
+                  <p key={i} className={isLast ? styles.meditationDialogFooter : styles.meditationDialogLine}>
+                    {line}
+                  </p>
+                );
+              })}
+            </div>
+          </div>
+        </dialog>
+      )}
     </section>
   );
 }
