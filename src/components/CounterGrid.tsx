@@ -75,7 +75,7 @@ export function CounterGrid({
         onClose={() => setViewingKey(null)}
         guide={
           viewingKey === "rosaryDecades" ? (
-            <RosaryGuide onRecordSet={onRosaryRecordSet} />
+            <RosaryGuide onRecordSet={onRosaryRecordSet} progress={rosarySetProgress} />
           ) : undefined
         }
         incrementCaption={
