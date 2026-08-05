@@ -68,6 +68,8 @@ export interface RosaryStep {
   lines: string[];
   /** 1–5 while inside a decade; absent for the opening and closing prayers. */
   decade?: number;
+  /** The path to an optional image for this step */
+  image?: string;
 }
 
 /** Prayer names, passed in so this module stays free of the i18n layer. */
@@ -115,7 +117,7 @@ export function buildRosarySteps(
     { title: labels.gloryBe, lines: gloryBe },
     ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => [
       // The mystery line is the announcement — it is the screen's whole text.
-      { title: mystery.lines[d], lines: [], decade: d + 1 },
+      { title: mystery.lines[d], lines: [], decade: d + 1, image: `/images/rosary/${id}-${d + 1}.jpeg` },
       { title: labels.ourFather, lines: ourFather, decade: d + 1 },
       ...hailMarys(HAIL_MARYS_PER_DECADE, d + 1),
       { title: labels.gloryBe, lines: gloryBe, decade: d + 1 },

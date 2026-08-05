@@ -185,6 +185,21 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           </p>
         </div>
 
+
+        {step.image && (
+          <div className={styles.imageWrapper}>
+             {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={step.image}
+              alt={step.title}
+              className={styles.mysteryImage}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+        )}
+
         {step.lines.length > 0 && (
           <div className={styles.body}>
             {step.lines.map((line, i) => (
