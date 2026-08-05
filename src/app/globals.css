@@ -148,3 +148,11 @@ button:disabled {
     display: none !important;
   }
 }
+
+@font-face {
+  font-family: 'Catholic';
+  src: url('/fonts/catholic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
