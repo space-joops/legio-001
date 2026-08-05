@@ -16,6 +16,11 @@ import {
   type PrayerTextSection,
 } from "./prayerTexts";
 import type { Language } from "./types";
+import {
+  ROSARY_MEDITATIONS,
+  type DecadeMeditation,
+} from "./rosaryMeditations";
+
 
 export type MysteryId = "joyful" | "sorrowful" | "glorious" | "luminous";
 
@@ -70,6 +75,8 @@ export interface RosaryStep {
   decade?: number;
   /** The path to an optional image for this step */
   image?: string;
+  /** The 10 specific meditations and virtue for the decade. */
+  meditation?: DecadeMeditation;
 }
 
 /** Prayer names, passed in so this module stays free of the i18n layer. */
@@ -117,7 +124,7 @@ export function buildRosarySteps(
     { title: labels.gloryBe, lines: gloryBe },
     ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => [
       // The mystery line is the announcement — it is the screen's whole text.
-      { title: mystery.lines[d], lines: [], decade: d + 1, image: `/images/rosary/${id}-${d + 1}.jpeg` },
+      { title: mystery.lines[d], lines: [], decade: d + 1, image: `/images/rosary/${id}-${d + 1}.jpeg`, meditation: ROSARY_MEDITATIONS[id]?.[String(d + 1)] },
       { title: labels.ourFather, lines: ourFather, decade: d + 1 },
       ...hailMarys(HAIL_MARYS_PER_DECADE, d + 1),
       { title: labels.gloryBe, lines: gloryBe, decade: d + 1 },

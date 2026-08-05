@@ -9,6 +9,7 @@ import {
   getMysterySection,
   type MysteryId,
 } from "@/lib/rosaryMysteries";
+import { type DecadeMeditation } from "@/lib/rosaryMeditations";
 import styles from "./RosaryGuide.module.css";
 
 interface RosaryGuideProps {
@@ -31,6 +32,18 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const [asking, setAsking] = useState(false);
   const [recorded, setRecorded] = useState(false);
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
+  const [activeMeditation, setActiveMeditation] = useState<DecadeMeditation | null>(null);
+  const meditationDialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = meditationDialogRef.current;
+    if (!dialog) return;
+    if (activeMeditation && !dialog.open) {
+      dialog.showModal();
+    } else if (!activeMeditation && dialog.open) {
+      dialog.close();
+    }
+  }, [activeMeditation]);
   const rootRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -127,7 +140,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
       x: e.targetTouches[0].clientX,
       y: e.targetTouches[0].clientY,
     };
-    if (touchStart.current && contentRef.current && !asking) {
+    if (touchStart.current && contentRef.current && !asking && !activeMeditation) {
       const distanceX = touchStart.current.x - touchEnd.current.x;
       const distanceY = Math.abs(touchStart.current.y - touchEnd.current.y);
       if (Math.abs(distanceX) > distanceY) {
@@ -148,7 +161,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
     if (Math.abs(distanceX) <= Math.abs(distanceY)) return;
 
-    if (!asking) {
+    if (!asking && !activeMeditation) {
       if (distanceX > 50) {
         handleNext();
       } else if (distanceX < -50 && index > 0) {
@@ -188,15 +201,34 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
         {step.image && (
           <div className={styles.imageWrapper}>
-             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={step.image}
-              alt={step.title}
-              className={styles.mysteryImage}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
+            {step.meditation ? (
+              <button
+                type="button"
+                className={styles.imageButton}
+                onClick={() => setActiveMeditation(step.meditation!)}
+                aria-label={t("common.open")}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={step.image}
+                  alt={step.title}
+                  className={styles.mysteryImage}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </button>
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={step.image}
+                alt={step.title}
+                className={styles.mysteryImage}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            )}
           </div>
         )}
 
@@ -268,6 +300,39 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           </>
         )}
       </div>
+
+      {/* Meditation Dialog */}
+      <dialog
+        ref={meditationDialogRef}
+        className={styles.meditationDialog}
+        onCancel={(e) => {
+          e.preventDefault();
+          setActiveMeditation(null);
+        }}
+      >
+        {activeMeditation && (
+          <div className={styles.meditationScreen}>
+            <div className={styles.meditationHeader}>
+              <h2 className={styles.meditationTitle}>{step.title}</h2>
+              <button type="button" className={styles.meditationCloseButton} onClick={() => setActiveMeditation(null)}>
+                {t("common.close")}
+              </button>
+            </div>
+            <div className={styles.meditationContent}>
+              <ol className={styles.meditationList}>
+                {activeMeditation.meditations.map((line, idx) => (
+                  <li key={idx} className={styles.meditationItem}>
+                    {line}
+                  </li>
+                ))}
+              </ol>
+              <div className={styles.meditationVirtue}>
+                {activeMeditation.virtue}
+              </div>
+            </div>
+          </div>
+        )}
+      </dialog>
     </section>
   );
 }

@@ -230,3 +230,114 @@
   object-fit: contain;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
 }
+
+.imageButton {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.imageButton:hover {
+  opacity: 0.9;
+}
+
+.imageButton:active {
+  transform: scale(0.98);
+}
+
+.meditationDialog {
+  border: none;
+  padding: 0;
+  margin: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.meditationDialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.meditationScreen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  padding-top: max(var(--space-4), env(safe-area-inset-top));
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+.meditationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+  flex-shrink: 0;
+  gap: var(--space-3);
+}
+
+.meditationTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-primary);
+  line-height: 1.4;
+}
+
+.meditationCloseButton {
+  flex-shrink: 0;
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.meditationContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-right: var(--space-2);
+}
+
+.meditationList {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.meditationItem {
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+.meditationVirtue {
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--color-accent-secondary);
+  text-align: center;
+}
