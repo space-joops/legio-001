@@ -174,6 +174,11 @@ export const ko = {
     digitalRosary: "디지털 묵주",
     digitalRosaryDescription: "묵주기도를 바칠 때 사용할 수 있는 디지털 묵주입니다.",
   },
+  reference: {
+    title: "참고",
+    legionOfMaryWebsite: "한국 레지오 마리애",
+    legionOfMaryWebsiteDescription: "레지오 마리애 관련 참고 홈페이지입니다.",
+  },
   common: {
     save: "저장",
     cancel: "취소",
