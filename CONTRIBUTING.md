@@ -34,8 +34,66 @@
 - **VSCode 디버거**: VSCode 왼쪽 패널의 벌레 모양 아이콘(Run and Debug)을 활용해 브라우저와 연동하여 편리하게 중단점(Breakpoint)을 잡고 디버깅할 수 있습니다.
 
 ## 5. 테스트 코드 작성 및 실행 팁
-현재 프로젝트에는 `npm test` 스크립트가 아직 구성되어 있지 않을 수 있습니다. 차후 UI 테스트(예: Playwright 사용)를 구성하거나 실행할 때 다음을 주의해 주세요:
-- **스플래시 스크린 주의점**: 앱이 처음 로드될 때 스플래시 화면(로고 화면) 오버레이가 잠시 나타나며 클릭(포인터 이벤트)을 가로챕니다. Playwright 등으로 자동화 테스트를 작성할 때는, 이 스플래시 화면이 사라질 때까지 기다리거나 클릭하여 닫은 뒤에 실제 화면 요소와 상호작용하도록 코드를 작성해야 합니다.
+이 프로젝트는 Node.js 내장 테스트 러너(`node:test`)와 `tsx`를 사용하여 TypeScript 테스트 코드를 실행합니다.
+테스트 파일은 원본 파일과 동일한 위치에 `파일명.test.ts` 규칙으로 작성해 주세요. (예: `id.ts`의 테스트는 `id.test.ts`)
+
+테스트는 다음 명령어로 간단히 실행할 수 있습니다:
+```bash
+npm test
+```
+
+### 테스트 작성 예시 (난이도별)
+
+**1. 낮은 난이도 (단순 유틸리티 함수 검증)**
+단순한 값을 반환하는 함수의 테스트는 아래와 같이 직관적으로 작성합니다.
+```typescript
+import assert from "node:assert";
+import test from "node:test";
+import { generateId } from "./id";
+
+test("generateId (낮은 난이도)", async (t) => {
+  await t.test("문자열을 반환해야 한다", () => {
+    assert.strictEqual(typeof generateId(), "string");
+  });
+});
+```
+
+**2. 중간 난이도 (데이터 가공 로직 검증)**
+배열이나 객체를 변환하는 로직은 여러 가지 엣지 케이스(예: 빈 데이터 등)를 함께 테스트합니다.
+```typescript
+import assert from "node:assert";
+import test from "node:test";
+import { formatTallies } from "./activityReport";
+
+test("formatTallies (중간 난이도)", async (t) => {
+  await t.test("count가 0인 항목은 제외하고 문자열을 만들어야 한다", () => {
+    const input = [
+      { label: "장례미사", count: 2 },
+      { label: "기타", count: 0 },
+    ];
+    assert.strictEqual(formatTallies(input), "장례미사(2)");
+  });
+});
+```
+
+**3. 높은 난이도 (복잡한 날짜/업무 로직 검증)**
+달력, 윤년, 날짜 경계선 등 경우의 수가 많은 핵심 비즈니스 로직은 상세한 주석과 함께 다양한 시나리오를 테스트합니다.
+```typescript
+import assert from "node:assert";
+import test from "node:test";
+import { computeSundayMassBasis } from "./monthlyReportUtils";
+
+test("computeSundayMassBasis (높은 난이도)", async (t) => {
+  await t.test("연도가 바뀌는 경계(1월)에서도 정상 동작해야 한다", () => {
+    // 2023년 12월 마지막 화요일부터 2024년 1월 마지막 화요일까지의 주일 횟수 계산
+    const result = computeSundayMassBasis("2024-01", 2, 10);
+    assert.strictEqual(result?.sundayCount, 5);
+  });
+});
+```
+
+**UI (Playwright) 테스트 주의점**
+차후 UI 테스트를 작성할 경우: 앱이 처음 로드될 때 스플래시 화면(로고 화면)이 나타나며 클릭(포인터 이벤트)을 가로챕니다. 자동화 테스트를 작성할 때는, 이 스플래시 화면이 사라질 때까지 기다리거나 닫은 뒤에 실제 화면 요소와 상호작용해야 합니다.
 
 ## 6. 알아두면 좋은 기타 개발 팁
 - **이미지 태그 린트 에러 무시**: Next.js는 기본적으로 최적화를 위해 `<Image>` 컴포넌트 사용을 강제합니다. 하지만 이 프로젝트는 정적 내보내기(Static Export) 환경이므로 일반 `<img>` 태그를 사용해야 할 때가 있습니다. 이 경우 `<img>` 태그 바로 윗줄에 `/* eslint-disable-next-line @next/next/no-img-element */` 주석을 추가하면 `npm run lint` 시 발생하는 경고를 통과시킬 수 있습니다.
