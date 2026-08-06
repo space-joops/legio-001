@@ -17,6 +17,18 @@
 - **Prettier - Code formatter**: 코드를 저장할 때 들여쓰기 등을 깔끔하게 자동 정렬해 줍니다.
 - **ES7+ React/Redux/React-Native snippets**: React 컴포넌트 기본 구조를 빠르게 작성할 수 있는 단축키(Snippet)를 제공합니다.
 
+
+## 2-1. 권장 개발 환경: WebStorm (JetBrains)
+VSCode 외에 **WebStorm**이나 IntelliJ IDEA Ultimate을 사용하시는 분들을 위한 팁입니다. JetBrains IDE는 React와 TypeScript 환경에서 강력한 기본 기능을 제공합니다.
+
+- **코드 검사 (Inspections)**: WebStorm은 기본적으로 프로젝트의 `package.json`과 `tsconfig.json`을 분석하여 타입 오류와 코드 스타일 문제를 실시간으로 에디터에 표시해 줍니다. 별도의 설정 없이도 대부분의 검사가 자동으로 이루어집니다.
+- **ESLint & Prettier 자동 연동**: `Settings(Preferences) > Languages & Frameworks > JavaScript > Code Quality Tools`에서 ESLint와 Prettier를 활성화하면, 파일을 저장할 때나 코드를 작성할 때 즉시 포맷팅과 린팅이 적용됩니다. "On Save" 옵션을 켜두면 매우 편리합니다.
+- **테스트 실행 및 디버깅**: 테스트 파일(`*.test.ts`)을 열면 테스트 구문(예: `test(...)`) 옆에 **녹색 재생 버튼(Run/Debug)**이 생깁니다. 이를 클릭하여 개별 테스트를 실행하거나, `Debug` 모드로 실행하여 손쉽게 중단점(Breakpoint)을 잡고 변수 값을 확인할 수 있습니다.
+- **브라우저 디버깅**: 코드 내에 `debugger;`를 작성하거나 IDE 에디터 좌측을 클릭해 빨간색 중단점(Breakpoint)을 설정한 뒤, npm script 패널(보통 좌측 하단에 위치)에서 `dev` 스크립트를 우클릭하고 **Debug**를 선택하면, 브라우저와 연동되어 실행 중인 앱을 WebStorm 내에서 단계별로 디버깅할 수 있습니다.
+- **유용한 플러그인**:
+  - **Key Promoter X**: 마우스로 클릭하는 기능들의 단축키를 알려주어 IDE 숙련도를 높여줍니다.
+  - **EnvFile**: `.env` 환경 변수 파일을 쉽게 관리하고 실행 환경에 주입할 수 있게 돕습니다.
+
 ## 3. 크롬 개발자 도구 및 확장 프로그램
 웹 프론트엔드 개발 시 크롬(Chrome) 브라우저의 **개발자 도구 (F12 또는 Cmd+Option+I)**는 필수입니다.
 - **Elements 탭**: HTML과 CSS 구조를 확인하고 실시간으로 스타일을 수정해 볼 수 있습니다.
