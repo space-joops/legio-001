@@ -1,0 +1,117 @@
+# 레지오 마리애 PWA 기여 가이드 (초심자/웹 개발 입문자를 위한 가이드)
+
+웹 개발(특히 React, Next.js)에 익숙하지 않은 분들(예: 파이썬 등 다른 언어 개발자)도 이 프로젝트에 쉽게 기여하고 유지보수할 수 있도록 작성된 친절한 가이드입니다.
+
+## 1. 주요 기반 기술 이해하기
+- **React**: 컴포넌트(Component) 기반으로 UI를 구성하는 자바스크립트 라이브러리입니다. 상태(State)가 변경되면 화면이 자동으로 업데이트됩니다.
+- **Next.js (App Router)**: React 기반의 프레임워크로, `src/app` 폴더 구조를 통해 라우팅(페이지 이동)을 처리합니다. 새로운 페이지를 만들려면 폴더를 만들고 그 안에 `page.tsx` 파일을 추가하면 됩니다. (참고: 이 프로젝트는 정적 내보내기인 `output: "export"`를 사용하므로 서버 기능은 제한됩니다.)
+- **TypeScript**: 자바스크립트에 타입(자료형)을 추가한 언어입니다. 코드를 작성할 때 오류를 미리 잡아주고 자동완성을 지원해 줍니다.
+- **CSS Modules**: 스타일 충돌을 막기 위해 각 컴포넌트별로 고유한 클래스 이름을 자동 생성해 주는 CSS 방식입니다. `.module.css` 확장자를 사용합니다.
+- **로컬 스토리지 (Local Storage)**: 브라우저에 데이터를 저장하는 공간입니다. 이 앱은 백엔드 서버 없이 모든 사용자 데이터를 기기의 로컬 스토리지에 저장합니다. 관련 로직은 `src/lib/storage.ts`와 커스텀 훅(`useLocalStorageReady.ts` 등)에서 중앙 관리합니다.
+- **PWA (Progressive Web App)**: 웹사이트를 모바일 앱처럼 설치하고 오프라인에서도 사용할 수 있게 해주는 기술입니다. 외부 플러그인 대신 자체적인 서비스 워커(`public/sw.js`)와 프리캐시 매니페스트 생성 스크립트(`scripts/generate-precache-manifest.mjs`)를 사용합니다.
+
+## 2. 권장 개발 환경 및 VSCode 플러그인
+코드 편집은 **Visual Studio Code (VSCode)** 를 추천합니다.
+다음 확장(Extensions) 프로그램들을 설치하면 개발이 훨씬 수월해집니다:
+- **ESLint**: 코드의 스타일을 검사하고 오류를 밑줄로 표시해 줍니다.
+- **Prettier - Code formatter**: 코드를 저장할 때 들여쓰기 등을 깔끔하게 자동 정렬해 줍니다.
+- **ES7+ React/Redux/React-Native snippets**: React 컴포넌트 기본 구조를 빠르게 작성할 수 있는 단축키(Snippet)를 제공합니다.
+
+
+## 2-1. 권장 개발 환경: WebStorm (JetBrains)
+VSCode 외에 **WebStorm**이나 IntelliJ IDEA Ultimate을 사용하시는 분들을 위한 팁입니다. JetBrains IDE는 React와 TypeScript 환경에서 강력한 기본 기능을 제공합니다.
+
+- **코드 검사 (Inspections)**: WebStorm은 기본적으로 프로젝트의 `package.json`과 `tsconfig.json`을 분석하여 타입 오류와 코드 스타일 문제를 실시간으로 에디터에 표시해 줍니다. 별도의 설정 없이도 대부분의 검사가 자동으로 이루어집니다.
+- **ESLint & Prettier 자동 연동**: `Settings(Preferences) > Languages & Frameworks > JavaScript > Code Quality Tools`에서 ESLint와 Prettier를 활성화하면, 파일을 저장할 때나 코드를 작성할 때 즉시 포맷팅과 린팅이 적용됩니다. "On Save" 옵션을 켜두면 매우 편리합니다.
+- **테스트 실행 및 디버깅**: 테스트 파일(`*.test.ts`)을 열면 테스트 구문(예: `test(...)`) 옆에 **녹색 재생 버튼(Run/Debug)**이 생깁니다. 이를 클릭하여 개별 테스트를 실행하거나, `Debug` 모드로 실행하여 손쉽게 중단점(Breakpoint)을 잡고 변수 값을 확인할 수 있습니다.
+- **브라우저 디버깅**: 코드 내에 `debugger;`를 작성하거나 IDE 에디터 좌측을 클릭해 빨간색 중단점(Breakpoint)을 설정한 뒤, npm script 패널(보통 좌측 하단에 위치)에서 `dev` 스크립트를 우클릭하고 **Debug**를 선택하면, 브라우저와 연동되어 실행 중인 앱을 WebStorm 내에서 단계별로 디버깅할 수 있습니다.
+- **유용한 플러그인**:
+  - **Key Promoter X**: 마우스로 클릭하는 기능들의 단축키를 알려주어 IDE 숙련도를 높여줍니다.
+  - **EnvFile**: `.env` 환경 변수 파일을 쉽게 관리하고 실행 환경에 주입할 수 있게 돕습니다.
+
+## 3. 크롬 개발자 도구 및 확장 프로그램
+웹 프론트엔드 개발 시 크롬(Chrome) 브라우저의 **개발자 도구 (F12 또는 Cmd+Option+I)**는 필수입니다.
+- **Elements 탭**: HTML과 CSS 구조를 확인하고 실시간으로 스타일을 수정해 볼 수 있습니다.
+- **Console 탭**: `console.log()`로 출력한 값이나 코드에서 발생한 오류 메시지를 확인합니다.
+- **Application 탭 (매우 중요!)**:
+  - 왼쪽 메뉴의 `Local Storage`를 선택하면 앱에 저장된 사용자 데이터를 확인하고 직접 수정하거나 삭제할 수 있습니다.
+  - `Service Workers` 탭에서는 오프라인 캐시 및 앱 업데이트 상태를 확인하고 디버깅할 수 있습니다.
+
+추가로 다음 크롬 확장 프로그램을 설치하는 것을 강력히 권장합니다:
+- **React Developer Tools**: 컴포넌트 트리를 확인하고 각 컴포넌트가 가진 상태(State)와 전달받은 속성(Props)을 실시간으로 추적할 수 있습니다.
+
+## 4. 디버깅(오류 수정)은 어떻게 하나요?
+- **console.log 활용**: 코드 중간에 `console.log("변수값:", myVar)`를 넣어 데이터가 의도한 대로 들어오는지 크롬 Console 탭에서 확인합니다.
+- **크롬 디버거(Sources 탭)**: 코드 흐름을 파악하고 싶을 때 코드 안에 `debugger;` 라고 적어두고 크롬 개발자 도구를 연 상태에서 실행해 보세요. 해당 줄에서 실행이 멈추고 변수 상태를 한 단계씩 확인할 수 있습니다.
+- **VSCode 디버거**: VSCode 왼쪽 패널의 벌레 모양 아이콘(Run and Debug)을 활용해 브라우저와 연동하여 편리하게 중단점(Breakpoint)을 잡고 디버깅할 수 있습니다.
+
+## 5. 테스트 코드 작성 및 실행 팁
+이 프로젝트는 Node.js 내장 테스트 러너(`node:test`)와 `tsx`를 사용하여 TypeScript 테스트 코드를 실행합니다.
+테스트 파일은 원본 파일과 동일한 위치에 `파일명.test.ts` 규칙으로 작성해 주세요. (예: `id.ts`의 테스트는 `id.test.ts`)
+
+테스트는 다음 명령어로 간단히 실행할 수 있습니다:
+```bash
+npm test
+```
+
+### 테스트 작성 예시 (난이도별)
+
+**1. 낮은 난이도 (단순 유틸리티 함수 검증)**
+단순한 값을 반환하는 함수의 테스트는 아래와 같이 직관적으로 작성합니다.
+```typescript
+import assert from "node:assert";
+import test from "node:test";
+import { generateId } from "./id";
+
+test("generateId (낮은 난이도)", async (t) => {
+  await t.test("문자열을 반환해야 한다", () => {
+    assert.strictEqual(typeof generateId(), "string");
+  });
+});
+```
+
+**2. 중간 난이도 (데이터 가공 로직 검증)**
+배열이나 객체를 변환하는 로직은 여러 가지 엣지 케이스(예: 빈 데이터 등)를 함께 테스트합니다.
+```typescript
+import assert from "node:assert";
+import test from "node:test";
+import { formatTallies } from "./activityReport";
+
+test("formatTallies (중간 난이도)", async (t) => {
+  await t.test("count가 0인 항목은 제외하고 문자열을 만들어야 한다", () => {
+    const input = [
+      { label: "장례미사", count: 2 },
+      { label: "기타", count: 0 },
+    ];
+    assert.strictEqual(formatTallies(input), "장례미사(2)");
+  });
+});
+```
+
+**3. 높은 난이도 (복잡한 날짜/업무 로직 검증)**
+달력, 윤년, 날짜 경계선 등 경우의 수가 많은 핵심 비즈니스 로직은 상세한 주석과 함께 다양한 시나리오를 테스트합니다.
+```typescript
+import assert from "node:assert";
+import test from "node:test";
+import { computeSundayMassBasis } from "./monthlyReportUtils";
+
+test("computeSundayMassBasis (높은 난이도)", async (t) => {
+  await t.test("연도가 바뀌는 경계(1월)에서도 정상 동작해야 한다", () => {
+    // 2023년 12월 마지막 화요일부터 2024년 1월 마지막 화요일까지의 주일 횟수 계산
+    const result = computeSundayMassBasis("2024-01", 2, 10);
+    assert.strictEqual(result?.sundayCount, 5);
+  });
+});
+```
+
+**UI (Playwright) 테스트 주의점**
+차후 UI 테스트를 작성할 경우: 앱이 처음 로드될 때 스플래시 화면(로고 화면)이 나타나며 클릭(포인터 이벤트)을 가로챕니다. 자동화 테스트를 작성할 때는, 이 스플래시 화면이 사라질 때까지 기다리거나 닫은 뒤에 실제 화면 요소와 상호작용해야 합니다.
+
+## 6. 알아두면 좋은 기타 개발 팁
+- **이미지 태그 린트 에러 무시**: Next.js는 기본적으로 최적화를 위해 `<Image>` 컴포넌트 사용을 강제합니다. 하지만 이 프로젝트는 정적 내보내기(Static Export) 환경이므로 일반 `<img>` 태그를 사용해야 할 때가 있습니다. 이 경우 `<img>` 태그 바로 윗줄에 `/* eslint-disable-next-line @next/next/no-img-element */` 주석을 추가하면 `npm run lint` 시 발생하는 경고를 통과시킬 수 있습니다.
+- **친절한 한국어 주석**: React나 TypeScript에 익숙하지 않은 다른 유지보수 개발자(예: 본인 포함)를 위해, 복잡한 로직이나 새로운 개념을 구현할 때는 그 개념과 동작 원리를 설명하는 상세한 한국어 주석을 남겨주시면 큰 도움이 됩니다.
+- **다국어 지원 (i18n)**: 새로운 텍스트나 문구를 화면에 추가할 때는 코드에 직접 적지(하드코딩) 말고, `src/i18n/dictionaries/` 폴더 안의 `ko.ts`와 `en.ts`에 키-값을 추가한 후 컴포넌트 내에서 `useTranslation` 훅을 사용해 다국어로 출력되도록 처리해 주세요.
+
+---
+
+궁금한 점이 있다면 언제든 코드를 둘러보시고, 각 컴포넌트와 모듈에 남겨진 주석들을 참고하며 자유롭게 기여해 주세요. 여러분의 기여를 환영합니다!
