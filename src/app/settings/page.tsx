@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { FontFamilyToggle } from "@/components/FontFamilyToggle";
 import { FontScaleToggle } from "@/components/FontScaleToggle";
 import { InstallPromptButton } from "@/components/InstallPromptButton";
-import { LanguageToggle } from "@/components/LanguageToggle";
 import { PageShell } from "@/components/PageShell";
 import { ShareButton } from "@/components/ShareButton";
 import { SHOW_SPLASH_EVENT } from "@/components/SplashOverlay";
@@ -195,20 +193,14 @@ export default function SettingsPage() {
         <p className={styles.description}>{t("common.autoSaveNotice")}</p>
       </section>
 
-      <section className={styles.section}>
-        <span className={styles.label}>{t("settings.languageLabel")}</span>
-        <LanguageToggle />
-      </section>
+
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.fontSizeLabel")}</span>
         <FontScaleToggle />
       </section>
 
-      <section className={styles.section}>
-        <span className={styles.label}>{t("settings.fontFamilyLabel")}</span>
-        <FontFamilyToggle />
-      </section>
+
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.splashLabel")}</span>

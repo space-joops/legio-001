@@ -1,8 +1,8 @@
-import { dictionaries } from "@/i18n/dictionaries";
+import { ko as strings } from "@/lib/strings";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
 import { formatSubmissionBlock } from "./prayerSubmission";
-import type { Language, Profile, WeeklyReport } from "./types";
+import type { Profile, WeeklyReport } from "./types";
 
 export function createNewReport(
   sessionNumber: number,
@@ -37,7 +37,7 @@ export function toDateTimeLocalValue(date: Date): string {
   )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function formatMeetingDateTime(iso: string, language: Language): string {
+export function formatMeetingDateTime(iso: string, language: "ko"): string {
   if (!iso) return "";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
@@ -50,12 +50,12 @@ export function formatMeetingDateTime(iso: string, language: Language): string {
   }).format(date);
 }
 
-export function formatSessionLabel(sessionNumber: number, language: Language): string {
+export function formatSessionLabel(sessionNumber: number, language: "ko"): string {
   return language === "ko" ? `${sessionNumber}회차` : `Session ${sessionNumber}`;
 }
 
-export function formatShareText(report: WeeklyReport, language: Language): string {
-  const dict = dictionaries[language];
+export function formatShareText(report: WeeklyReport, language: "ko"): string {
+  const dict = strings;
   const title = `${dict.app.shortName} (${formatSessionLabel(
     report.sessionNumber,
     language

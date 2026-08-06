@@ -15,7 +15,6 @@ import {
   SALVE_REGINA_KO,
   type PrayerTextSection,
 } from "./prayerTexts";
-import type { Language } from "./types";
 
 export type MysteryId = "joyful" | "sorrowful" | "glorious" | "luminous";
 
@@ -318,7 +317,7 @@ export function getMysteryIdForDate(date: Date): MysteryId {
   return MYSTERY_BY_WEEKDAY[date.getDay()];
 }
 
-export function getMysterySection(id: MysteryId, language: Language): PrayerTextSection {
+export function getMysterySection(id: MysteryId, language: "ko"): PrayerTextSection {
   const sections = language === "ko" ? ROSARY_MYSTERY_SECTIONS_KO : ROSARY_MYSTERY_SECTIONS_EN;
   return sections[MYSTERY_ORDER.indexOf(id)];
 }
@@ -356,7 +355,7 @@ export interface RosaryStepLabels {
  */
 export function buildRosarySteps(
   id: MysteryId,
-  language: Language,
+  language: "ko",
   labels: RosaryStepLabels
 ): RosaryStep[] {
   const ko = language === "ko";

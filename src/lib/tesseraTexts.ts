@@ -1,4 +1,3 @@
-import type { Language } from "./types";
 import {
   FATIMA_PRAYER_EN,
   GLORY_BE_EN,
@@ -26,7 +25,7 @@ export type TesseraChapterId = "opening" | "rosary" | "catena" | "closing";
 export interface TesseraChapter {
   /** 목차 앵커 id이자 i18n 제목 키(tessera.<id>). */
   id: TesseraChapterId;
-  entry: Record<Language, PrayerTextEntry>;
+  entry: Record<"ko", PrayerTextEntry>;
 }
 
 const SIGN_OF_CROSS_KO = "† 성부와 성자와 성령의 이름으로. 아멘.";
@@ -74,48 +73,6 @@ export const TESSERA_CHAPTERS: TesseraChapter[] = [
               "● 주님, 어서 오시어 저를 도와주소서.",
               "○ 영광이 성부와 성자와 성령께",
               "● 처음과 같이 이제와 항상 영원히. ◎ 아멘.",
-            ],
-          },
-        ],
-      },
-      en: {
-        sections: [
-          { lines: [SIGN_OF_CROSS_EN] },
-          {
-            heading: "Invocation of the Holy Spirit",
-            lines: [
-              "○ Come, O Holy Spirit, fill the hearts of Your faithful,",
-              "and enkindle in them the fire of Your love.",
-              "○ Send forth Your Spirit, O Lord, and they shall be created.",
-              "● And You shall renew the face of the earth.",
-            ],
-          },
-          {
-            heading: "Prayer",
-            lines: [
-              "○ Let us pray.",
-              "God our Father, pour out the gifts of Your Holy Spirit on the world.",
-              "You sent the Spirit on Your Church to begin the teaching of the gospel:",
-              "now let the Spirit continue to work in the world",
-              "through the hearts of all who believe.",
-              "Through Christ our Lord.",
-              "◎ Amen.",
-            ],
-          },
-          {
-            heading: "Versicles",
-            lines: [
-              "○ You, O Lord, will open my lips.",
-              "● And my tongue shall announce Your praise.",
-              "○ Incline unto my aid, O God.",
-              "● O Lord, make haste to help me.",
-              "○ Glory be to the Father, and to the Son, and to the Holy Spirit,",
-              "● As it was in the beginning, is now and ever shall be, world without end. Amen.",
-            ],
-          },
-          {
-            lines: [
-              "(Then follow five decades of the Rosary with the Hail, Holy Queen.)",
             ],
           },
         ],
@@ -213,56 +170,6 @@ export const TESSERA_CHAPTERS: TesseraChapter[] = [
           },
         ],
       },
-      en: {
-        sections: [
-          { heading: "Our Father", lines: OUR_FATHER_EN },
-          { heading: "Hail Mary", lines: HAIL_MARY_EN },
-          { heading: "Glory Be", lines: GLORY_BE_EN },
-          {
-            heading: "Order of one decade",
-            lines: [
-              "Announce the mystery, then one Our Father →",
-              "ten Hail Marys → one Glory Be → the Fatima Prayer",
-              "(repeat the Our Father, Hail Mary, and Glory Be above)",
-            ],
-          },
-          { heading: "Fatima Prayer", lines: FATIMA_PRAYER_EN },
-          ...ROSARY_MYSTERY_SECTIONS_EN,
-          { heading: "Hail, Holy Queen", lines: SALVE_REGINA_EN },
-          {
-            heading: "Prayer after the Rosary",
-            lines: [
-              "○ Pray for us, O holy Mother of God.",
-              "● That we may be made worthy of the promises of Christ.",
-              "○ Let us pray.",
-              "O God, Whose only-begotten Son, by His life, death and resurrection,",
-              "has purchased for us the rewards of eternal salvation;",
-              "grant, we beseech You, that meditating upon these mysteries",
-              "in the most holy Rosary of the Blessed Virgin Mary,",
-              "we may imitate what they contain, and obtain what they promise.",
-              "Through the same Christ our Lord.",
-              "◎ Amen.",
-            ],
-          },
-          {
-            heading: "Invocations",
-            lines: [
-              "○ Most Sacred Heart of Jesus,",
-              "● Have mercy on us.",
-              "○ Immaculate Heart of Mary,",
-              "● Pray for us.",
-              "○ St. Joseph,",
-              "● Pray for us.",
-              "○ St. John the Evangelist,",
-              "● Pray for us.",
-              "○ St. Louis-Marie de Montfort,",
-              "● Pray for us.",
-            ],
-          },
-          { lines: [SIGN_OF_CROSS_EN] },
-        ],
-        note: "In the Legion meeting the five decades follow the opening prayers directly.",
-      },
     },
   },
 
@@ -319,51 +226,6 @@ export const TESSERA_CHAPTERS: TesseraChapter[] = [
           },
         ],
         note: "행동 단원은 매일 까떼나를 바칩니다. '당신께 매달리는'은 판본에 따라 '당신께 의탁하는'으로도 바칩니다.",
-      },
-      en: {
-        sections: [
-          { heading: "Antiphon", lines: ANTIPHON_EN },
-          {
-            heading: "Magnificat (Luke 1:46-55)",
-            lines: [
-              "○ My soul glorifies the Lord.",
-              "● My spirit rejoices in God, my Saviour.",
-              "○ He looks on His servant in her lowliness;",
-              "● henceforth all ages will call me blessed.",
-              "○ The Almighty works marvels for me.",
-              "● Holy His name!",
-              "○ His mercy is from age to age, on those who fear Him.",
-              "● He puts forth His arm in strength and scatters the proud-hearted.",
-              "○ He casts the mighty from their thrones and raises the lowly.",
-              "● He fills the starving with good things, sends the rich away empty.",
-              "○ He protects Israel His servant, remembering His mercy,",
-              "● The mercy promised to our fathers, to Abraham and his sons for ever.",
-              "○ Glory be to the Father, and to the Son, and to the Holy Spirit,",
-              "● As it was in the beginning, is now and ever shall be, world without end. Amen.",
-            ],
-          },
-          { heading: "Antiphon (repeat)", lines: ANTIPHON_EN },
-          {
-            heading: "Versicle",
-            lines: [
-              "○ O Mary, conceived without sin.",
-              "● Pray for us who have recourse to you.",
-            ],
-          },
-          {
-            heading: "Prayer",
-            lines: [
-              "○ Let us pray.",
-              "O Lord Jesus Christ, our mediator with the Father,",
-              "Who has been pleased to appoint the Most Blessed Virgin, Your mother,",
-              "to be our mother also, and our mediatrix with You,",
-              "mercifully grant that whoever comes to You seeking Your favours",
-              "may rejoice to receive all of them through her.",
-              "◎ Amen.",
-            ],
-          },
-        ],
-        note: "Active members pray the Catena every day.",
       },
     },
   },
@@ -451,81 +313,6 @@ export const TESSERA_CHAPTERS: TesseraChapter[] = [
             ],
           },
         ],
-      },
-      en: {
-        sections: [
-          { lines: [SIGN_OF_CROSS_EN] },
-          {
-            heading: "We Fly to Your Patronage",
-            lines: [
-              "○ We fly to your patronage, O holy Mother of God;",
-              "despise not our prayers in our necessities,",
-              "but ever deliver us from all dangers,",
-              "● O glorious and blessed Virgin.",
-            ],
-          },
-          {
-            heading: "Invocations",
-            lines: [
-              "○ Mary Immaculate, Mediatrix of all Graces,",
-              "(or the invocation proper to the praesidium)",
-              "● Pray for us.",
-              "○ Saints Michael, Gabriel and Raphael,",
-              "● Pray for us.",
-              "○ All you heavenly Powers, Mary's Legion of Angels,",
-              "● Pray for us.",
-              "○ St. John the Baptist,",
-              "● Pray for us.",
-              "○ Saints Peter and Paul,",
-              "● Pray for us.",
-            ],
-          },
-          {
-            heading: "Concluding Prayer",
-            lines: [
-              "◎ Confer, O Lord, on us, who serve beneath the standard of Mary,",
-              "that fullness of faith in You and trust in her,",
-              "to which it is given to conquer the world.",
-              "Grant us a lively faith, animated by charity,",
-              "which will enable us to perform all our actions",
-              "from the motive of pure love of You,",
-              "and ever to see You and serve You in our neighbour;",
-              "a faith, firm and immovable as a rock,",
-              "through which we shall rest tranquil and steadfast",
-              "amid the crosses, toils and disappointments of life;",
-              "a courageous faith which will inspire us",
-              "to undertake and carry out without hesitation",
-              "great things for Your glory and for the salvation of souls;",
-              "a faith which will be our Legion's Pillar of Fire",
-              "— to lead us forth united —",
-              "to kindle everywhere the fires of divine love —",
-              "to enlighten those who are in darkness and in the shadow of death —",
-              "to inflame those who are lukewarm —",
-              "to bring back life to those who are dead in sin;",
-              "and which will guide our own feet in the way of peace;",
-              "so that — the battle of life over —",
-              "our Legion may reassemble, without the loss of any one,",
-              "in the kingdom of Your love and glory.",
-              "Amen.",
-            ],
-          },
-          {
-            heading: "For Departed Legionaries",
-            lines: [
-              "○ May the souls of our departed legionaries",
-              "and the souls of all the faithful departed,",
-              "through the mercy of God, rest in peace.",
-              "◎ Amen.",
-            ],
-          },
-          {
-            lines: [
-              "(The priest's blessing follows; without a priest, close with the Sign of the Cross.)",
-              SIGN_OF_CROSS_EN,
-            ],
-          },
-        ],
-        note: "Wording follows the official Concilium Tessera; printings may vary slightly.",
       },
     },
   },

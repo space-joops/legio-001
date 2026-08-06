@@ -1,10 +1,9 @@
-import { dictionaries } from "@/i18n/dictionaries";
+import { ko as strings } from "@/lib/strings";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
 import { normalizeName, type ParsedSubmission } from "./prayerSubmission";
 import type {
   AttendanceRecord,
-  Language,
   MemberCounts,
   MemberEntry,
   MemberRoster,
@@ -761,15 +760,15 @@ export function addMonthToYearMonth(yearMonth: string): string {
   return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export function formatYearMonthLabel(yearMonth: string, language: Language): string {
+export function formatYearMonthLabel(yearMonth: string, language?: "ko"): string {
   const [year, month] = yearMonth.split("-").map(Number);
   if (!year || !month) return yearMonth;
   return language === "ko" ? `${year}년 ${month}월` : `${year}-${String(month).padStart(2, "0")}`;
 }
 
-export function formatMonthlyShareText(report: MonthlyReport, language: Language): string {
-  const dict = dictionaries[language];
-  const title = `${dict.app.shortName} ${formatYearMonthLabel(report.yearMonth, language)} ${dict.secretaryReport.title}`;
+export function formatMonthlyShareText(report: MonthlyReport, language?: "ko"): string {
+  const dict = strings;
+  const title = `${dict.app.shortName} ${formatYearMonthLabel(report.yearMonth)} ${dict.secretaryReport.title}`;
   const prayerLines = PRAYER_ITEMS.map(
     (item) => `${dict.counters[item.key]}: ${report.prayerCounts[item.key]}`
   );

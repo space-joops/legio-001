@@ -1,38 +1,21 @@
-"use client";
+// 다국어 기능(i18n)을 제거하면서 LanguageContext는 더 이상 언어 상태를 관리하지 않지만,
+// 기존 앱 구조(Providers 등)에 남아있는 참조 에러를 막기 위해 아주 단순한 빈 껍데기만 남겨둡니다.
+// 이렇게 하면 파이썬으로 치면 아무 것도 하지 않는 Pass 블록과 같은 역할을 합니다.
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { storage } from "@/lib/storage";
-import type { Language } from "@/lib/types";
+import { createContext, useContext, type ReactNode } from "react";
 
 interface LanguageContextValue {
-  language: Language;
-  setLanguage: (lang: Language) => void;
+  language: "ko";
+  setLanguage: (lang: "ko") => void;
   ready: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("ko");
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time load from localStorage once client-hydrated
-    setLanguageState(storage.getLanguage());
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (ready) document.documentElement.lang = language;
-  }, [language, ready]);
-
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    storage.setLanguage(lang);
-  };
-
+  // 항상 "ko"를 반환하며, 언어를 바꾸는 기능(setLanguage)은 비워둡니다.
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, ready }}>
+    <LanguageContext.Provider value={{ language: "ko", setLanguage: () => {}, ready: true }}>
       {children}
     </LanguageContext.Provider>
   );

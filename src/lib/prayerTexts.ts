@@ -1,4 +1,4 @@
-import type { Language, PrayerItemKey } from "./types";
+import type { PrayerItemKey } from "./types";
 
 export interface PrayerTextSection {
   heading?: string;
@@ -11,7 +11,7 @@ export interface PrayerTextEntry {
   note?: string;
 }
 
-type PrayerTextMap = Partial<Record<PrayerItemKey, Record<Language, PrayerTextEntry>>>;
+type PrayerTextMap = Partial<Record<PrayerItemKey, Record<"ko", PrayerTextEntry>>>;
 
 export const OUR_FATHER_KO = [
   "하늘에 계신 우리 아버지,",
@@ -225,21 +225,6 @@ export const PRAYER_TEXTS: PrayerTextMap = {
         },
       ],
     },
-    en: {
-      sections: [
-        {
-          lines: [
-            "Lord, send good priests to your Church,",
-            "priests after your own heart,",
-            "priests who will be true shepherds of your people.",
-            "Give them the courage to lead, the wisdom to guide,",
-            "and the compassion to heal.",
-            "Bless them in their labours and comfort them in their loneliness. Amen.",
-          ],
-        },
-      ],
-      note: "A commonly used version, not an official Legion of Mary Handbook translation.",
-    },
   },
 
   chainPrayer: {
@@ -248,13 +233,6 @@ export const PRAYER_TEXTS: PrayerTextMap = {
         { heading: "주님의 기도", lines: OUR_FATHER_KO },
         { heading: "성모송", lines: HAIL_MARY_KO },
         { heading: "영광송", lines: GLORY_BE_KO },
-      ],
-    },
-    en: {
-      sections: [
-        { heading: "Our Father", lines: OUR_FATHER_EN },
-        { heading: "Hail Mary", lines: HAIL_MARY_EN },
-        { heading: "Glory Be", lines: GLORY_BE_EN },
       ],
     },
   },
@@ -280,26 +258,6 @@ export const PRAYER_TEXTS: PrayerTextMap = {
       ],
       note: "가톨릭 기도서의 현행 공식 문구를 따랐습니다. ◎ 표시는 함께 바치는 마침 계응입니다.",
     },
-    en: {
-      sections: [
-        { heading: "Opening · Apostles' Creed", lines: APOSTLES_CREED_EN },
-        { heading: "Our Father", lines: OUR_FATHER_EN },
-        { heading: "Hail Mary (x3, for faith, hope, and charity)", lines: HAIL_MARY_EN },
-        { heading: "Glory Be", lines: GLORY_BE_EN },
-        {
-          heading: "Order of one decade",
-          lines: [
-            "Announce the mystery, then one Our Father →",
-            "ten Hail Marys → one Glory Be → the Fatima Prayer",
-            "(repeat the Our Father, Hail Mary, and Glory Be above)",
-          ],
-        },
-        { heading: "Fatima Prayer", lines: FATIMA_PRAYER_EN },
-        ...ROSARY_MYSTERY_SECTIONS_EN,
-        { heading: "Closing · Hail Holy Queen", lines: SALVE_REGINA_EN },
-      ],
-      note: "The closing 'Hail Holy Queen' is a commonly used version, not a specific official translation. The rest are standard liturgical texts.",
-    },
   },
 
   aspirations: {
@@ -315,19 +273,6 @@ export const PRAYER_TEXTS: PrayerTextMap = {
         },
       ],
       note: "정해진 한 가지 문구가 아니라 그때그때 짧게 바치는 기도입니다. 위는 자주 쓰이는 예시입니다.",
-    },
-    en: {
-      sections: [
-        {
-          heading: "Commonly used aspirations",
-          lines: [
-            "\"O Mary, conceived without sin, pray for us who have recourse to thee.\"",
-            "\"Queen of Peace, pray for us.\"",
-            "\"Jesus, Mary, Joseph, help us.\"",
-          ],
-        },
-      ],
-      note: "Aspirations are short, spontaneous prayers rather than one fixed text; these are common examples.",
     },
   },
 };

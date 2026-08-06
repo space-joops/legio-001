@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Nanum_Gothic } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 import { Providers } from "./providers";
@@ -10,14 +9,6 @@ import { Providers } from "./providers";
 // critical path of every page — for the majority who never leave the default
 // system font (Settings > 폰트). Without it the @font-face rules stay, so
 // opting in still works, just fetched lazily per slice as glyphs are used.
-const nanumGothic = Nanum_Gothic({
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  variable: "--font-nanum",
-  display: "swap",
-  preload: false,
-});
-
 const SITE_NAME = "레지오 마리애 주간 활동 보고";
 const SITE_DESCRIPTION =
   "레지오 마리애 단원을 위한 주간 기도 활동 기록 및 보고 앱 / A weekly prayer activity tracker for Legion of Mary members.";
@@ -61,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={nanumGothic.variable}>
+    <html lang="ko">
       <body>
         <Providers>{children}</Providers>
       </body>

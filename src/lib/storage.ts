@@ -5,7 +5,6 @@ import { migrateLegacyTreasury } from "./treasury";
 import type {
   ActivityItem,
   ExpenseItem,
-  Language,
   MemberCounts,
   MonthlyReport,
   PraesidiumRoster,
@@ -85,7 +84,6 @@ export const DEFAULT_PROFILE: Profile = {
 export const DEFAULT_SETTINGS: Settings = {
   language: "ko",
   fontScale: "medium",
-  fontFamily: "system",
   splashEnabled: true,
 };
 const EMPTY_MEMBER_COUNTS_DEFAULT: MemberCounts = {
@@ -185,11 +183,8 @@ export const storage = {
   setSettings(settings: Settings): void {
     writeJson(KEYS.settings, settings);
   },
-  getLanguage(): Language {
+  getLanguage(): "ko" {
     return this.getSettings().language;
-  },
-  setLanguage(language: Language): void {
-    this.setSettings({ ...this.getSettings(), language });
   },
 
   getCurrentReport(): WeeklyReport | null {
