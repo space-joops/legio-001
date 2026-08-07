@@ -44,3 +44,13 @@ export const EMPTY_COUNTS: PrayerCounts = {
  * numbers are what mark a member present.
  */
 export const DATA_SCHEMA_VERSION = 2;
+
+/**
+ * Stamped on scoped export files (personal / secretary / one month) instead of
+ * DATA_SCHEMA_VERSION. Invariant: full backups must stay at 2 so apps from
+ * before scoped exports keep accepting them, while scoped files must carry 3 —
+ * those old apps overwrite every slice on import, so a personal file (which
+ * passes their profile+history check) would silently wipe a secretary's data
+ * unless their version guard rejects it with the "update the app" message.
+ */
+export const SCOPED_EXPORT_VERSION = 3;

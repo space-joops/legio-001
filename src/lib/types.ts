@@ -261,9 +261,13 @@ export interface MonthlyReport {
   updatedAt: string;
 }
 
+export type ExportScope = "all" | "personal" | "secretary" | "secretaryMonth";
+
 export interface ExportedData {
   exportedAt: string;
   dataSchemaVersion: number;
+  /** Absent in files exported before scoped exports existed. */
+  exportScope?: "all";
   profile: Profile;
   history: WeeklyReport[];
   currentReport: WeeklyReport | null;
@@ -271,3 +275,44 @@ export interface ExportedData {
   roster: PraesidiumRoster;
   monthlyReports: MonthlyReport[];
 }
+
+/** A member's own data only — importing one never touches secretary data. */
+export interface PersonalExportFile {
+  exportScope: "personal";
+  exportedAt: string;
+  dataSchemaVersion: number;
+  profile: Profile;
+  history: WeeklyReport[];
+  currentReport: WeeklyReport | null;
+  schedule: ScheduleEvent[];
+}
+
+/** Secretary data only — importing one never touches the member's own records. */
+export interface SecretaryExportFile {
+  exportScope: "secretary";
+  exportedAt: string;
+  dataSchemaVersion: number;
+  roster: PraesidiumRoster;
+  monthlyReports: MonthlyReport[];
+  activityItems: ActivityItem[];
+  expenseItems: ExpenseItem[];
+}
+
+/**
+ * One monthly report. No live roster: each report embeds its own roster
+ * snapshot, so the file is self-contained and importing it must not rewrite
+ * the device's current roster.
+ */
+export interface SecretaryMonthExportFile {
+  exportScope: "secretaryMonth";
+  exportedAt: string;
+  dataSchemaVersion: number;
+  /** Exactly one entry; array form so the shape matches the other files. */
+  monthlyReports: MonthlyReport[];
+}
+
+export type AnyExportFile =
+  | ExportedData
+  | PersonalExportFile
+  | SecretaryExportFile
+  | SecretaryMonthExportFile;
