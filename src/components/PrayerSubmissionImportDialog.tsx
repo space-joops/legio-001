@@ -13,6 +13,19 @@ import { parseSubmissionBlocks } from "@/lib/prayerSubmission";
 import type { MonthlyReport } from "@/lib/types";
 import styles from "./PrayerSubmissionImportDialog.module.css";
 
+/**
+ * 단원들이 보낸 카톡 메시지를 통째로 붙여 넣으면 기도 숫자를 채워 주는 창.
+ *
+ * 붙여 넣은 글에서 `LEGIO1|...` 줄들을 찾아 명단의 사람과 짝지어 준다.
+ * 다만 곧바로 반영하지 않고, **먼저 짝지은 결과를 표로 보여 주고 확인을 받는다.**
+ * 동명이인, 명단에 없는 이름, 회차 범위 밖, 형식 오류를 각각 표시해 주기 때문이다.
+ *
+ * 이름 비교 전에 반드시 정규화(NFC)를 한다. 아이폰에서 온 한글은 자모가 분리된
+ * 형태라, 눈에 똑같아 보여도 그냥 비교하면 다른 글자로 취급된다.
+ *
+ * 같은 메시지를 두 번 붙여 넣어도 결과가 달라지지 않는다(덧셈이 아니라 덮어쓰기).
+ */
+
 interface Props {
   open: boolean;
   report: MonthlyReport;

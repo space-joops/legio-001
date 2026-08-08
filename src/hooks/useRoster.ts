@@ -7,6 +7,13 @@ import { storage } from "@/lib/storage";
 import type { MemberCounts, MemberEntry, OfficerEntry, OfficerRole, PraesidiumRoster } from "@/lib/types";
 import { useLocalStorageReady } from "./useLocalStorageReady";
 
+/**
+ * 쁘레시디움 명단(간부 4명 + 구분별 단원 명부)을 다루는 훅.
+ *
+ * 명단은 월례 보고서가 만들어질 때 통째로 복사돼 들어간다. 그래서 여기서
+ * 이름을 고쳐도 **이미 만들어진 보고서는 따라 바뀌지 않는다** — 그쪽은
+ * `monthlyReportUtils` 의 이름 동기화 함수가 따로 처리한다.
+ */
 export function useRoster() {
   const ready = useLocalStorageReady();
   const [roster, setRoster] = useState<PraesidiumRoster | null>(null);

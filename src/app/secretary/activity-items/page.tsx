@@ -16,6 +16,12 @@ import { storage } from "@/lib/storage";
 import type { ActivityItem, ActivityLine } from "@/lib/types";
 import styles from "./page.module.css";
 
+/**
+ * 활동 항목 목록을 편집하는 화면(`/secretary/activity-items`).
+ *
+ * 쁘레시디움마다 활동을 부르는 말이 조금씩 달라서, 내장 목록을 그대로 쓰지 않고
+ * 고칠 수 있게 열어 두었다. 항목마다 공식 양식의 어느 줄로 집계될지도 정한다.
+ */
 const LINES: { value: ActivityLine; labelKey: string }[] = [
   { value: "praesidium", labelKey: "secretaryActivityItems.linePraesidium" },
   { value: "parish", labelKey: "secretaryActivityItems.lineParish" },

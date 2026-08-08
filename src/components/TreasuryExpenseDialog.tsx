@@ -9,6 +9,13 @@ import { formatWon } from "@/lib/treasury";
 import type { ExpenseItem, TreasuryExpense } from "@/lib/types";
 import styles from "./TreasuryExpenseDialog.module.css";
 
+/**
+ * 한 회차의 지출을 항목별로 입력하는 창(회계용).
+ *
+ * 여기서 적은 지출들이 공식 양식의 "지출 합계"와 "중요 지출 내역" 줄을 함께
+ * 만들어 낸다. 즉 같은 숫자를 두 번 적을 일이 없다(`lib/treasury.ts` 참고).
+ */
+
 /** Sentinel for the "type it myself" option, which no catalogue entry can use. */
 const CUSTOM = "__custom__";
 

@@ -17,6 +17,13 @@ import {
 } from "./prayerTexts";
 import type { Language } from "./types";
 
+/**
+ * 묵주기도 안내 화면(`RosaryGuide`)이 따라가는 순서표를 만든다.
+ *
+ * 요일에 따라 어느 신비(환희·고통·영광·빛)를 바치는지 고르고, 성호경부터
+ * 마침 기도까지 "한 화면에 하나씩" 넘겨 볼 수 있는 단계 배열로 펼쳐 준다.
+ * 기도문 원문은 여기에 다시 적지 않고 `prayerTexts.ts` 의 것을 가리킨다.
+ */
 export type MysteryId = "joyful" | "sorrowful" | "glorious" | "luminous";
 
 /**

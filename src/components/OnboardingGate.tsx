@@ -7,6 +7,16 @@ import { storage } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
 import styles from "./OnboardingGate.module.css";
 
+/**
+ * 내 정보가 아직 비어 있으면 앱 대신 첫 설정 화면을 보여 주는 문지기.
+ *
+ * 이름·쁘레시디움 같은 값은 주간 보고를 만들 때 그 안에 복사돼 들어간다.
+ * 그래서 비어 있는 채로 기록을 시작하면 나중에 누구 보고서인지 알 수 없게 된다.
+ *
+ * 하이드레이션이 끝나기 전에는 아무것도 그리지 않는다. 저장소를 읽기 전에
+ * 판단하면 이미 설정을 마친 사람에게도 온보딩이 잠깐 번쩍이기 때문이다.
+ */
+
 function isProfileComplete(profile: Profile): boolean {
   return Boolean(
     profile.name.trim() &&

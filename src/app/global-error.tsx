@@ -7,6 +7,13 @@
  * hardcoded Korean rather than going through useTranslation: the i18n provider
  * lives below this boundary and may be exactly what failed.
  */
+/**
+ * 앱 어디서든 처리하지 못한 오류가 났을 때 대신 보여 주는 마지막 화면.
+ *
+ * 예전에는 이런 오류가 나면 흰 화면만 남아서, 사용자는 앱이 죽었는지 로딩
+ * 중인지 알 수 없었다. 최소한 "다시 시도" 버튼이라도 보이게 하려는 안전망이다.
+ * Next.js 가 정한 이름(`global-error.tsx`)이라 파일명을 바꾸면 동작하지 않는다.
+ */
 export default function GlobalError({ reset }: { error: Error; reset: () => void }) {
   return (
     <html lang="ko">

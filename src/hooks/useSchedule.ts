@@ -6,6 +6,13 @@ import { storage } from "@/lib/storage";
 import type { ScheduleEvent } from "@/lib/types";
 import { useLocalStorageReady } from "./useLocalStorageReady";
 
+/**
+ * 일정 화면의 예정 목록을 다루는 훅.
+ *
+ * 다른 훅과 다른 점이 하나 있다. "앞으로 올 일정"과 "지난 일정"을 나누려면
+ * 지금 시각이 필요한데, 시간은 가만히 있어도 흐른다. 그래서 30초마다 현재
+ * 시각을 갱신해, 화면을 켜 둔 채로도 목록이 알아서 옮겨 가게 한다.
+ */
 function sortByDateTimeAsc(events: ScheduleEvent[]): ScheduleEvent[] {
   return [...events].sort(
     (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()

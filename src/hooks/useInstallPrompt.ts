@@ -2,6 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+/**
+ * "홈 화면에 추가"(앱 설치) 버튼이 눌릴 수 있는 상태인지 알려 주는 훅.
+ *
+ * 이 파일에는 다른 훅에 없는 특이한 점이 있다. 상태를 컴포넌트가 아니라
+ * **모듈 바깥(파일 최상단)** 에 둔다. 브라우저가 주는 설치 신호가 페이지를 열
+ * 때 딱 한 번, 그것도 아주 이른 시점에 오기 때문이다. 자세한 이유는 바로
+ * 아래 영문 주석에 있다.
+ */
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;

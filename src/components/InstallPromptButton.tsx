@@ -4,6 +4,8 @@ import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./InstallPromptButton.module.css";
 
+/** 설정 화면의 "홈 화면에 추가" 버튼. 눌릴 수 있는지는 `useInstallPrompt` 가 판단한다. */
+
 export function InstallPromptButton() {
   const { t } = useTranslation();
   const { canInstall, installed, isIos, isAndroid, promptInstall } = useInstallPrompt();

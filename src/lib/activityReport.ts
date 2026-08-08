@@ -4,6 +4,9 @@ import { computeMassCommunion } from "./monthlyReportUtils";
 import type { ActivityItem, ActivityLine, MonthlyReport } from "./types";
 
 /**
+ * 단원들의 활동 기록을 합쳐 공식 양식의 "주요 활동 내역" 네 줄을 만든다.
+ * 편집 화면·인쇄 화면·내보내기가 모두 이 결과를 그대로 쓴다.
+ *
  * Builds the four "주요 활동 내역" lines of the official form.
  *
  * The edit screen, the print view and the RTF export all render these, and

@@ -8,6 +8,13 @@ import { useTranslation } from "@/i18n/useTranslation";
 import Image from "next/image";
 import styles from "./PlatformChoicePopup.module.css";
 
+/**
+ * "홈 화면에 추가하면 앱처럼 쓸 수 있어요"를 기기에 맞게 안내하는 팝업.
+ *
+ * 설치 방법이 안드로이드·아이폰·PC 마다 전부 달라서, 어떤 기기인지 먼저
+ * 판별한 뒤 그 기기의 방법만 보여 준다. 한 번 닫으면 다시 뜨지 않는다.
+ */
+
 /** Give the app a moment to settle before interrupting. */
 const FIRST_CHECK_MS = 1500;
 /** How often to re-check once something else (the splash) is holding the screen. */

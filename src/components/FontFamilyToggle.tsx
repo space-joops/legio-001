@@ -4,6 +4,11 @@ import { useDisplayPreferences } from "./DisplayPreferencesProvider";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./FontFamilyToggle.module.css";
 
+/**
+ * 설정 화면의 글꼴 선택(기기 기본 / 나눔고딕).
+ * 기본값이 기기 글꼴인 이유는 나눔고딕을 받는 데 용량이 크기 때문이다(`app/layout.tsx` 참고).
+ */
+
 export function FontFamilyToggle() {
   const { fontFamily, setFontFamily } = useDisplayPreferences();
   const { t } = useTranslation();

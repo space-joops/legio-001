@@ -5,6 +5,13 @@ import { selectOnFocus } from "@/lib/selectOnFocus";
 import type { PrayerCounts, PrayerItemKey, WeeklyReport } from "@/lib/types";
 import styles from "./ReportSummary.module.css";
 
+/**
+ * 주간 보고 한 건의 내용을 표로 보여 준다.
+ *
+ * `editable` 이 true 면 같은 표가 그대로 입력칸으로 바뀐다. 보기용과 수정용
+ * 화면을 따로 만들면 둘이 조금씩 어긋나기 때문에 하나로 합쳐 두었다.
+ */
+
 interface ReportSummaryProps {
   report: WeeklyReport;
   editable?: boolean;

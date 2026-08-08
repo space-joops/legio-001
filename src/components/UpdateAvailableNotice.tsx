@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./UpdateAvailableNotice.module.css";
 
+/**
+ * 새 버전이 준비됐을 때 "새로고침하시겠어요?" 배너를 띄운다.
+ *
+ * 주의할 점이 하나 있다. 앱을 **처음** 방문하면 서비스 워커가 설치되면서
+ * 마찬가지로 "제어자가 바뀌었다"는 신호가 온다. 예전에는 이걸 업데이트로
+ * 착각해 1초 만에 화면을 통째로 새로고침해 버렸다(첫 방문 스플래시가 사라진
+ * 원인이었다). 그래서 **이미 제어자가 있었을 때만** 업데이트로 본다.
+ */
+
 export function UpdateAvailableNotice() {
   const { t } = useTranslation();
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);

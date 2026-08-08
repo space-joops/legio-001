@@ -16,6 +16,12 @@ import { storage } from "@/lib/storage";
 import type { ExpenseItem } from "@/lib/types";
 import styles from "./page.module.css";
 
+/**
+ * 지출 항목 목록을 편집하는 화면(`/secretary/expense-items`).
+ *
+ * 활동 항목과 달리 여기 이름을 바꿔도 이미 기록된 지출은 그대로다. 지출은
+ * 적힐 때 이름을 복사해 두기 때문이다(제출한 달의 숫자가 나중에 바뀌면 안 된다).
+ */
 export default function ExpenseItemsPage() {
   const { t } = useTranslation();
   const { showToast } = useToast();

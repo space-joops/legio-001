@@ -4,6 +4,14 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { storage } from "@/lib/storage";
 import type { FontFamily, FontScale } from "@/lib/types";
 
+/**
+ * 글자 크기와 글꼴 설정을 앱 전체에 적용한다.
+ *
+ * 값을 각 컴포넌트에 뿌리는 대신 `<html>` 요소에 표시를 달아 두면, CSS 변수가
+ * 그걸 보고 한 번에 바뀐다. 그래서 화면 코드는 글자 크기를 신경 쓸 필요가 없다.
+ * 사용자층이 어르신 중심이라 이 설정이 특히 중요하다.
+ */
+
 interface DisplayPreferencesContextValue {
   fontScale: FontScale;
   fontFamily: FontFamily;

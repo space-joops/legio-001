@@ -10,6 +10,16 @@ import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS } from "@/lib/monthlyReportUtils";
 import type { MemberCounts } from "@/lib/types";
 import styles from "./page.module.css";
 
+/**
+ * 쁘레시디움 명단 관리 화면(`/secretary/roster`).
+ *
+ * 여기서 관리하는 것: 쁘레시디움 이름·상급평의회·영적지도자, 간부 4명,
+ * 구분별 단원 명부, 주회 요일.
+ *
+ * 여기서 이름을 고쳐도 **이미 만들어 둔 월례 보고서는 자동으로 바뀌지 않는다.**
+ * 보고서는 만들 때 명단을 통째로 복사해 가기 때문이다(그래야 지난달 보고서가
+ * 나중에 바뀌지 않는다).
+ */
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
   { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },

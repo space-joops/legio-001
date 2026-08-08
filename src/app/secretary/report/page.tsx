@@ -64,6 +64,31 @@ import type {
 } from "@/lib/types";
 import styles from "./page.module.css";
 
+/**
+ * 월례 보고서 작성·미리보기 화면(`/secretary/report?id=...`).
+ *
+ * 이 저장소에서 가장 큰 파일이다(1,200줄 남짓). 처음 열면 막막하니 아래 지도를
+ * 먼저 보고 필요한 구역으로 바로 내려가는 걸 권한다. 위에서 아래로 이 순서다.
+ *
+ *   1. 모듈 상수      — MEMBER_COUNT_FIELDS / EVANGELIZATION_FIELDS / MEMBER_COUNT_BUCKETS
+ *   2. 작은 헬퍼      — personDisplayName, formatDay, summariseExpenses, toNumber
+ *   3. 작은 부품      — CurrencyInput(원화 입력칸), SessionTabBar(회차 탭)
+ *   4. ReportPageContent — 실제 화면. 이 안이 다시 아래 순서로 되어 있다
+ *        a. 훅과 state (8개 남짓)
+ *        b. useEffect 2개 — 회차 탭 범위 보정 / 명단↔보고서 자동 동기화
+ *        c. 로딩·없음 처리와 파생값
+ *        d. 핸들러 20여 개 — **전부 마지막에 `patch()` 하나로 모인다**
+ *        e. 미리보기 모드면 여기서 조기 반환(인쇄·PDF·이미지·공유)
+ *        f. 편집 모드 화면 — 회합정보 / 활동보고 / 명단 / 단원수 / 의안 /
+ *           재정 / 기도실적 / 활동상세 / 활동요약·복음화 / 다이얼로그 5종
+ *   5. SecretaryReportPage — PageShell 과 <Suspense> 로 감싸는 껍데기
+ *
+ * 읽는 요령: **원본을 고치면 파생값을 다시 계산해 함께 저장한다**는 규칙만
+ * 잡고 보면 핸들러들이 거의 같은 모양이라는 게 보인다. (출석부→출석 수,
+ * 기도표→기도 합계, 장부→재정 4숫자. `lib/types.ts` 의 MonthlyReport 주석 참고)
+ *
+ * 계산 로직 자체는 여기 없고 `lib/monthlyReportUtils.ts` 와 `lib/treasury.ts` 에 있다.
+ */
 const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
   { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },

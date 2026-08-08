@@ -9,6 +9,13 @@ import { storage } from "@/lib/storage";
 import type { ActivityEntry, ActivityItem } from "@/lib/types";
 import styles from "./ActivityEntryDialog.module.css";
 
+/**
+ * 단원 한 명이 한 회차에 한 활동들을 여러 줄로 입력하는 창(서기용).
+ *
+ * 목록에 없는 활동은 직접 적을 수 있고, 그 자리에서 활동 목록에 새 항목을
+ * 추가할 수도 있다(월례 보고 도중 목록 관리 화면까지 다녀오지 않아도 되도록).
+ */
+
 /** Sentinel for the "type it myself" option, which no catalogue key can use. */
 const CUSTOM = "__custom__";
 

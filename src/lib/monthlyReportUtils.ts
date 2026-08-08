@@ -16,6 +16,21 @@ import type {
   WeeklyReport,
 } from "./types";
 
+/**
+ * 서기용 월례 보고서의 계산 로직 전부. 이 앱에서 가장 큰 lib 파일이다.
+ *
+ * 화면(`app/secretary/report/page.tsx`)은 입력만 받고, 실제 계산은 여기서 한다.
+ * 크게 네 갈래다.
+ *   1. 명단 ↔ 보고서 동기화 — 단원이 늘거나 이름이 바뀌면 출석부·기도표를 맞춰 준다
+ *   2. 집계            — 출석부에서 출석 수를, 기도표에서 기도 합계를 뽑는다
+ *   3. 제출본 반영      — 단원이 보낸 LEGIO1 한 줄을 명단의 사람과 짝지어 채워 넣는다
+ *   4. 양식 규칙        — 주일미사 기준, 미사영성체 = 평일미사 + 주일미사 등
+ *
+ * React 를 전혀 모르는 순수 함수들이라, 화면 없이도 테스트할 수 있다.
+ * (`monthlyReportUtils.test.ts` 참고)
+ */
+
+/** 한 달에 둘 수 있는 주회 수의 상한. 5주인 달과 여유분을 감안한 값이다. */
 export const MAX_ATTENDANCE_SESSIONS = 6;
 
 export const WEEKDAY_LABEL_KEYS = [
