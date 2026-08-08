@@ -75,7 +75,7 @@ self.addEventListener("fetch", (event) => {
       fetch(request).catch(
         () =>
           caches
-            .match(request)
+            .match(request, { ignoreSearch: true })
             .then((res) => res || caches.match("/"))
             .then((res) => res || Response.error())
       )
@@ -90,7 +90,7 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.endsWith(".txt")) {
     event.respondWith(
       fetch(request).catch(() =>
-        caches.match(request).then((res) => res || Response.error())
+        caches.match(request, { ignoreSearch: true }).then((res) => res || Response.error())
       )
     );
     return;
@@ -99,7 +99,7 @@ self.addEventListener("fetch", (event) => {
   // Static assets: cache-first, populating the cache from the network the
   // first time each asset is requested.
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(request, { ignoreSearch: true }).then((cached) => {
       if (cached) return cached;
       return fetch(request)
         .then((response) => {
