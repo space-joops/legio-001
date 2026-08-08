@@ -11,6 +11,13 @@ import {
 } from "react";
 import styles from "./Toast.module.css";
 
+/**
+ * 화면 아래에 잠깐 떴다 사라지는 알림(토스트)을 앱 전체에 제공한다.
+ *
+ * 쓰는 쪽에서는 `const { showToast } = useToast()` 한 줄이면 된다.
+ * `LanguageContext` 와 똑같은 Context 4단 구조로 되어 있다.
+ */
+
 interface ToastContextValue {
   showToast: (message: string) => void;
 }

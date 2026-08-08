@@ -4,6 +4,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./LanguageToggle.module.css";
 
+/** 설정 화면의 한국어 / English 전환 버튼. */
+
 export function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();

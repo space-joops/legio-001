@@ -2,6 +2,10 @@ import { EMPTY_COUNTS } from "./constants";
 import type { PrayerCounts, PrayerItemKey, WeeklyReport } from "./types";
 
 /**
+ * 단원 → 서기 전송 규약. 단원이 공유하는 텍스트 맨 뒤에 `LEGIO1|...` 한 줄을
+ * 덧붙여, 서기가 카톡 메시지를 그대로 붙여 넣으면 숫자가 자동으로 채워지게 한다.
+ * (아래 영문 주석에 "왜 JSON·파일·링크가 아니라 한 줄 텍스트인가"가 적혀 있다.)
+ *
  * A member's weekly numbers, encoded as one line appended to the text they
  * already share. The secretary pastes those messages back into the monthly
  * report instead of retyping several hundred cells by hand.

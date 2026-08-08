@@ -1,4 +1,7 @@
 /**
+ * 월례 보고서 화면을 그림으로 떠서 PNG 이나 한 장짜리 PDF 로 만든다.
+ * 외부 라이브러리 없이 브라우저 기능만으로 직접 구현했다(오프라인·용량 때문).
+ *
  * Rasterises the monthly-report form and packages it as a PNG or a one-page
  * PDF — all client-side, no dependencies (the same reasoning as the old RTF
  * exporter: this app must work offline and stay small).

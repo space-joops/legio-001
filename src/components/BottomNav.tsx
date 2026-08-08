@@ -14,6 +14,12 @@ import {
 } from "./icons/NavIcons";
 import styles from "./BottomNav.module.css";
 
+/**
+ * 화면 맨 아래 고정된 탭 바.
+ *
+ * 주소가 `/secretary` 로 시작하면 탭 두 개가 서기용으로 바뀐다. 개인용 화면과
+ * 서기용 화면을 오갈 때 길을 잃지 않게 하려는 장치다.
+ */
 export function BottomNav() {
   const { t } = useTranslation();
   const pathname = usePathname();

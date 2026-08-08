@@ -11,6 +11,16 @@ import type {
 import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./SecretaryReportPrintView.module.css";
 
+/**
+ * 월례 보고서를 공식 양식 그대로 A4 한 장에 그린다.
+ *
+ * 서울 무염시태 세나뚜스 양식 제6호(2024년 12월 개정)를 따른다.
+ *
+ * 화면 미리보기·인쇄·PDF·이미지가 **전부 이 컴포넌트 하나에서 나온다.** 각각
+ * 따로 만들면 어느 하나가 조금씩 달라지는데, 실제로 제출되는 문서라 그러면 안
+ * 되기 때문이다. `compact` 로 미리보기와 실제 출력 크기만 구분한다.
+ */
+
 const MEMBER_COUNT_ROWS: { key: keyof MemberCounts; labelKey: string }[] = [
   { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
   { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },

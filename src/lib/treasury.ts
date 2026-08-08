@@ -3,6 +3,9 @@ import { sessionRangeNumbers } from "./monthlyReportUtils";
 import type { MonthlyReport, TreasuryExpense, TreasurySessionEntry } from "./types";
 
 /**
+ * 회계 장부. 회차별 수입·지출을 적으면 공식 양식 7항의 네 숫자
+ * (이월금·수입·지출·잔액)와 "중요 지출 내역" 줄이 자동으로 나온다.
+ *
  * The treasurer's per-session ledger and the four figures item 7 of the
  * official form asks for.
  *

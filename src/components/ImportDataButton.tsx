@@ -15,6 +15,13 @@ import type { AnyExportFile, ExportScope } from "@/lib/types";
 import styles from "./ImportDataButton.module.css";
 
 /**
+ * 데이터 가져오기의 유일한 입구.
+ *
+ * 무엇이 덮어써질지는 **사용자가 어느 버튼을 눌렀는지가 아니라 고른 파일의
+ * 범위(exportScope)** 가 정한다. 그래서 설정 화면과 서기 화면이 각각 버튼을
+ * 하나씩 둘 수 있고, 확인 창이 "이 파일은 무엇을 바꾸고 무엇을 건드리지
+ * 않는지"를 그때그때 설명해 준다.
+ *
  * The one import entry point: which slices get replaced is decided by the
  * picked file's scope, not by which button the user found — so the settings
  * page and the secretary screens can each offer one and the confirm dialog

@@ -11,6 +11,14 @@ import {
 } from "@/lib/rosaryMysteries";
 import styles from "./RosaryGuide.module.css";
 
+/**
+ * 묵주기도를 처음부터 끝까지 한 화면에 하나씩 안내한다.
+ *
+ * 오늘 요일에 해당하는 신비를 골라 성호경부터 마침 기도까지 단계를 펼쳐 놓고,
+ * 넘기면서 따라 바칠 수 있게 한다. 다 마치면 5단을 한 번에 기록한다.
+ * 단계 목록을 만드는 계산은 `lib/rosaryMysteries.ts` 에 있다.
+ */
+
 interface RosaryGuideProps {
   /** Adds a whole 5단 set to the counter. */
   onRecordSet: () => void;

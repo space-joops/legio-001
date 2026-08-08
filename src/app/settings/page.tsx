@@ -26,7 +26,19 @@ import type { Profile } from "@/lib/types";
 import { APP_VERSION, BUILD_TIME, formatBuildStamp } from "@/lib/version";
 import styles from "./page.module.css";
 
-/** Nag only once the user has enough recorded to lose. */
+/**
+ * 설정 화면(`/settings`). 이 앱에서 화면 하나가 가장 많은 일을 하는 곳이다.
+ *
+ *   - 내 정보(이름·세례명·쁘레시디움·본당)
+ *   - 서기 기능 입구
+ *   - 언어 / 글자 크기 / 글꼴 / 스플래시
+ *   - 앱 설치, 데이터 내보내기·가져오기·초기화, 버전 표시
+ *
+ * 데이터가 기기 안에만 있으므로 "내보내기"가 사실상 유일한 백업 수단이다.
+ * 그래서 한동안 백업하지 않았으면 안내를 띄우고, 초기화 전에도 백업을 권한다.
+ */
+
+/** 잃을 게 생길 만큼 기록이 쌓인 뒤에야 백업하라고 권한다(30일). */
 const BACKUP_REMINDER_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
 
 export default function SettingsPage() {

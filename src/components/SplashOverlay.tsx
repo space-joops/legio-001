@@ -6,6 +6,15 @@ import { storage } from "@/lib/storage";
 import styles from "./SplashOverlay.module.css";
 
 /**
+ * 앱을 열거나 다른 앱에 다녀왔을 때 잠깐 뜨는 레지오 마리애 성화 화면.
+ *
+ * 다른 앱에서 돌아온 것을 감지하는 데는 브라우저의 `visibilitychange` 신호를
+ * 쓴다. 다만 잠깐 스치는 경우(공유 시트, 권한 창)까지 매번 뜨면 성가시므로,
+ * 3초 이상 벗어나 있었을 때만 다시 보여 준다. 입력 중이거나 다른 창이 열려
+ * 있을 때도 건너뛴다.
+ */
+
+/**
  * How long the app has to have been in the background before coming back
  * counts as a return. Only there to swallow momentary blips — an OS share
  * sheet or permission prompt that flicks the page hidden and straight back —

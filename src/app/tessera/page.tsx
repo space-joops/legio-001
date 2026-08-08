@@ -5,6 +5,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { TESSERA_CHAPTERS } from "@/lib/tesseraTexts";
 import styles from "./page.module.css";
 
+/** 뗏세라(레지오 단원 기도서) 전문을 읽는 화면(`/tessera`). */
 export default function TesseraPage() {
   const { t, language } = useTranslation();
 

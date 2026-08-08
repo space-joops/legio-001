@@ -9,6 +9,15 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { formatMeetingDateTime, toDateTimeLocalValue } from "@/lib/reportUtils";
 import styles from "./page.module.css";
 
+/**
+ * 주회·행사 일정을 등록하고 알림을 받는 화면(`/schedule`).
+ *
+ * 서버가 없으므로 푸시 알림을 보낼 수 없다. 대신 앱이 켜져 있는 동안
+ * `ScheduleReminderChecker` 가 주기적으로 확인해서 브라우저 알림을 띄운다.
+ * 즉 알림은 앱을 한 번이라도 열어야 뜬다.
+ */
+
+/** 알림 시점 선택지(분 단위). 1440 = 하루 전. */
 const REMINDER_OPTIONS = [10, 30, 60, 180, 1440] as const;
 
 type PermissionState = NotificationPermission | "unsupported";

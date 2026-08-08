@@ -5,6 +5,11 @@ import { useTranslation } from "@/i18n/useTranslation";
 import type { FontScale } from "@/lib/types";
 import styles from "./FontScaleToggle.module.css";
 
+/**
+ * 설정 화면의 글자 크기 선택(작게·보통·크게·아주 크게).
+ * 사용자층에 어르신 비중이 높아, 이 앱에서 가장 많이 쓰이는 설정이다.
+ */
+
 const OPTIONS: { value: FontScale; labelKey: string }[] = [
   { value: "small", labelKey: "settings.fontSizeSmall" },
   { value: "medium", labelKey: "settings.fontSizeMedium" },

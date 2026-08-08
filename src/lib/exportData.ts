@@ -12,6 +12,15 @@ import type {
   SecretaryMonthExportFile,
 } from "./types";
 
+/**
+ * 설정 화면의 "데이터 내보내기 / 가져오기 / 초기화"를 담당한다.
+ *
+ * 이 앱은 데이터를 기기 안에만 두기 때문에, 휴대폰을 바꾸거나 앱을 지우면
+ * 기록이 사라진다. 그걸 막는 유일한 수단이 이 JSON 파일이다. 그래서
+ *   - 내보내기는 공유 시트를 먼저 시도하고 안 되면 다운로드로 떨어지고,
+ *   - 가져오기는 파일을 먼저 검사해 무엇이 들어 있는지 보여 준 뒤 확인을 받는다.
+ * (단원용 파일을 잘못 넣어 서기의 명단이 통째로 지워지는 사고가 있었다.)
+ */
 export function buildExportedData(): ExportedData {
   return {
     exportedAt: new Date().toISOString(),

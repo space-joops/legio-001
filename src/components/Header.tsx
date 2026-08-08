@@ -1,5 +1,6 @@
 import styles from "./Header.module.css";
 
+/** 화면 맨 위의 제목 줄. `PageShell` 이 붙여 준다. */
 export function Header({ title, wide }: { title: string; wide?: boolean }) {
   return (
     <header className={styles.header} data-app-chrome>

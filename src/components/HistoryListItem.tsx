@@ -5,6 +5,13 @@ import { formatMeetingDateTime, formatSessionLabel } from "@/lib/reportUtils";
 import type { WeeklyReport } from "@/lib/types";
 import styles from "./HistoryListItem.module.css";
 
+/**
+ * 기록 목록의 한 줄 — 회차·주회 일시와 기도 숫자 미리보기.
+ *
+ * 숫자를 미리 보여 주는 이유: 회차 번호만으로는 어느 주가 어느 주인지
+ * 구별되지 않아, 열어 보기 전에는 찾을 수가 없었다.
+ */
+
 export function HistoryListItem({ report }: { report: WeeklyReport }) {
   const { t, language } = useTranslation();
 

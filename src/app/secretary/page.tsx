@@ -15,6 +15,9 @@ import { addMonthToYearMonth, formatYearMonthLabel } from "@/lib/monthlyReportUt
 import type { MonthlyReport } from "@/lib/types";
 import styles from "./page.module.css";
 
+/**
+ * 서기 기능의 첫 화면(`/secretary`). 월례 보고서 목록 + 새로 만들기 + 삭제.
+ */
 function currentYearMonth(): string {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;

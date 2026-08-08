@@ -2,6 +2,9 @@ import { generateId } from "./id";
 import type { ActivityItem, ActivityLine } from "./types";
 
 /**
+ * 단원이 활동을 기록할 때 고르는 항목 목록(카탈로그). 서기가 편집할 수 있다.
+ * 항목마다 "공식 양식의 어느 줄로 집계되는지"를 자기가 들고 있다.
+ *
  * The catalogue of activities members can record against a session.
  *
  * Each item declares which line of the official form it belongs to, which is

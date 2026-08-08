@@ -1,5 +1,11 @@
 import packageJson from "../../package.json";
 
+/**
+ * 설정 화면 맨 아래에 보이는 앱 버전과 빌드 시각.
+ *
+ * 사용자가 "지금 어떤 버전을 쓰고 있는지"를 전화로 불러 줄 수 있어야 해서 만든
+ * 값이다. 서버가 없으니 빌드할 때 값을 코드 안에 박아 넣는다(`next.config.ts`).
+ */
 export const APP_VERSION = packageJson.version;
 
 /** ISO timestamp stamped at build time (see next.config.ts); "" in dev. */

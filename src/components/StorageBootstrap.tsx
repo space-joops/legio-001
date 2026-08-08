@@ -5,6 +5,9 @@ import { clearUnreportedAttendance } from "@/lib/monthlyReportUtils";
 import { storage } from "@/lib/storage";
 
 /**
+ * 앱이 켜질 때 딱 한 번 도는 데이터 정비 작업. 화면에는 아무것도 그리지 않는다.
+ * (옛 형식 보정 + 저장 공간 유지 요청)
+ *
  * One-time startup housekeeping for the local data store. All of it has to run
  * client-side (static export pre-renders with no localStorage), and none of it
  * renders anything.
