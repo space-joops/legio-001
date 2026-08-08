@@ -1,5 +1,20 @@
 import type { Language, PrayerItemKey } from "./types";
 
+/**
+ * 기도문 **원문**이 사는 곳. 이 앱에서 기도문 글자를 적는 유일한 파일이다.
+ *
+ * 두 갈래로 쓰인다.
+ *   1. `PRAYER_TEXTS` — 카운터의 [기도문 보기] 창에 통째로 보여 주는 전문
+ *   2. 개별 상수(`OUR_FATHER_KO` 등) — `rosaryMysteries.ts` 가 가져가 77단계로 쪼갬
+ *
+ * 둘 다 같은 상수를 참조하므로 **원문을 고칠 일이 생기면 여기 한 곳만 고치면 된다.**
+ * 뗏세라 화면(`tesseraTexts.ts`)도 신비 명칭을 여기서 가져다 쓴다.
+ *
+ * ⚠️ 문구는 가톨릭 기도서의 현행 공식 문안을 검수해 넣은 것이다. 눈에 어색해
+ *    보여도 출처를 확인하지 않고 고치지 말 것.
+ */
+
+/** 소제목 하나 + 그 아래 여러 줄. 한 줄이 화면에서 한 문단이 된다. */
 export interface PrayerTextSection {
   heading?: string;
   lines: string[];
@@ -7,7 +22,7 @@ export interface PrayerTextSection {
 
 export interface PrayerTextEntry {
   sections: PrayerTextSection[];
-  /** Shown in small print under the text when the wording isn't a fixed liturgical text. */
+  /** 고정된 전례문이 아닐 때 본문 아래에 작게 붙이는 안내. */
   note?: string;
 }
 

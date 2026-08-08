@@ -42,6 +42,9 @@ npx serve out
 **파이썬 등 다른 언어는 익숙한데 JavaScript/TypeScript 가 처음이라면** [docs/typescript-for-python.md](docs/typescript-for-python.md) 부터 읽어 보세요.
 `?? / ?. / 스프레드 / 제네릭 / JSX / React 훅` 을 파이썬 문법과 나란히 놓고 설명하고, 이 저장소를 어떤 순서로 읽으면 좋은지도 정리해 두었습니다.
 
+**묵주기도 기능을 깊이 파고들고 싶다면** [docs/rosary/](docs/rosary/00-개요.md) 에 전용 심화 문서가 있습니다.
+77단계가 만들어지는 과정, 스와이프 판정, 성화 팝업, 구슬 계산부터 **정답과 해설이 딸린 연습문제 16개**까지 담았습니다.
+
 ## 향후 계획
 
 - 여러 단원의 제출본을 PR 단위로 취합하는 관리자 기능(현재는 로컬 스토리지 기반 개인용 앱). 내보내기 JSON 형식이 이 작업을 염두에 두고 설계되어 있습니다.
@@ -58,8 +61,8 @@ npx serve out
 - **`src/app/globals.css`**: 애플리케이션 전체에 적용되는 글로벌 스타일(Reset CSS, 변수, 공통 애니메이션 등)이 정의된 파일입니다.
 - **`src/app/history/page.tsx`**: 과거 활동 보고 기록을 리스트 형태로 보여주는 페이지 컴포넌트입니다.
 - **`src/app/icon.png`**: 기본 앱 아이콘 이미지입니다.
-- **`src/app/lab/rosary/page.module.css`**: 묵주기도 가이드(실험실) 페이지의 스타일링 파일입니다.
-- **`src/app/lab/rosary/page.tsx`**: 묵주기도를 안내하는 가이드 페이지(실험실 기능) 컴포넌트입니다.
+- **`src/app/lab/rosary/page.module.css`**: 실험실 "디지털 묵주" 페이지의 스타일링 파일입니다.
+- **`src/app/lab/rosary/page.tsx`**: 실험실의 "디지털 묵주" — 누르면 숫자가 오르는 단순 카운터입니다. 묵주기도 안내 화면(`RosaryGuide`)과는 별개이며, 여기서 센 숫자는 저장되지 않습니다.
 - **`src/app/layout.tsx`**: 애플리케이션의 최상위 레이아웃을 정의하며, 전역 프로바이더와 HTML 구조를 포함합니다.
 - **`src/app/page.module.css`**: 메인 페이지(활동 기록)의 컴포넌트 스타일링 파일입니다.
 - **`src/app/page.tsx`**: 주요 개인 기도 활동을 기록하는 메인 페이지(홈 화면) 컴포넌트입니다.
@@ -126,8 +129,10 @@ npx serve out
 - **`src/components/PrayerTextDialog.tsx`**: 상세한 기도문 텍스트를 화면에 보여주는 팝업 컴포넌트입니다.
 - **`src/components/ReportSummary.module.css`**: 보고서 요약 컴포넌트의 스타일 파일입니다.
 - **`src/components/ReportSummary.tsx`**: 작성된 주간 활동 보고서의 요약 정보를 표시하는 컴포넌트입니다.
-- **`src/components/RosaryGuide.module.css`**: 묵주기도 가이드 컴포넌트의 스타일 파일입니다.
-- **`src/components/RosaryGuide.tsx`**: 묵주기도의 각 단과 신비를 안내하는 시각적 가이드 컴포넌트입니다.
+- **`src/components/MysteryImageDialog.tsx`**: 묵주기도 성화를 전체화면으로 크게 보며 그 단의 묵상을 읽는 팝업입니다.
+- **`src/components/RosaryGuide.module.css`**: 묵주기도 안내 화면의 스타일 파일입니다. `RosaryStepView`, `MysteryImageDialog` 도 이 파일을 함께 씁니다.
+- **`src/components/RosaryGuide.tsx`**: 묵주기도 안내 화면의 상태를 들고 조각들을 조립하는 컴포넌트입니다. 77단계 중 지금 어디인지, 성화 팝업이 열렸는지 등을 관리합니다.
+- **`src/components/RosaryStepView.tsx`**: 묵주기도 안내의 화면 한 장(위치·기도 이름·성화·기도문)을 그리는 컴포넌트입니다.
 - **`src/components/ScheduleReminderChecker.tsx`**: 설정된 주회 일정이 다가오는지 확인하고 알림(또는 UI 표시)을 트리거하는 컴포넌트입니다.
 - **`src/components/SecretaryModeBanner.module.css`**: 서기 모드 배너의 스타일 파일입니다.
 - **`src/components/SecretaryModeBanner.tsx`**: 서기 기능이 활성화되었음을 화면 상단 등에 알려주는 배너 컴포넌트입니다.
@@ -168,6 +173,7 @@ npx serve out
 - **`src/hooks/useMonthlyReports.ts`**: 월별/기간별 활동 보고서 통계를 계산하고 데이터를 추출하는 커스텀 훅입니다.
 - **`src/hooks/useRoster.ts`**: 서기가 관리하는 쁘레시디움 단원 명부(로스터) 데이터를 관리하는 커스텀 훅입니다.
 - **`src/hooks/useSchedule.ts`**: 주회 일정 데이터를 로컬 스토리지에서 읽어오고 설정하는 커스텀 훅입니다.
+- **`src/hooks/useSwipe.ts`**: 좌우 스와이프(손가락으로 쓸어 넘기기)를 감지하는 커스텀 훅입니다. 묵주기도 안내 화면에서 다음/이전으로 넘어가는 데 씁니다.
 
 ### `src/i18n/`
 
@@ -190,7 +196,8 @@ npx serve out
 - **`src/lib/prayerTexts.ts`**: 앱에서 제공되는 다양한 기도문들의 원문 텍스트 데이터가 하드코딩되어 있는 파일입니다.
 - **`src/lib/reportCapture.ts`**: 화면에 렌더링된 보고서를 이미지나 파일 형태로 캡처/추출하는 기능과 관련된 로직입니다.
 - **`src/lib/reportUtils.ts`**: 보고서 데이터를 가공, 포맷팅, 요약하는 데 필요한 공통 유틸리티 함수 모음입니다.
-- **`src/lib/rosaryMysteries.ts`**: 묵주기도의 신비(환희, 빛, 고통, 영광) 목록과 해당 요일 등 관련 데이터가 정의된 모듈입니다.
+- **`src/lib/rosaryMeditations.ts`**: 신비 20개(4신비 × 5단) 각각에 붙는 묵상 문장 데이터입니다. 성화를 눌렀을 때 뜨는 팝업의 본문이 여기서 나옵니다.
+- **`src/lib/rosaryMysteries.ts`**: 요일에 맞는 신비를 고르고, 묵주기도 한 바퀴를 화면 77장짜리 배열로 펼치는 순수 로직 모듈입니다.
 - **`src/lib/selectOnFocus.ts`**: 입력창(input)이 포커스를 받을 때 텍스트를 자동으로 전체 선택하게 해주는 유틸리티 훅/함수입니다.
 - **`src/lib/site.ts`**: 앱의 기본 URL, 메타데이터(SEO), 사이트 설정값 등을 정의하는 모듈입니다.
 - **`src/lib/storage.ts`**: 브라우저 로컬 스토리지에 데이터를 읽고 쓰는 모든 인터페이스를 추상화하여 관리하는 핵심 모듈입니다.
