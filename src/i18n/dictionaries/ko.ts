@@ -141,7 +141,10 @@ export const ko = {
     shareAppDescription: "다른 단원에게 이 앱을 소개해 보세요.",
     shareAppText: "레지오 마리애 주간 활동 보고 앱을 함께 써보세요!",
     exportData: "데이터 내보내기",
-    exportDescription: "내 활동 기록을 파일로 저장합니다.",
+    exportAll: "전체 백업 내보내기",
+    exportDescription: "활동 기록과 서기 자료(명단·월례 보고서)를 모두 한 파일에 담습니다.",
+    exportPersonal: "활동 기록만 내보내기",
+    exportPersonalDescription: "내 주간 활동 기록과 일정만 담습니다. 서기 자료는 담지 않습니다.",
     exportSaved: "파일이 저장되었습니다.",
     exportBeforeReset: "먼저 내보내기(백업)",
     backupOverdue:
@@ -155,11 +158,27 @@ export const ko = {
     secretaryLink: "월례보고서(서기용)",
     secretaryLinkDescription: "쁘레시디움 월례 보고서를 작성하고 인쇄·공유할 수 있습니다.",
     importData: "데이터 가져오기",
-    importDescription: "다른 기기에서 내보낸 파일을 불러와 이어서 작업합니다.",
+    importDescription:
+      "다른 기기에서 내보낸 파일을 불러옵니다. 파일 종류(전체 백업·활동 기록·서기 데이터·월례 보고서)에 따라 그 내용만 바뀝니다.",
     importConfirmTitle: "데이터를 가져올까요?",
     importConfirmBody:
-      "가져오기를 진행하면 현재 기기의 모든 데이터가 덮어써집니다. 활동 기록뿐 아니라 명단과 월례 보고서까지 함께 바뀝니다. 아래 내용이 맞는지 확인해 주세요.",
+      "전체 백업 파일입니다. 가져오기를 진행하면 현재 기기의 모든 데이터가 덮어써집니다. 활동 기록뿐 아니라 명단과 월례 보고서까지 함께 바뀝니다. 아래 내용이 맞는지 확인해 주세요.",
     importSuccess: "데이터를 가져왔습니다.",
+    importPersonalConfirmTitle: "활동 기록을 가져올까요?",
+    importPersonalConfirmBody:
+      "활동 기록 파일입니다. 내 활동 기록·일정·프로필이 파일 내용으로 바뀌고, 명단과 월례 보고서는 그대로 유지됩니다.",
+    importPersonalSuccess: "활동 기록을 가져왔습니다.",
+    importSecretaryConfirmTitle: "서기 데이터를 가져올까요?",
+    importSecretaryConfirmBody:
+      "서기 데이터 파일입니다. 명단·월례 보고서·활동 및 지출 항목이 파일 내용으로 바뀌고, 내 활동 기록은 그대로 유지됩니다.",
+    importSecretarySuccess: "서기 데이터를 가져왔습니다.",
+    importMonthConfirmTitle: "월례 보고서를 가져올까요?",
+    importMonthConfirmBodyNew:
+      "이 달 보고서가 목록에 새로 추가됩니다. 다른 데이터는 바뀌지 않습니다.",
+    importMonthConfirmBodyReplace:
+      "같은 달 보고서가 이미 있어 파일 내용으로 바뀝니다. 다른 달과 나머지 데이터는 바뀌지 않습니다.",
+    importMonthCaution: "이후 달 보고서의 이월금은 자동으로 바뀌지 않으니 확인해 주세요.",
+    importMonthSuccess: "월례 보고서를 가져왔습니다.",
     importError: "파일을 읽을 수 없습니다. 올바른 내보내기 파일인지 확인해 주세요.",
     importFutureVersion: "더 새로운 버전에서 만든 파일입니다. 앱을 먼저 업데이트해 주세요.",
     installUnavailable:
@@ -252,6 +271,12 @@ export const ko = {
     navSettings: "명단 관리",
     modeBanner: "서기 전용 화면입니다",
     exitToSettings: "일반 설정으로",
+    exportMonth: "내보내기",
+    transferSection: "데이터 옮기기",
+    transferDescription:
+      "PC와 휴대폰 사이에서 서기 자료(명단·월례 보고서·활동/지출 항목)를 파일로 주고받습니다. 가져오기를 해도 내 활동 기록은 지워지지 않습니다.",
+    exportSecretaryData: "서기 데이터 내보내기",
+    importData: "파일 가져오기",
   },
   secretaryRoster: {
     title: "현재 명단 관리",
@@ -503,9 +528,11 @@ export const ko = {
     print: "인쇄",
     exportPdf: "PDF 저장",
     exportImage: "이미지 복사",
+    exportJson: "다른 기기로 보내기",
     pdfSaved: "PDF 파일로 저장했습니다.",
     imageCopied: "이미지가 클립보드에 복사되었습니다.",
     imageSaved: "이미지 파일로 저장했습니다.",
+    jsonSaved: "보고서 파일로 저장했습니다.",
     exportFailed: "내보내기에 실패했습니다. 다시 시도해 주세요.",
   },
 };

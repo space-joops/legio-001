@@ -140,7 +140,12 @@ export const en = {
     shareAppDescription: "Introduce this app to other members.",
     shareAppText: "Try the Legion of Mary Weekly Report app with me!",
     exportData: "Export data",
-    exportDescription: "Save your activity records to a file.",
+    exportAll: "Export full backup",
+    exportDescription:
+      "Saves everything in one file — your activity records plus the secretary data (roster and monthly reports).",
+    exportPersonal: "Export activity records only",
+    exportPersonalDescription:
+      "Includes only your weekly records and schedule, not the secretary data.",
     exportSaved: "File saved.",
     exportBeforeReset: "Back up first",
     backupOverdue:
@@ -154,11 +159,28 @@ export const en = {
     secretaryLink: "Monthly Report (Secretary)",
     secretaryLinkDescription: "Prepare, print, and share the praesidium's monthly report.",
     importData: "Import data",
-    importDescription: "Load a file exported from another device to continue there.",
+    importDescription:
+      "Load a file exported from another device. Only what that kind of file contains (full backup, activity records, secretary data, or one monthly report) is replaced.",
     importConfirmTitle: "Import data?",
     importConfirmBody:
-      "Importing overwrites everything on this device — activity records, the roster, and every monthly report. Check the details below first.",
+      "This is a full backup file. Importing overwrites everything on this device — activity records, the roster, and every monthly report. Check the details below first.",
     importSuccess: "Data imported.",
+    importPersonalConfirmTitle: "Import activity records?",
+    importPersonalConfirmBody:
+      "This is an activity-records file. Your records, schedule, and profile will be replaced; the roster and monthly reports stay untouched.",
+    importPersonalSuccess: "Activity records imported.",
+    importSecretaryConfirmTitle: "Import secretary data?",
+    importSecretaryConfirmBody:
+      "This is a secretary data file. The roster, monthly reports, and activity/expense items will be replaced; your own activity records stay untouched.",
+    importSecretarySuccess: "Secretary data imported.",
+    importMonthConfirmTitle: "Import this monthly report?",
+    importMonthConfirmBodyNew:
+      "This month's report will be added to the list. Nothing else changes.",
+    importMonthConfirmBodyReplace:
+      "A report for this month already exists and will be replaced with the file's contents. Other months and all other data stay untouched.",
+    importMonthCaution:
+      "The brought-forward balance of later months is not recalculated — please check it.",
+    importMonthSuccess: "Monthly report imported.",
     importError: "Could not read this file. Please check it's a valid export file.",
     importFutureVersion: "This file came from a newer version. Please update the app first.",
     installUnavailable:
@@ -251,6 +273,12 @@ export const en = {
     navSettings: "Roster",
     modeBanner: "Secretary-only screens",
     exitToSettings: "Back to general settings",
+    exportMonth: "Export",
+    transferSection: "Transfer data",
+    transferDescription:
+      "Move the secretary data (roster, monthly reports, activity/expense items) between your PC and phone as a file. Importing here never erases your own activity records.",
+    exportSecretaryData: "Export secretary data",
+    importData: "Import file",
   },
   secretaryRoster: {
     title: "Manage current roster",
@@ -502,9 +530,11 @@ export const en = {
     print: "Print",
     exportPdf: "Save PDF",
     exportImage: "Copy image",
+    exportJson: "Send to another device",
     pdfSaved: "Saved as a PDF file.",
     imageCopied: "Image copied to the clipboard.",
     imageSaved: "Saved as an image file.",
+    jsonSaved: "Saved as a report file.",
     exportFailed: "Export failed. Please try again.",
   },
 } satisfies typeof ko;

@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { ImportDataButton } from "@/components/ImportDataButton";
 import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/components/ToastProvider";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useRoster } from "@/hooks/useRoster";
 import { useTranslation } from "@/i18n/useTranslation";
+import { shareOrDownloadMonthExport, shareOrDownloadSecretaryExport } from "@/lib/exportData";
 import { addMonthToYearMonth, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
+import type { MonthlyReport } from "@/lib/types";
 import styles from "./page.module.css";
 
 function currentYearMonth(): string {
@@ -45,6 +48,16 @@ export default function SecretaryPage() {
     }
     const created = createReport(yearMonth, roster);
     router.push(`/secretary/report?id=${created.id}`);
+  };
+
+  const handleExportMonth = async (report: MonthlyReport) => {
+    const outcome = await shareOrDownloadMonthExport(report, t("app.shortName"));
+    if (outcome === "downloaded") showToast(t("settings.exportSaved"));
+  };
+
+  const handleExportSecretary = async () => {
+    const outcome = await shareOrDownloadSecretaryExport();
+    if (outcome === "downloaded") showToast(t("settings.exportSaved"));
   };
 
   return (
@@ -97,6 +110,15 @@ export default function SecretaryPage() {
                 </Link>
                 <button
                   type="button"
+                  className={styles.exportButton}
+                  onClick={() => {
+                    void handleExportMonth(report);
+                  }}
+                >
+                  {t("secretary.exportMonth")}
+                </button>
+                <button
+                  type="button"
                   className={styles.deleteButton}
                   onClick={() => setDeleteTarget(report.id)}
                 >
@@ -106,6 +128,25 @@ export default function SecretaryPage() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>{t("secretary.transferSection")}</h2>
+        <p className={styles.description}>{t("secretary.transferDescription")}</p>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => {
+            void handleExportSecretary();
+          }}
+        >
+          {t("secretary.exportSecretaryData")}
+        </button>
+        <ImportDataButton
+          label={t("secretary.importData")}
+          buttonClassName={styles.secondaryButton}
+          reloadTo="/secretary/"
+        />
       </section>
 
       <ConfirmDialog
