@@ -82,6 +82,12 @@ html[data-font-family="nanum"] body {
     sans-serif;
 }
 
+html[data-font-family="catholic"] body {
+  font-family: "Catholic", "가톨릭서체", "Catholic B", "Catholic R", var(--font-nanum), "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
+    sans-serif;
+}
+
+
 h1,
 h2,
 h3,
@@ -141,4 +147,12 @@ button:disabled {
   [data-app-chrome] {
     display: none !important;
   }
+}
+
+@font-face {
+  font-family: 'Catholic';
+  src: url('/fonts/catholic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }

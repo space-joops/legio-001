@@ -83,7 +83,7 @@ export interface Profile {
 export type Language = "ko" | "en";
 
 export type FontScale = "small" | "medium" | "large" | "xlarge";
-export type FontFamily = "system" | "nanum";
+export type FontFamily = "system" | "nanum" | "catholic";
 
 /** 앱 전역 설정. 화면에 보이는 것(언어·글자)과 동작(스플래시)만 담는다. */
 export interface Settings {
