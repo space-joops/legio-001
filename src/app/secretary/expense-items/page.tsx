@@ -122,13 +122,15 @@ export default function ExpenseItemsPage() {
                   <td>
                     {/* Hidden rather than deleted, so a name the treasurer
                         stopped using does not vanish from the picker's history. */}
-                    <input
-                      type="checkbox"
-                      className={styles.checkbox}
-                      checked={!item.hidden}
-                      aria-label={`${item.label} ${t("secretaryExpenseItems.visibleColumn")}`}
-                      onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
-                    />
+                    <label className={styles.checkboxCell}>
+                      <input
+                        type="checkbox"
+                        className={styles.checkbox}
+                        checked={!item.hidden}
+                        aria-label={`${item.label} ${t("secretaryExpenseItems.visibleColumn")}`}
+                        onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
+                      />
+                    </label>
                   </td>
                   <td className={styles.orderCell}>
                     <button

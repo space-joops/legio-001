@@ -190,14 +190,19 @@
   padding: 0 var(--space-3);
 }
 
+/* Weight + an inner underline mark the active tab as well as color, so the
+   state survives poor eyesight and bright sunlight. */
 .sessionTabActive {
   border-color: var(--color-primary);
   background: var(--color-primary);
   color: var(--color-primary-contrast);
+  font-weight: 800;
+  box-shadow: inset 0 -0.375rem 0 0 var(--color-primary-contrast);
 }
 
 .tableScroll {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -218,12 +223,20 @@
   text-align: left;
 }
 
-/* The default ~16px checkbox was the smallest target in the app, in the one
-   control secretaries tap dozens of times per report. */
+/* The checkbox draws at 1.75rem, but the wrapping label is the tap target —
+   the one control secretaries tap dozens of times per report. */
+.attendanceCellLabel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--min-tap-target);
+  min-height: var(--min-tap-target);
+  cursor: pointer;
+}
+
 .attendanceCheckbox {
   width: 1.75rem;
   height: 1.75rem;
-  margin: var(--space-2);
   accent-color: var(--color-primary);
 }
 

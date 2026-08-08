@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import {
@@ -45,6 +45,8 @@ type Stage = "paste" | "review" | "confirm";
 export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }: Props) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const titleId = useId();
   const [stage, setStage] = useState<Stage>("paste");
   const [text, setText] = useState("");
   const [matches, setMatches] = useState<SubmissionMatch[]>([]);
@@ -60,7 +62,11 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // The paste box is the whole point of the dialog — put the caret there.
+      textareaRef.current?.focus();
+    }
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
@@ -160,21 +166,24 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
     <dialog
       ref={ref}
       className={styles.dialog}
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onCancel();
       }}
     >
-      <h2 className={styles.title}>{t("secretaryReport.importTitle")}</h2>
+      <h2 id={titleId} className={styles.title}>{t("secretaryReport.importTitle")}</h2>
 
       {stage === "paste" && (
         <>
           <p className={styles.hint}>{t("secretaryReport.importPasteHint")}</p>
           <textarea
+            ref={textareaRef}
             className={styles.textarea}
             rows={8}
             value={text}
             placeholder={t("secretaryReport.importPastePlaceholder")}
+            aria-label={t("secretaryReport.importTitle")}
             onChange={(e) => setText(e.target.value)}
           />
           {notFound && <p className={styles.error}>{t("secretaryReport.importNothingFound")}</p>}
@@ -281,14 +290,16 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
                         </td>
                         <td className={styles.status}>{statusLabel(match, row)}</td>
                         <td>
-                          <input
-                            type="checkbox"
-                            className={styles.checkbox}
-                            checked={row.include}
-                            disabled={!row.personId || !sessions.includes(row.sessionNumber)}
-                            aria-label={`${match.submission.name} ${t("secretaryReport.importColumnInclude")}`}
-                            onChange={(e) => updateRow(index, { include: e.target.checked })}
-                          />
+                          <label className={styles.checkboxCell}>
+                            <input
+                              type="checkbox"
+                              className={styles.checkbox}
+                              checked={row.include}
+                              disabled={!row.personId || !sessions.includes(row.sessionNumber)}
+                              aria-label={`${match.submission.name} ${t("secretaryReport.importColumnInclude")}`}
+                              onChange={(e) => updateRow(index, { include: e.target.checked })}
+                            />
+                          </label>
                         </td>
                       </tr>
                     );

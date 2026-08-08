@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import styles from "./ConfirmDialog.module.css";
 
 /**
@@ -44,6 +44,7 @@ export function ConfirmDialog({
   onAlt,
 }: ConfirmDialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   useEffect(() => {
     const dialog = ref.current;
@@ -56,12 +57,13 @@ export function ConfirmDialog({
     <dialog
       ref={ref}
       className={styles.dialog}
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onCancel();
       }}
     >
-      <h2 className={styles.title}>{title}</h2>
+      <h2 id={titleId} className={styles.title}>{title}</h2>
       <p className={styles.body}>{body}</p>
       {detail && <p className={styles.detail}>{detail}</p>}
       {altLabel && onAlt && (

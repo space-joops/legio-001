@@ -93,10 +93,15 @@ function TapFace({
         type="button"
         className={styles.tapArea}
         onClick={onIncrement}
-        aria-label={`${label} ${t("counters.tapToRecord")}`}
+        aria-label={`${label} ${count} — ${t("counters.tapToRecord")}`}
       >
         <span className={styles.count}>{count}</span>
       </button>
+      {/* aria-label 은 포커스 시점의 문구로 굳으므로, 탭할 때마다 바뀐 값은
+          이 라이브 리전이 대신 읽어 준다. */}
+      <span className="visuallyHidden" role="status">
+        {label} {count}
+      </span>
       {setSize ? <BeadRow setSize={setSize} setProgress={setProgress} /> : null}
       <div className={styles.controls}>
         <button

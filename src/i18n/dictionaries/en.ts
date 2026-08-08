@@ -47,6 +47,7 @@ export const en = {
     recordQuestion: "Record {count} decades of the Rosary?",
     record: "Record",
     recorded: "Recorded 5 decades of the Rosary.",
+    enlargeImage: "View the image full screen",
   },
   week: {
     sessionNumber: "Session",
@@ -194,6 +195,8 @@ export const en = {
     title: "Lab",
     digitalRosary: "Digital Rosary",
     digitalRosaryDescription: "A digital rosary for praying the rosary.",
+    tapToAdd: "Tap to count one",
+    reset: "Start over",
   },
   common: {
     save: "Save",

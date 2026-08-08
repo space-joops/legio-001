@@ -45,7 +45,7 @@
 
 .tapArea {
   width: 100%;
-  min-height: 96px;
+  min-height: 6rem;
   border-radius: var(--radius-md);
   border: none;
   background: var(--color-primary);
@@ -53,6 +53,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Rapid taps must not start a text selection of the count. */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .tapArea:active {

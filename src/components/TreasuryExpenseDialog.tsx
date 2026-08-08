@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "@/i18n/useTranslation";
 import { selectableExpenseItems } from "@/lib/expenseItems";
 import { generateId } from "@/lib/id";
@@ -58,6 +58,7 @@ export function TreasuryExpenseDialog({
 }: Props) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const [rows, setRows] = useState<DraftRow[]>([]);
 
   useEffect(() => {
@@ -118,12 +119,13 @@ export function TreasuryExpenseDialog({
     <dialog
       ref={ref}
       className={styles.dialog}
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
       }}
     >
-      <h2 className={styles.title}>{t("secretaryReport.expenseDialogTitle")}</h2>
+      <h2 id={titleId} className={styles.title}>{t("secretaryReport.expenseDialogTitle")}</h2>
       <p className={styles.subtitle}>
         {sessionNumber}
         {t("week.sessionNumberUnit")}

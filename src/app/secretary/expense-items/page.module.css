@@ -91,6 +91,16 @@
   text-align: left;
 }
 
+/* The label is the tap target; the checkbox alone would be half the floor. */
+.checkboxCell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--min-tap-target);
+  min-height: var(--min-tap-target);
+  cursor: pointer;
+}
+
 .checkbox {
   width: 1.75rem;
   height: 1.75rem;

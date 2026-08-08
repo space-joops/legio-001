@@ -140,6 +140,7 @@ export function SplashOverlay() {
       ref={ref}
       className={`${styles.dialog} ${phase === "leaving" ? styles.leaving : ""}`}
       data-app-chrome
+      aria-label={t("splash.imageAlt")}
       onClick={dismiss}
       onCancel={(e) => {
         e.preventDefault();

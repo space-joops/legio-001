@@ -12,8 +12,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 200px;
-  height: 200px;
+  width: 12.5rem;
+  height: 12.5rem;
+  padding: 0;
+  border: none;
   border-radius: 50%;
   background-color: var(--color-surface);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -33,11 +35,13 @@
 }
 
 .resetButton {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: var(--color-background-alt);
-  color: var(--color-text-secondary);
+  min-height: var(--min-tap-target);
+  padding: 0 2rem;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
 }
