@@ -1,3 +1,13 @@
+/*
+ * 묵주기도 안내 화면의 스타일.
+ *
+ * 세 파일이 이 하나를 함께 쓴다 — RosaryGuide.tsx(조립) ·
+ * RosaryStepView.tsx(화면 한 장) · MysteryImageDialog.tsx(성화 팝업).
+ * CSS 모듈은 여러 파일이 import 해도 클래스 이름이 그대로 공유된다.
+ *
+ * 자세한 설명: docs/rosary/02-화면과-스와이프.md
+ */
+
 .guide {
   position: relative;
   display: flex;
@@ -6,6 +16,8 @@
   padding: 0 0 var(--space-4);
   margin-bottom: var(--space-4);
   border-bottom: 3px solid var(--color-border);
+  /* 세로 스크롤만 브라우저에 넘기고 가로 제스처는 우리가 가져온다.
+     이게 없으면 옆으로 쓰는 동안 브라우저가 페이지를 가로로 끌어 버린다. */
   touch-action: pan-y;
 }
 
@@ -14,9 +26,17 @@
   flex-direction: column;
   gap: var(--space-3);
   width: 100%;
+  /* 손가락을 따라 화면이 옆으로 밀릴 때 삐져나온 부분을 감춘다. */
   overflow-x: hidden;
 }
 
+/*
+ * 화면이 바뀔 때 옆에서 밀려 들어오는 효과.
+ *
+ * transition 이 아니라 animation 인 이유: RosaryGuide 가 key={index} 로 이 요소를
+ * 통째로 새로 만들기 때문에, "값이 A에서 B로 변했다"가 아니라 "새 요소가 생겼다"에
+ * 반응해야 한다. animation 은 요소가 생기는 순간 한 번 재생된다.
+ */
 .slideInRight {
   animation: slideInRight 0.3s ease-out forwards;
 }
@@ -91,8 +111,8 @@
   }
 }
 
-/* Keeps the prayer's name at the top of the screen while a long text scrolls
-   under it — the walk-through's whole job is telling you where you are. */
+/* 긴 기도문이 밑으로 흘러가는 동안에도 기도 이름은 화면 맨 위에 붙어 있게 한다.
+   "지금 무엇을 바치고 있는지" 알려 주는 게 안내 화면의 존재 이유다. */
 .stickyHead {
   position: sticky;
   top: 0;
@@ -118,8 +138,10 @@
   font-weight: 800;
   line-height: 1.4;
   color: var(--color-text);
-  /* Three blinks (2 Hz, well under the three-per-second flash limit) then it
-     settles — long enough to catch the eye, short enough to read under. */
+  /* 세 번 깜박이고 멈춘다. 기도가 넘어갔다는 걸 눈으로 알리되, 읽는 데 방해가
+     되지 않을 만큼만.
+     500ms 주기 = 초당 2회다. 초당 3회를 넘는 깜박임은 광과민성 발작을 유발할 수
+     있어 접근성 지침(WCAG)이 금지하는데, 그 선 아래로 잡은 값이다. */
   animation: blink 500ms ease-in-out 3;
 }
 
@@ -133,6 +155,9 @@
   }
 }
 
+/* 기기 설정에서 "동작 줄이기"를 켠 사용자에게는 깜박임을 끈다.
+   참고: 위의 슬라이드 애니메이션(.slideInRight/.slideInLeft)은 아직 여기서
+   꺼지지 않는다 — docs/rosary/05-연습문제.md 의 중급 9번 과제. */
 @media (prefers-reduced-motion: reduce) {
   .heading {
     animation: none;
