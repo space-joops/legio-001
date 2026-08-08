@@ -212,3 +212,6 @@ npx serve out
    * (예: 영광의 신비 1단 이미지는 `glorious-1.jpeg`)
 3. **이미지 포맷:**
    `jpeg` 확장자를 사용하는 것을 권장하며, 용량 최적화를 위해 적절히 압축된 이미지를 사용하는 것이 좋습니다. 앱 화면에 맞는 해상도를 고려하여 업로드합니다.
+
+### 참고 링크 (Reference)
+- [한국 레지오 마리애 공식 홈페이지](http://church.catholic.or.kr/syracuse/legio/legio.html)

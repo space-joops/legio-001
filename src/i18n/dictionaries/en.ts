@@ -195,6 +195,11 @@ export const en = {
     digitalRosary: "Digital Rosary",
     digitalRosaryDescription: "A digital rosary for praying the rosary.",
   },
+  reference: {
+    title: "Reference",
+    legionOfMaryWebsite: "Legion of Mary Korea",
+    legionOfMaryWebsiteDescription: "Reference website for Legion of Mary.",
+  },
   common: {
     save: "Save",
     cancel: "Cancel",
