@@ -147,13 +147,15 @@ export default function ActivityItemsPage() {
                   <td>
                     {/* Hidden rather than deleted: removing an item outright would
                         drop it from reports that already counted it. */}
-                    <input
-                      type="checkbox"
-                      className={styles.checkbox}
-                      checked={!item.hidden}
-                      aria-label={`${item.label} ${t("secretaryActivityItems.visibleColumn")}`}
-                      onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
-                    />
+                    <label className={styles.checkboxCell}>
+                      <input
+                        type="checkbox"
+                        className={styles.checkbox}
+                        checked={!item.hidden}
+                        aria-label={`${item.label} ${t("secretaryActivityItems.visibleColumn")}`}
+                        onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
+                      />
+                    </label>
                   </td>
                 </tr>
               ))}

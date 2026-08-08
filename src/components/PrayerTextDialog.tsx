@@ -2,7 +2,7 @@
 // 즉, 브라우저의 API(예: useRef, useEffect, 이벤트 리스너 등)를 사용할 수 있게 됩니다.
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 // 다국어 지원을 위한 훅을 가져옵니다. 텍스트를 번역할 때 사용됩니다.
 import { useTranslation } from "@/i18n/useTranslation";
 // 기도문 데이터 구조에 대한 타입 정의를 가져옵니다.
@@ -54,6 +54,7 @@ export function PrayerTextDialog({
   // HTML <dialog> 엘리먼트에 직접 접근하기 위해 useRef를 사용합니다.
   // 이를 통해 네이티브 dialog API인 showModal()과 close()를 호출할 수 있습니다.
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
 
   // entry 객체가 존재하면(truthy) 모달을 열어야 하는 상태(true)로 판단합니다.
   const open = Boolean(entry);
@@ -80,6 +81,7 @@ export function PrayerTextDialog({
     <dialog
       ref={ref}
       className={styles.dialog}
+      aria-labelledby={titleId}
       // 사용자가 ESC 키를 눌러 모달을 닫으려 할 때 발생하는 onCancel 이벤트
       onCancel={(e) => {
         // 브라우저의 기본 닫힘 동작을 막고 (React 상태와 동기화하기 위함)
@@ -92,7 +94,7 @@ export function PrayerTextDialog({
       {entry && (
         <div className={styles.screen}>
           {/* 기도 제목 */}
-          <h2 className={styles.title}>{title}</h2>
+          <h2 id={titleId} className={styles.title}>{title}</h2>
 
           <div className={styles.content}>
             {/* 가이드가 전달되었다면 최상단에 렌더링합니다. */}

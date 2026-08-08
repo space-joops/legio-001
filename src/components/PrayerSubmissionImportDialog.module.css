@@ -5,6 +5,8 @@
   width: calc(100vw - 32px);
   max-width: 900px;
   max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
@@ -50,6 +52,7 @@
 /* Wide table on a phone: scroll it rather than crushing the columns. */
 .tableScroll {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   margin-bottom: var(--space-3);
 }
 
@@ -105,6 +108,16 @@
 .sender {
   min-width: 8rem;
   word-break: keep-all;
+}
+
+/* The label is the tap target; the checkbox alone would be half the floor. */
+.checkboxCell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--min-tap-target);
+  min-height: var(--min-tap-target);
+  cursor: pointer;
 }
 
 .checkbox {

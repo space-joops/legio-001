@@ -16,11 +16,17 @@ export default function RosaryPage() {
   return (
     <PageShell title={t("lab.digitalRosary")}>
       <div className={styles.container}>
-        <div className={styles.beadContainer} onClick={() => setCount(c => c + 1)}>
-          <div className={styles.bead}>{count}</div>
-        </div>
-        <button className={styles.resetButton} onClick={() => setCount(0)}>
-          {t("common.cancel")}
+        <button
+          type="button"
+          className={styles.beadContainer}
+          onClick={() => setCount(c => c + 1)}
+          aria-label={`${t("lab.digitalRosary")} — ${t("lab.tapToAdd")}`}
+        >
+          <span className={styles.bead} aria-hidden="true">{count}</span>
+        </button>
+        <span className="visuallyHidden" role="status">{count}</span>
+        <button type="button" className={styles.resetButton} onClick={() => setCount(0)}>
+          {t("lab.reset")}
         </button>
       </div>
     </PageShell>

@@ -45,6 +45,7 @@ export const ko = {
     recordQuestion: "묵주기도 {count}단을 기록할까요?",
     record: "기록하기",
     recorded: "묵주기도 5단을 기록했습니다.",
+    enlargeImage: "성화 크게 보기",
   },
   week: {
     sessionNumber: "회차",
@@ -192,6 +193,8 @@ export const ko = {
     title: "실험실",
     digitalRosary: "디지털 묵주",
     digitalRosaryDescription: "묵주기도를 바칠 때 사용할 수 있는 디지털 묵주입니다.",
+    tapToAdd: "눌러서 1씩 세기",
+    reset: "처음부터",
   },
   common: {
     save: "저장",

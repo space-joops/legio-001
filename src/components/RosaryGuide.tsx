@@ -42,6 +42,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const [fullScreenImage, setFullScreenImage] = useState<{src: string, title: string, explanation: string[]} | null>(null);
   const rootRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const fullScreenDialogRef = useRef<HTMLDialogElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const touchEnd = useRef<{ x: number; y: number } | null>(null);
 
@@ -90,6 +91,15 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   useEffect(() => {
     rootRef.current?.scrollIntoView({ block: "start" });
   }, [index]);
+
+  // House dialog pattern: the <dialog> stays mounted and showModal()/close()
+  // track React state, so the top layer is always cleaned up on close.
+  useEffect(() => {
+    const dialog = fullScreenDialogRef.current;
+    if (!dialog) return;
+    if (fullScreenImage && !dialog.open) dialog.showModal();
+    if (!fullScreenImage && dialog.open) dialog.close();
+  }, [fullScreenImage]);
 
   if (!mysteryId || steps.length === 0) return null;
 
@@ -188,30 +198,53 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           <p className={styles.context}>{context}</p>
           {/* Remounting on index change restarts the blink — the point is to show
               that the prayer moved, so it has to replay on every step. */}
-          <p key={index} className={styles.heading}>
+          <h2 key={index} className={styles.heading}>
             {step.title}
             {step.ordinal && <span className={styles.ordinal}>{step.ordinal}</span>}
-          </p>
+          </h2>
         </div>
 
 
         {step.image && (
           <div className={styles.imageWrapper}>
-             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={step.image}
-              alt={step.title}
-              className={styles.mysteryImage}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-              onClick={() => {
-                if (step.explanation && step.explanation.length > 0) {
-                  setFullScreenImage({ src: step.image!, title: step.title, explanation: step.explanation });
+            {step.explanation && step.explanation.length > 0 ? (
+              <button
+                type="button"
+                className={styles.imageButton}
+                onClick={() =>
+                  setFullScreenImage({
+                    src: step.image!,
+                    title: step.title,
+                    explanation: step.explanation!,
+                  })
                 }
-              }}
-              style={{ cursor: step.explanation && step.explanation.length > 0 ? 'pointer' : 'default' }}
-            />
+                aria-label={`${step.title} — ${t("rosary.enlargeImage")}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={step.image}
+                  alt={step.title}
+                  width={304}
+                  height={405}
+                  className={styles.mysteryImage}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </button>
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={step.image}
+                alt={step.title}
+                width={304}
+                height={405}
+                className={styles.mysteryImage}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            )}
           </div>
         )}
 
@@ -247,7 +280,11 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           </div>
         ) : (
           <>
-            {recorded && <p className={styles.recorded}>{t("rosary.recorded")}</p>}
+            {recorded && (
+              <p className={styles.recorded} role="status">
+                {t("rosary.recorded")}
+              </p>
+            )}
             <div className={styles.bottomNav}>
               <button
                 type="button"
@@ -257,7 +294,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
                 aria-label={t("rosary.previous")}
                 title={t("rosary.previous")}
               >
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
                   <polygon points="15,4 5,12 15,20"></polygon>
                 </svg>
               </button>
@@ -275,7 +312,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
                 aria-label={t("rosary.next")}
                 title={t("rosary.next")}
               >
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
                   <polygon points="9,4 19,12 9,20"></polygon>
                 </svg>
               </button>
@@ -283,31 +320,29 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           </>
         )}
       </div>
-      {fullScreenImage && (
-        <dialog
-          className={styles.fullScreenDialog}
-          ref={(el) => {
-            if (el && !el.open) {
-              el.showModal();
-            }
-          }}
-          onCancel={(e) => {
-            e.preventDefault();
+      <dialog
+        ref={fullScreenDialogRef}
+        className={styles.fullScreenDialog}
+        aria-label={fullScreenImage?.title}
+        onCancel={(e) => {
+          e.preventDefault();
+          setFullScreenImage(null);
+        }}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
             setFullScreenImage(null);
-          }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setFullScreenImage(null);
-            }
-          }}
-        >
+          }
+        }}
+      >
+        {fullScreenImage && (
           <div className={styles.fullScreenContent}>
             <button
+              type="button"
               className={styles.closeFullScreenBtn}
               onClick={() => setFullScreenImage(null)}
               aria-label={t("common.close")}
             >
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">
                 <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
               </svg>
             </button>
@@ -317,6 +352,8 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
               <img
                 src={fullScreenImage.src}
                 alt={fullScreenImage.title}
+                width={304}
+                height={405}
                 className={styles.fullScreenImg}
               />
               <div className={styles.fullScreenText}>
@@ -328,8 +365,8 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
               </div>
             </div>
           </div>
-        </dialog>
-      )}
+        )}
+      </dialog>
     </section>
   );
 }

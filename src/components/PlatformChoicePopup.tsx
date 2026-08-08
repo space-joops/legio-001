@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { storage } from "@/lib/storage";
@@ -35,6 +35,7 @@ export function PlatformChoicePopup() {
   const { installed, canInstall, isIos, isAndroid, isInAppBrowser, promptInstall } =
     useInstallPrompt();
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
   const [open, setOpen] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
@@ -102,15 +103,17 @@ export function PlatformChoicePopup() {
     <dialog
       ref={ref}
       className={styles.dialog}
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         handleClose();
       }}
     >
       <div className={styles.iconWrapper}>
-        <Image src="/icons/icon-192.png" alt="App Icon" className={styles.appIcon} width={64} height={64} unoptimized />
+        {/* Purely decorative — the title right below names the app. */}
+        <Image src="/icons/icon-192.png" alt="" aria-hidden="true" className={styles.appIcon} width={64} height={64} unoptimized />
       </div>
-      <h2 className={styles.title}>{t(copy.title)}</h2>
+      <h2 id={titleId} className={styles.title}>{t(copy.title)}</h2>
       <p className={styles.body}>{t(copy.body)}</p>
 
       {variant === "prompt" && (

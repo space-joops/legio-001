@@ -119,9 +119,12 @@ function personDisplayName(person: { name: string; baptismalName: string }): str
   return person.baptismalName ? `${person.name}(${person.baptismalName})` : person.name;
 }
 
-/** "5/29" — enough for the secretary to recognise the window at a glance. */
-function formatDay(date: Date): string {
-  return `${date.getMonth() + 1}/${date.getDate()}`;
+/** "5/29" (ko: "5. 29.") — enough for the secretary to recognise the window at a glance. */
+function formatDay(date: Date, language: string): string {
+  return new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", {
+    month: "numeric",
+    day: "numeric",
+  }).format(date);
 }
 
 /** "의연금 70,000" — with "외 1건" appended when the session had more. */
@@ -177,6 +180,7 @@ function SessionTabBar({
   active: number;
   onSelect: (session: number) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={styles.sessionTabs}>
       {sessions.map((n) => (
@@ -185,6 +189,8 @@ function SessionTabBar({
           type="button"
           className={`${styles.sessionTab} ${n === active ? styles.sessionTabActive : ""}`}
           onClick={() => onSelect(n)}
+          aria-pressed={n === active}
+          aria-label={`${n}${t("week.sessionNumberUnit")}`}
         >
           {n}
         </button>
@@ -710,12 +716,12 @@ function ReportPageContent() {
           <table className={styles.sessionTable}>
             <thead>
               <tr>
-                <th>{t("secretaryReport.personColumnLabel")}</th>
+                <th scope="col">{t("secretaryReport.personColumnLabel")}</th>
                 {PRAYER_ITEMS.map((item) => (
-                  <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
+                  <th scope="col" key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
                 ))}
-                <th>{t("secretaryReport.activityColumn")}</th>
-                <th>{t("secretaryReport.attendance")}</th>
+                <th scope="col">{t("secretaryReport.activityColumn")}</th>
+                <th scope="col">{t("secretaryReport.attendance")}</th>
               </tr>
             </thead>
             <tbody>
@@ -759,13 +765,17 @@ function ReportPageContent() {
                       </button>
                     </td>
                     <td>
-                      <input
-                        type="checkbox"
-                        className={styles.attendanceCheckbox}
-                        checked={record.sessions[activeSession] ?? false}
-                        onChange={() => toggleAttendance(record.personId, activeSession)}
-                        aria-label={`${person.name || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
-                      />
+                      {/* The label is the tap target; the checkbox alone is far
+                          under the 3.5rem floor for a control tapped per member. */}
+                      <label className={styles.attendanceCellLabel}>
+                        <input
+                          type="checkbox"
+                          className={styles.attendanceCheckbox}
+                          checked={record.sessions[activeSession] ?? false}
+                          onChange={() => toggleAttendance(record.personId, activeSession)}
+                          aria-label={`${person.name || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
+                        />
+                      </label>
                     </td>
                   </tr>
                 );
@@ -845,6 +855,7 @@ function ReportPageContent() {
                     className={styles.input}
                     value={report[bucket.key][key]}
                     onFocus={selectOnFocus}
+                    aria-label={`${t(labelKey)} ${t(bucket.labelKey)}`}
                     onChange={(e) => patchMemberCountBucket(bucket.key, key, e.target.value)}
                   />
                 </label>
@@ -959,10 +970,10 @@ function ReportPageContent() {
           <table className={`${styles.sessionTable} ${styles.treasuryTable}`}>
             <thead>
               <tr>
-                <th>{t("secretaryReport.sessionColumn")}</th>
-                <th>{t("secretaryReport.offeringColumn")}</th>
-                <th>{t("secretaryReport.expenseLabel")}</th>
-                <th>{t("secretaryReport.balanceLabel")}</th>
+                <th scope="col">{t("secretaryReport.sessionColumn")}</th>
+                <th scope="col">{t("secretaryReport.offeringColumn")}</th>
+                <th scope="col">{t("secretaryReport.expenseLabel")}</th>
+                <th scope="col">{t("secretaryReport.balanceLabel")}</th>
               </tr>
             </thead>
             <tbody>
@@ -1014,9 +1025,11 @@ function ReportPageContent() {
         </div>
 
         <span className={styles.label}>{t("secretaryReport.expenseBreakdownLabel")}</span>
-        <output className={styles.autoLine}>
+        {/* Not <output>: its implicit aria-live would re-read the whole line on
+            every keystroke that recomputes it. */}
+        <div className={styles.autoLine}>
           {formatExpenseBreakdown(treasury.breakdown) || "-"}
-        </output>
+        </div>
       </section>
 
       <section className={styles.section}>
@@ -1049,8 +1062,8 @@ function ReportPageContent() {
         <p className={styles.hint}>{t("secretaryReport.sundayMassHint")}</p>
         {sundayBasis && (
           <p className={styles.hint}>
-            {t("secretaryReport.sundayMassBasis")}: {formatDay(sundayBasis.from)} ~{" "}
-            {formatDay(sundayBasis.to)} · {t("secretaryReport.sundayCountLabel")}{" "}
+            {t("secretaryReport.sundayMassBasis")}: {formatDay(sundayBasis.from, language)} ~{" "}
+            {formatDay(sundayBasis.to, language)} · {t("secretaryReport.sundayCountLabel")}{" "}
             {sundayBasis.sundayCount} × {sundayBasis.peopleCount}
             {t("secretaryRoster.memberCountUnit")} = {sundayBasis.total}
           </p>
@@ -1070,7 +1083,7 @@ function ReportPageContent() {
             onChange={(e) => patch({ dioceseInstructions: e.target.value })}
           />
         </label>
-        <output className={styles.autoLine}>{activityLines.diocese}</output>
+        <div className={styles.autoLine}>{activityLines.diocese}</div>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.parishInstructionsLabel")}</span>
           <textarea
@@ -1080,7 +1093,7 @@ function ReportPageContent() {
             onChange={(e) => patch({ parishInstructions: e.target.value })}
           />
         </label>
-        <output className={styles.autoLine}>{activityLines.parish}</output>
+        <div className={styles.autoLine}>{activityLines.parish}</div>
         <label className={styles.field}>
           <span className={styles.label}>{t("secretaryReport.councilInstructionsLabel")}</span>
           <textarea
@@ -1104,7 +1117,7 @@ function ReportPageContent() {
             onChange={(e) => patch({ activitySummary: e.target.value })}
           />
         </label>
-        <output className={styles.autoLine}>{activityLines.praesidium}</output>
+        <div className={styles.autoLine}>{activityLines.praesidium}</div>
         <h3 className={styles.sectionTitle}>{t("secretaryReport.evangelizationSection")}</h3>
         {EVANGELIZATION_FIELDS.map(({ key, labelKey }) => (
           <div key={key} className={styles.memberCountRow}>
@@ -1121,6 +1134,7 @@ function ReportPageContent() {
                     className={styles.input}
                     value={report.evangelization[key][slot]}
                     onFocus={selectOnFocus}
+                    aria-label={`${t(labelKey)} ${t(`secretaryReport.evangelization${slot === "result" ? "Result" : "Target"}`)}`}
                     onChange={(e) =>
                       patch({
                         evangelization: {
