@@ -1,0 +1,8 @@
+.fileName {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+.hiddenFileInput {
+  display: none;
+}

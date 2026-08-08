@@ -66,10 +66,6 @@
   padding: var(--space-3);
 }
 
-.hiddenFileInput {
-  display: none;
-}
-
 .versionText {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);

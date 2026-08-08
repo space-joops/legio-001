@@ -16,7 +16,7 @@ import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useTranslation } from "@/i18n/useTranslation";
 import { buildActivityLines, personActivityCount } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
-import { shareOrDownloadFile } from "@/lib/exportData";
+import { shareOrDownloadFile, shareOrDownloadMonthExport } from "@/lib/exportData";
 import { generateId } from "@/lib/id";
 import {
   buildSinglePageImagePdf,
@@ -338,6 +338,11 @@ function ReportPageContent() {
   const exportFileName = (ext: string) =>
     `${report.roster.praesidiumName || t("app.shortName")}_${report.yearMonth}.${ext}`;
 
+  const handleExportJson = async () => {
+    const outcome = await shareOrDownloadMonthExport(report, t("app.shortName"));
+    if (outcome === "downloaded") showToast(t("secretaryReport.jsonSaved"));
+  };
+
   const handleExportPdf = async () => {
     try {
       const canvas = await captureReportCanvas();
@@ -558,6 +563,15 @@ function ReportPageContent() {
           </button>
           <button type="button" className={styles.secondaryButton} onClick={handleCopyImage}>
             {t("secretaryReport.exportImage")}
+          </button>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => {
+              void handleExportJson();
+            }}
+          >
+            {t("secretaryReport.exportJson")}
           </button>
           <button
             type="button"

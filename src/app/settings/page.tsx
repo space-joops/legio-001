@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { FontFamilyToggle } from "@/components/FontFamilyToggle";
 import { FontScaleToggle } from "@/components/FontScaleToggle";
+import { ImportDataButton } from "@/components/ImportDataButton";
 import { InstallPromptButton } from "@/components/InstallPromptButton";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { PageShell } from "@/components/PageShell";
@@ -15,16 +16,13 @@ import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { useTranslation } from "@/i18n/useTranslation";
 import {
-  importExportedData,
-  inspectImportFile,
   resetAllData,
   shareOrDownloadExportedData,
-  type ImportSummary,
+  shareOrDownloadPersonalExport,
 } from "@/lib/exportData";
-import { formatMeetingDateTime } from "@/lib/reportUtils";
 import { SITE_URL } from "@/lib/site";
 import { storage, DEFAULT_PROFILE } from "@/lib/storage";
-import type { ExportedData, Profile } from "@/lib/types";
+import type { Profile } from "@/lib/types";
 import { APP_VERSION, BUILD_TIME, formatBuildStamp } from "@/lib/version";
 import styles from "./page.module.css";
 
@@ -44,15 +42,12 @@ import styles from "./page.module.css";
 const BACKUP_REMINDER_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
 
 export default function SettingsPage() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const ready = useLocalStorageReady();
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [resetOpen, setResetOpen] = useState(false);
-  const [importFile, setImportFile] = useState<File | null>(null);
-  const [importSummary, setImportSummary] = useState<ImportSummary | null>(null);
   const [backupOverdue, setBackupOverdue] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!ready) return;
@@ -78,14 +73,6 @@ export default function SettingsPage() {
     }, 1500);
   };
 
-  const clearFileInput = () => {
-    setImportFile(null);
-    setImportSummary(null);
-    // Without this, re-picking the same file fires no change event and the
-    // button appears dead.
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
   const handleReset = () => {
     resetAllData();
     setResetOpen(false);
@@ -93,48 +80,15 @@ export default function SettingsPage() {
     reloadAfterToast();
   };
 
-  // Validate up front so a wrong file is caught before the confirm dialog, and
-  // so the dialog can describe what is actually about to overwrite everything.
-  const handleFilePicked = async (file: File | undefined) => {
-    if (!file) return;
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(await file.text());
-    } catch {
-      clearFileInput();
-      showToast(t("settings.importError"));
-      return;
-    }
-    const check = inspectImportFile(parsed);
-    if (!check.ok) {
-      clearFileInput();
-      showToast(
-        check.reason === "futureVersion"
-          ? t("settings.importFutureVersion")
-          : t("settings.importError")
-      );
-      return;
-    }
-    setImportFile(file);
-    setImportSummary(check.summary);
-  };
-
-  const handleImportConfirm = async () => {
-    const file = importFile;
-    clearFileInput();
-    if (!file) return;
-    try {
-      const data = JSON.parse(await file.text()) as Partial<ExportedData>;
-      importExportedData(data);
-      showToast(t("settings.importSuccess"));
-      reloadAfterToast();
-    } catch {
-      showToast(t("settings.importError"));
-    }
-  };
-
   const handleExport = async () => {
     const outcome = await shareOrDownloadExportedData();
+    if (outcome === "cancelled") return;
+    setBackupOverdue(false);
+    if (outcome === "downloaded") showToast(t("settings.exportSaved"));
+  };
+
+  const handleExportPersonal = async () => {
+    const outcome = await shareOrDownloadPersonalExport();
     if (outcome === "cancelled") return;
     setBackupOverdue(false);
     if (outcome === "downloaded") showToast(t("settings.exportSaved"));
@@ -146,20 +100,6 @@ export default function SettingsPage() {
     setResetOpen(false);
     await handleExport();
   };
-
-  const importSummaryText = importSummary
-    ? [
-        importSummary.memberName,
-        importSummary.exportedAt
-          ? formatMeetingDateTime(importSummary.exportedAt, language)
-          : "",
-        `${t("history.title")} ${importSummary.historyCount}`,
-        `${t("secretary.listTitle")} ${importSummary.monthlyReportCount}`,
-        `${t("secretaryRoster.memberCountsSection")} ${importSummary.rosterMemberCount}`,
-      ]
-        .filter(Boolean)
-        .join(" · ")
-    : "";
 
   return (
     <PageShell title={t("settings.title")}>
@@ -266,7 +206,6 @@ export default function SettingsPage() {
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.exportData")}</span>
-        <p className={styles.description}>{t("settings.exportDescription")}</p>
         {backupOverdue && <p className={styles.backupNotice}>{t("settings.backupOverdue")}</p>}
         <button
           type="button"
@@ -275,29 +214,28 @@ export default function SettingsPage() {
             void handleExport();
           }}
         >
-          {t("settings.exportData")}
+          {t("settings.exportAll")}
         </button>
+        <p className={styles.description}>{t("settings.exportDescription")}</p>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={() => {
+            void handleExportPersonal();
+          }}
+        >
+          {t("settings.exportPersonal")}
+        </button>
+        <p className={styles.description}>{t("settings.exportPersonalDescription")}</p>
       </section>
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.importData")}</span>
         <p className={styles.description}>{t("settings.importDescription")}</p>
-        <button
-          type="button"
-          className={styles.secondaryButton}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {t("settings.importData")}
-        </button>
-        {importFile && <p className={styles.description}>{importFile.name}</p>}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json"
-          className={styles.hiddenFileInput}
-          onChange={(e) => {
-            void handleFilePicked(e.target.files?.[0]);
-          }}
+        <ImportDataButton
+          label={t("settings.importData")}
+          buttonClassName={styles.secondaryButton}
+          reloadTo="/"
         />
       </section>
 
@@ -314,18 +252,6 @@ export default function SettingsPage() {
         danger
         onCancel={() => setResetOpen(false)}
         onConfirm={handleReset}
-      />
-
-      <ConfirmDialog
-        open={importFile !== null}
-        title={t("settings.importConfirmTitle")}
-        body={t("settings.importConfirmBody")}
-        detail={importSummaryText}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
-        danger
-        onCancel={clearFileInput}
-        onConfirm={handleImportConfirm}
       />
 
       {/* Neither belongs in a member's daily path: the secretary screens are for

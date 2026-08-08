@@ -341,10 +341,24 @@ export interface MonthlyReport {
   updatedAt: string;
 }
 
-/** 설정 화면의 "데이터 내보내기"가 만들어 내는 JSON 파일의 형태. */
+/**
+ * 내보내기 파일이 어느 범위를 담고 있는지.
+ *
+ * 파일 하나가 무엇을 덮어쓸 수 있는지를 이 값이 정한다. 단원용 파일을 잘못
+ * 넣어 서기의 명단이 통째로 지워지는 사고를 막기 위해 도입됐다.
+ *   all            — 옛 형식(전부 덮어씀)
+ *   personal       — 내 기록만
+ *   secretary      — 서기 데이터만
+ *   secretaryMonth — 월례 보고서 한 건만
+ */
+export type ExportScope = "all" | "personal" | "secretary" | "secretaryMonth";
+
+/** 예전 "전체 내보내기"가 만들어 내던 JSON 파일의 형태. */
 export interface ExportedData {
   exportedAt: string;
   dataSchemaVersion: number;
+  /** 범위 구분이 생기기 전에 내보낸 파일에는 이 값이 아예 없다. */
+  exportScope?: "all";
   profile: Profile;
   history: WeeklyReport[];
   currentReport: WeeklyReport | null;
@@ -352,3 +366,52 @@ export interface ExportedData {
   roster: PraesidiumRoster;
   monthlyReports: MonthlyReport[];
 }
+
+/** 단원 개인 데이터만. 이 파일을 가져와도 서기 데이터는 건드리지 않는다. */
+export interface PersonalExportFile {
+  exportScope: "personal";
+  exportedAt: string;
+  dataSchemaVersion: number;
+  profile: Profile;
+  history: WeeklyReport[];
+  currentReport: WeeklyReport | null;
+  schedule: ScheduleEvent[];
+}
+
+/** 서기 데이터만. 이 파일을 가져와도 단원 본인의 기록은 건드리지 않는다. */
+export interface SecretaryExportFile {
+  exportScope: "secretary";
+  exportedAt: string;
+  dataSchemaVersion: number;
+  roster: PraesidiumRoster;
+  monthlyReports: MonthlyReport[];
+  activityItems: ActivityItem[];
+  expenseItems: ExpenseItem[];
+}
+
+/**
+ * 월례 보고서 한 건.
+ *
+ * 현재 명단은 넣지 않는다. 보고서는 저마다 만들어질 당시의 명단 스냅샷을
+ * 자기 안에 품고 있어서 파일 하나로 완결되며, 이걸 가져왔다고 해서 그 기기의
+ * 현재 명단을 덮어써서는 안 되기 때문이다.
+ */
+export interface SecretaryMonthExportFile {
+  exportScope: "secretaryMonth";
+  exportedAt: string;
+  dataSchemaVersion: number;
+  /** 항상 한 건만 들어간다. 다른 파일들과 모양을 맞추려고 배열로 두었다. */
+  monthlyReports: MonthlyReport[];
+}
+
+/**
+ * 가져오기가 받아들일 수 있는 파일 네 종류.
+ *
+ * [TS] 여러 타입을 `|` 로 묶은 유니온이다. `exportScope` 값을 확인하면
+ *      TypeScript 가 넷 중 어느 것인지 알아서 좁혀 준다(태그 유니온).
+ */
+export type AnyExportFile =
+  | ExportedData
+  | PersonalExportFile
+  | SecretaryExportFile
+  | SecretaryMonthExportFile;
