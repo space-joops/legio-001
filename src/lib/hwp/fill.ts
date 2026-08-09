@@ -4,13 +4,7 @@ import { OFFICER_ROLES } from "../monthlyReportUtils";
 import { formatWon } from "../treasury";
 import type { ActivityItem, MemberCounts, MonthlyReport } from "../types";
 import { utf16leEncode } from "./binary";
-import {
-  getParaBody,
-  patchParaBody,
-  setParaBody,
-  type ParaEdit,
-  type ParaSlot,
-} from "./paragraph";
+import { getParaBody, patchParaBody, setParaBody, type ParaEdit } from "./paragraph";
 import { TAG, type HwpRecord } from "./records";
 import type { TableSlots, TemplateMap } from "./template";
 

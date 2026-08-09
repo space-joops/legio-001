@@ -453,7 +453,8 @@ export const ko = {
     directlyUnder: "직속",
     praesidiumSuffix: "쁘레시디움",
     signature: "서명",
-    referenceNote: "※ 참고용 문서 — 공식 보고서는 세나뚜스 양식(한글 문서)에 옮겨 적어 제출합니다.",
+    referenceNote:
+      "※ 참고용 화면 — 공식 제출은 [HWP 저장]으로 만든 세나뚜스 양식 한글 문서를 확인·보완해 제출합니다.",
     activityReportSection: "활동보고",
     activityReportGrid: "활동보고 (회차별)",
     activityReportHint: "미·사·주·묵·화 숫자를 넣으면 그 회차 출석이 자동으로 체크되고, 모두 0이 되면 해제됩니다. 필요하면 출석은 직접 고칠 수 있습니다.",
@@ -526,9 +527,13 @@ export const ko = {
     backToList: "보고서 목록으로",
     edit: "수정",
     print: "인쇄",
+    exportHwp: "HWP 저장",
     exportPdf: "PDF 저장",
     exportImage: "이미지 복사",
     exportJson: "다른 기기로 보내기",
+    hwpSaved: "한글(HWP) 문서로 저장했습니다. 한글에서 열어 확인해 주세요.",
+    hwpAgendaTruncated:
+      "주요 사항이 3건을 넘어 앞의 3건만 담았습니다. 나머지는 한글에서 직접 추가해 주세요.",
     pdfSaved: "PDF 파일로 저장했습니다.",
     imageCopied: "이미지가 클립보드에 복사되었습니다.",
     imageSaved: "이미지 파일로 저장했습니다.",

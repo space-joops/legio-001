@@ -62,13 +62,13 @@ export function concatBytes(chunks: Uint8Array[]): Uint8Array {
 
 async function pumpThrough(
   data: Uint8Array,
-  transform: { readable: ReadableStream<Uint8Array>; writable: WritableStream<Uint8Array> }
+  transform: { readable: ReadableStream<Uint8Array>; writable: WritableStream<BufferSource> }
 ): Promise<Uint8Array> {
   const writer = transform.writable.getWriter();
   // write를 먼저 await하면 내부 버퍼가 가득 찰 때 read와 교착할 수 있어
   // 쓰기와 읽기를 동시에 진행한다.
   const writing = (async () => {
-    await writer.write(data);
+    await writer.write(data as unknown as BufferSource);
     await writer.close();
   })();
   const chunks: Uint8Array[] = [];
