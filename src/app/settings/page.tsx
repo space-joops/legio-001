@@ -288,6 +288,16 @@ export default function SettingsPage() {
         </Link>
       </details>
 
+      <details className={styles.advanced}>
+        <summary className={styles.advancedSummary}>
+          <h2 className={styles.advancedTitle}>{t("reference.title")}</h2>
+        </summary>
+        <p className={styles.description}>{t("reference.legionOfMaryWebsiteDescription")}</p>
+        <a href="http://church.catholic.or.kr/syracuse/legio/legio.html" target="_blank" rel="noopener noreferrer" className={styles.secondaryButton}>
+          {t("reference.legionOfMaryWebsite")}
+        </a>
+      </details>
+
       {/* One line, no labels: "v0.6.0(20260802120712) https://legio.diginori.com".
           It gets read out over the phone when something looks wrong. */}
       <p className={styles.versionText}>
