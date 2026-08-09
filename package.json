@@ -8,7 +8,7 @@
     "postbuild": "node scripts/generate-precache-manifest.mjs",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test src/**/*.test.ts"
+    "test": "tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
     "next": "16.2.12",
