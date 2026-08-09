@@ -93,7 +93,15 @@ export function useCurrentReport() {
     [report, patchReport]
   );
 
-  /** 구슬 한 알을 채운다. 다섯 번째 알에서 5단이 한꺼번에 기록된다. */
+  /**
+   * 구슬 한 알을 채운다. 다섯 번째 알에서 5단이 한꺼번에 기록된다.
+   *
+   *   탭 1~4회 → counts 는 그대로, rosarySetProgress 만 1씩 오름
+   *   탭 5회째 → counts.rosaryDecades += 5, rosarySetProgress = 0
+   *
+   * 묵주기도는 5단을 한 묶음으로 바치기 때문에, 세다가 만 것을 보고서에 올리지
+   * 않으려는 설계다. 자세한 설명: `docs/rosary/04-구슬과-기록.md`
+   */
   const addRosaryBead = useCallback(() => {
     if (!report) return;
     const next = (report.rosarySetProgress ?? 0) + 1;
@@ -109,8 +117,17 @@ export function useCurrentReport() {
   /**
    * `addRosaryBead` 를 정확히 되돌린다. 세트 경계도 넘어간다.
    *
-   * 세트를 완성한 그 탭을 취소하면 5단을 도로 빼고 구슬 4알이 남는다. 잘못 누른
-   * 사람이 기대하는 그림이 바로 그것이다.
+   * 세 갈래로 갈린다.
+   *
+   *   구슬이 남아 있으면        → 구슬만 하나 뺀다            (3알 → 2알)
+   *   구슬 0 이고 5단 이상이면  → 5단을 빼고 구슬 4알을 남긴다 (10단·0알 → 5단·4알)
+   *   구슬 0 이고 5단 미만이면  → 숫자를 0 으로 만든다          (아래 주의)
+   *
+   * 두 번째가 핵심이다. 세트를 완성한 그 탭을 취소하면 5단을 도로 빼고 구슬 4알이
+   * 남는다 — 잘못 누른 사람이 기대하는 그림이 바로 그것이다.
+   *
+   * ⚠️ 세 번째 갈래는 직접 입력한 숫자를 통째로 날린다(7 에서 한 번 빼면 6이
+   *    아니라 0). `docs/rosary/06-알려진-문제.md` 참고.
    */
   const removeRosaryBead = useCallback(() => {
     if (!report) return;
@@ -133,7 +150,16 @@ export function useCurrentReport() {
     });
   }, [report, patchReport]);
 
-  /** 5단을 한 번에 기록한다 — 묵주기도 안내 화면의 "5단을 다 바쳤다" 경로. */
+  /**
+   * 5단을 한 번에 기록한다 — 묵주기도 안내 화면을 끝까지 따라간 경로.
+   *
+   * 구슬을 한 알씩 세는 `addRosaryBead` 와는 별개의 입구다. 안내 화면
+   * (`RosaryGuide`)에서 마지막 단계까지 간 뒤 [기록하기]를 누르면 여기로 온다.
+   *
+   * ⚠️ 이 함수는 `rosarySetProgress` 를 건드리지 않는다. 그래서 구슬 3알을 채워
+   *    둔 상태로 안내를 완주하면 +5 가 되면서 구슬 3알이 그대로 남고, 이후 탭
+   *    2번에 또 +5 가 된다. `docs/rosary/06-알려진-문제.md` 의 1번 항목.
+   */
   const addRosarySet = useCallback(() => {
     if (!report) return;
     patchReport({

@@ -6,8 +6,16 @@ import styles from "./page.module.css";
 import { useState } from "react";
 
 /**
- * 묵주기도 안내를 통째로 한 화면에서 보는 실험실 페이지(`/lab/rosary`).
- * 하단 탭에는 없고, 안내 화면만 따로 열어 보고 싶을 때 쓰는 통로다.
+ * 실험실의 "디지털 묵주"(`/lab/rosary`) — 누르면 숫자가 오르는 단순 카운터.
+ *
+ * **묵주기도 안내 화면(`RosaryGuide`)과는 아무 상관이 없다.** 여기서 센 숫자는
+ * 어디에도 저장되지 않고 주간 보고에도 반영되지 않는다. 화면을 벗어나면 사라진다.
+ * 손에 쥔 묵주 대신 화면을 두드려 세어 보는 실험용 화면일 뿐이다.
+ *
+ * 하단 탭에는 없다. 들어오는 길은 **설정 → 실험실 펼치기 → [디지털 묵주]** 하나뿐이다.
+ *
+ * 진짜 묵주기도 안내를 찾는다면: 홈 → 묵주기도 카드 → [기도문 보기]
+ * (`src/components/RosaryGuide.tsx`, `docs/rosary/` 참고)
  */
 export default function RosaryPage() {
   const { t } = useTranslation();
