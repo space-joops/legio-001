@@ -455,7 +455,8 @@ export const en = {
     directlyUnder: "(direct)",
     praesidiumSuffix: "Praesidium",
     signature: "signature",
-    referenceNote: "※ For reference only — the official report is transcribed onto the Senatus form (HWP document).",
+    referenceNote:
+      "※ For reference only — for the official submission, use [Save HWP] to produce the Senatus-form HWP document, then review and submit it.",
     activityReportSection: "Activity report",
     activityReportGrid: "Activity report (by session)",
     activityReportHint: "Entering any prayer count marks that session present; clearing them all marks it absent. You can still set attendance by hand.",
@@ -528,9 +529,13 @@ export const en = {
     backToList: "Back to report list",
     edit: "Edit",
     print: "Print",
+    exportHwp: "Save HWP",
     exportPdf: "Save PDF",
     exportImage: "Copy image",
     exportJson: "Send to another device",
+    hwpSaved: "Saved as an HWP document. Please open it in Hangul to review.",
+    hwpAgendaTruncated:
+      "Only the first 3 agenda items fit the form. Please add the rest in Hangul directly.",
     pdfSaved: "Saved as a PDF file.",
     imageCopied: "Image copied to the clipboard.",
     imageSaved: "Saved as an image file.",

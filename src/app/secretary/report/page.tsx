@@ -17,6 +17,7 @@ import { useTranslation } from "@/i18n/useTranslation";
 import { buildActivityLines, personActivityCount } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { shareOrDownloadFile, shareOrDownloadMonthExport } from "@/lib/exportData";
+import { buildMonthlyReportHwp } from "@/lib/hwp";
 import { generateId } from "@/lib/id";
 import {
   buildSinglePageImagePdf,
@@ -355,6 +356,29 @@ function ReportPageContent() {
   };
 
   /**
+   * 세나뚜스 양식 템플릿(.hwp)에 이 보고서 값만 치환해 제출용 한글 문서를
+   * 만든다. 템플릿은 선캐시된 정적 자산이라 오프라인에서도 동작한다.
+   */
+  const handleExportHwp = async () => {
+    try {
+      const response = await fetch("/report-template.hwp");
+      if (!response.ok) throw new Error(`template fetch: ${response.status}`);
+      const template = new Uint8Array(await response.arrayBuffer());
+      const { blob, warnings } = await buildMonthlyReportHwp(report, template, activityItems);
+      const outcome = await shareOrDownloadFile(blob, exportFileName("hwp"));
+      if (outcome === "cancelled") return;
+      if (warnings.some((warning) => warning.kind === "agendaTruncated")) {
+        // 저장 토스트보다 중요한 정보라 이것 하나만 띄운다.
+        showToast(t("secretaryReport.hwpAgendaTruncated"));
+      } else if (outcome === "downloaded") {
+        showToast(t("secretaryReport.hwpSaved"));
+      }
+    } catch {
+      showToast(t("secretaryReport.exportFailed"));
+    }
+  };
+
+  /**
    * ClipboardItem gets the promise, not the finished blob: Safari only honours
    * clipboard.write() while the tap's user activation is alive, and
    * rasterising first would spend it. Browsers without image clipboard
@@ -551,6 +575,15 @@ function ReportPageContent() {
         <div className={styles.previewActions} data-app-chrome>
           <button type="button" className={styles.secondaryButton} onClick={() => setMode("edit")}>
             {t("secretaryReport.edit")}
+          </button>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => {
+              void handleExportHwp();
+            }}
+          >
+            {t("secretaryReport.exportHwp")}
           </button>
           <button
             type="button"
