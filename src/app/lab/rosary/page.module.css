@@ -2,42 +2,327 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  gap: 2rem;
-  min-height: 60vh;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-3) var(--space-5);
 }
 
-.beadContainer {
+/* ── 오늘의 신비 카드 ──────────────────────────────────────── */
+
+.mysteryCard {
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background-color: var(--color-surface);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.1s;
-  user-select: none;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 480px;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid rgba(74, 58, 42, 0.16);
+  border-radius: var(--radius-lg);
 }
 
-.beadContainer:active {
-  transform: scale(0.95);
+.medallionButton,
+.medallion {
+  flex: none;
+  width: 4.5rem;
+  height: 4.5rem;
+  padding: 0;
+  border: 3px solid var(--color-accent-secondary);
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface-alt);
+  display: block;
+}
+
+.medallion {
+  border-color: rgba(74, 58, 42, 0.3);
+}
+
+.medallionImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mysteryText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  word-break: keep-all;
+}
+
+.mysteryHeading {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.mysteryLine {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ── 묵주 본체 ────────────────────────────────────────────── */
+
+.rosaryButton {
+  position: relative;
+  width: clamp(250px, 68vmin, 340px);
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 42%, #fffdf7 0%, var(--color-surface) 82%);
+  box-shadow:
+    0 10px 30px rgba(74, 58, 42, 0.18),
+    inset 0 0 0 1px rgba(74, 58, 42, 0.08);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform 0.08s ease;
+}
+
+.rosaryButton:active {
+  transform: scale(0.97);
+}
+
+.doneState {
+  background: radial-gradient(circle at 50% 42%, #fffaf2 0%, #f0e2cc 82%);
+  animation: doneGlow 1.8s ease-in-out infinite alternate;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.chain {
+  fill: none;
+  stroke: rgba(74, 58, 42, 0.3);
+  stroke-width: 2.5;
+}
+
+.cross {
+  fill: var(--color-accent-secondary);
 }
 
 .bead {
+  fill: #fffdf7;
+  stroke: rgba(74, 58, 42, 0.45);
+  stroke-width: 1.5;
+  transition: fill 0.15s ease, stroke 0.15s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.beadFilled {
+  fill: var(--color-primary);
+  stroke: var(--color-primary-strong);
+}
+
+.beadPop {
+  animation: beadPop 0.28s ease-out;
+}
+
+/* 완주하면 구슬이 구리색으로 물든다. */
+.doneState .beadFilled {
+  fill: var(--color-accent-secondary);
+  stroke: #6d3a0e;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 20%;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.count {
   font-size: 4rem;
-  font-weight: bold;
-  color: var(--color-primary);
+  line-height: 1;
+  font-weight: 800;
+  color: var(--color-primary-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.countLabel {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.totalLabel {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.doneTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--color-accent-secondary);
+}
+
+.doneHint {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* ── 진행 표시 · 조작 버튼 ────────────────────────────────── */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.decades {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.decadePill {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  border: 2px solid transparent;
+  white-space: nowrap;
+}
+
+/* 완료 표시 ✓ — 글자보다 살짝 작게 해 5개가 한 줄에 들어가게 한다. */
+.decadePill span {
+  font-size: 0.85em;
+}
+
+.decadeTodo {
+  background: var(--color-surface);
+  border-color: rgba(74, 58, 42, 0.25);
+  color: var(--color-text-muted);
+}
+
+.decadeCurrent {
+  background: #fffdf7;
+  border-color: var(--color-primary);
+  color: var(--color-primary-strong);
+  font-weight: 800;
+}
+
+.decadeDone {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.controlButton {
+  min-height: var(--min-tap-target);
+  padding: 0 var(--space-4);
+  border: 1.5px solid rgba(74, 58, 42, 0.5);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
 }
 
 .resetButton {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  background-color: var(--color-background-alt);
-  color: var(--color-text-secondary);
-  cursor: pointer;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.rounds {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-accent-secondary);
+}
+
+.notice {
+  max-width: 420px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* 화면 낭독기 전용 안내문. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes beadPop {
+  0% {
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes doneGlow {
+  from {
+    box-shadow:
+      0 10px 30px rgba(138, 74, 18, 0.2),
+      0 0 0 0 rgba(138, 74, 18, 0.15);
+  }
+  to {
+    box-shadow:
+      0 10px 30px rgba(138, 74, 18, 0.28),
+      0 0 0 14px rgba(138, 74, 18, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beadPop,
+  .doneState {
+    animation: none;
+  }
+}
+
+/* 가로로 돌린 폰: 세로 공간이 없으니 묵주 원과 간격을 줄여 스크롤을 아낀다.
+   (본문 폭은 PageShell 이 어차피 한 컬럼으로 제한하므로 배치는 그대로 둔다.) */
+@media (orientation: landscape) and (max-height: 520px) {
+  .container {
+    gap: var(--space-3);
+  }
+
+  .rosaryButton {
+    width: clamp(190px, 55vh, 250px);
+  }
+
+  .count {
+    font-size: 3rem;
+  }
 }
