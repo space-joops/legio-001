@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { FontFamilyToggle } from "@/components/FontFamilyToggle";
 import { FontScaleToggle } from "@/components/FontScaleToggle";
 import { ImportDataButton } from "@/components/ImportDataButton";
 import { InstallPromptButton } from "@/components/InstallPromptButton";
@@ -147,19 +146,14 @@ export default function SettingsPage() {
         <p className={styles.description}>{t("common.autoSaveNotice")}</p>
       </section>
 
-      <section className={styles.section}>
+      {/* <section className={styles.section}>
         <span className={styles.label}>{t("settings.languageLabel")}</span>
         <LanguageToggle />
-      </section>
+      </section> */}
 
       <section className={styles.section}>
         <span className={styles.label}>{t("settings.fontSizeLabel")}</span>
         <FontScaleToggle />
-      </section>
-
-      <section className={styles.section}>
-        <span className={styles.label}>{t("settings.fontFamilyLabel")}</span>
-        <FontFamilyToggle />
       </section>
 
       <section className={styles.section}>

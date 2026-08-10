@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Nanum_Gothic } from "next/font/google";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site";
 import { Providers } from "./providers";
@@ -18,19 +17,6 @@ import { Providers } from "./providers";
  * 아래 `<Providers>`(그쪽은 "use client")로 넘긴다.
  */
 
-// 구글은 나눔고딕을 유니코드 구간별로 ~276조각(전부 합쳐 2.9MB)으로 쪼개 준다.
-// `preload: false` 는 실수가 아니라 꼭 필요한 설정이다. preload 태그는 유니코드
-// 구간을 따지지 않고 모든 조각을 다 받아 버려서, 기본값인 시스템 글꼴을 그대로
-// 쓰는 대다수 사용자에게까지 매 페이지 ~1.9MB 를 강제로 내려받게 했다.
-// 이 옵션을 꺼도 @font-face 규칙 자체는 남으므로, 설정 > 폰트에서 나눔고딕을
-// 고른 사람은 필요한 조각만 그때그때 받아 정상적으로 쓸 수 있다.
-const nanumGothic = Nanum_Gothic({
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  variable: "--font-nanum",
-  display: "swap",
-  preload: false,
-});
 
 const SITE_NAME = "레지오 마리애 주간 활동 보고";
 const SITE_DESCRIPTION =
@@ -83,7 +69,7 @@ export default function RootLayout({
   // [TS] `children` 은 이 컴포넌트가 감싸고 있는 내용물이다. 각 페이지가
   //      여기 `{children}` 자리에 끼워진다.
   return (
-    <html lang="ko" className={nanumGothic.variable}>
+    <html lang="ko">
       <body>
         <Providers>{children}</Providers>
       </body>

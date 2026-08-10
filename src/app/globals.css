@@ -75,13 +75,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* User-selectable typeface (Settings > 폰트). --font-nanum is set on <html> by next/font
-   in layout.tsx; the fallback stack matches body's default so text never blanks out. */
-html[data-font-family="nanum"] body {
-  font-family: var(--font-nanum), "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
-    sans-serif;
-}
-
 h1,
 h2,
 h3,

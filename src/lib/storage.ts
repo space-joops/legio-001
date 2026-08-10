@@ -133,7 +133,6 @@ export const DEFAULT_PROFILE: Profile = {
 export const DEFAULT_SETTINGS: Settings = {
   language: "ko",
   fontScale: "medium",
-  fontFamily: "system",
   splashEnabled: true,
 };
 const EMPTY_MEMBER_COUNTS_DEFAULT: MemberCounts = {
