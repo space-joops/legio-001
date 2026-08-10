@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useToast } from "./ToastProvider";
-import { useTranslation } from "@/i18n/useTranslation";
 import { onStorageWriteFailure } from "@/lib/storage";
 
 /**
@@ -20,7 +19,6 @@ import { onStorageWriteFailure } from "@/lib/storage";
  */
 export function StorageFailureNotice() {
   const { showToast } = useToast();
-  const { t } = useTranslation();
 
   useEffect(() => {
     let lastShownAt = 0;
@@ -30,9 +28,9 @@ export function StorageFailureNotice() {
       const now = Date.now();
       if (now - lastShownAt < 10000) return;
       lastShownAt = now;
-      showToast(t("common.storageFull"));
+      showToast("저장 공간이 부족해 방금 입력한 내용이 저장되지 않았습니다. 설정에서 내보내기로 백업한 뒤 지난 기록을 정리해 주세요.");
     });
-  }, [showToast, t]);
+  }, [showToast]);
 
   return null;
 }

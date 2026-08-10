@@ -18,7 +18,7 @@
    - 커스텀 훅(`useLocalStorageReady`, `useCurrentReport`) 만들기
    - 예외 처리와 데이터 스키마 관리
 4. **[고급 기능 및 설정 (04_advanced.md)](./04_advanced.md)**
-   - 다국어 처리 (i18n)
+   - 화면 문구를 코드에 직접 (다국어 계층 제거)
    - PWA (Progressive Web App) 오프라인 지원
    - 린팅(ESLint)과 빌드 스크립트
 

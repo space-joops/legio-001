@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import { selectableExpenseItems } from "@/lib/expenseItems";
 import { generateId } from "@/lib/id";
 import { selectOnFocus } from "@/lib/selectOnFocus";
@@ -56,7 +55,6 @@ export function TreasuryExpenseDialog({
   onClose,
   onSave,
 }: Props) {
-  const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
   const [rows, setRows] = useState<DraftRow[]>([]);
 
@@ -123,14 +121,14 @@ export function TreasuryExpenseDialog({
         onClose();
       }}
     >
-      <h2 className={styles.title}>{t("secretaryReport.expenseDialogTitle")}</h2>
+      <h2 className={styles.title}>지출 입력</h2>
       <p className={styles.subtitle}>
         {sessionNumber}
-        {t("week.sessionNumberUnit")}
+        {"회차"}
       </p>
 
       {rows.length === 0 ? (
-        <p className={styles.empty}>{t("secretaryReport.expenseDialogEmpty")}</p>
+        <p className={styles.empty}>이 회차에는 지출이 없습니다. 아래 [지출 추가]를 눌러 넣으세요.</p>
       ) : (
         <ul className={styles.rows}>
           {rows.map((row) => (
@@ -138,7 +136,7 @@ export function TreasuryExpenseDialog({
               <select
                 className={styles.select}
                 value={row.choice}
-                aria-label={t("secretaryReport.expenseItemLabel")}
+                aria-label="지출 항목"
                 onChange={(e) => patchRow(row.id, { choice: e.target.value })}
               >
                 {options.map((item) => (
@@ -146,15 +144,15 @@ export function TreasuryExpenseDialog({
                     {item.label}
                   </option>
                 ))}
-                <option value={CUSTOM}>{t("secretaryReport.expenseCustomOption")}</option>
+                <option value={CUSTOM}>직접 입력…</option>
               </select>
               {row.choice === CUSTOM && (
                 <input
                   type="text"
                   className={styles.customLabel}
                   value={row.customLabel}
-                  placeholder={t("secretaryReport.expenseCustomPlaceholder")}
-                  aria-label={t("secretaryReport.expenseItemLabel")}
+                  placeholder="항목 이름"
+                  aria-label="지출 항목"
                   onChange={(e) => patchRow(row.id, { customLabel: e.target.value })}
                 />
               )}
@@ -164,7 +162,7 @@ export function TreasuryExpenseDialog({
                 className={styles.amount}
                 value={row.amount === 0 ? "" : formatWon(row.amount)}
                 placeholder="0"
-                aria-label={t("secretaryReport.expenseAmountLabel")}
+                aria-label="금액"
                 onFocus={selectOnFocus}
                 onChange={(e) => patchRow(row.id, { amount: toAmount(e.target.value) })}
               />
@@ -173,7 +171,7 @@ export function TreasuryExpenseDialog({
                 className={styles.removeButton}
                 onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}
               >
-                {t("common.delete")}
+                삭제
               </button>
             </li>
           ))}
@@ -181,18 +179,18 @@ export function TreasuryExpenseDialog({
       )}
 
       <p className={styles.total}>
-        {t("secretaryReport.expenseLabel")} {formatWon(total)}
+        {"지출"} {formatWon(total)}
       </p>
 
       <div className={styles.actions}>
         <button type="button" className={styles.secondaryButton} onClick={addRow}>
-          {t("secretaryReport.expenseAddRow")}
+          지출 추가
         </button>
         <button type="button" className={styles.secondaryButton} onClick={onClose}>
-          {t("common.cancel")}
+          취소
         </button>
         <button type="button" className={styles.primaryButton} onClick={handleSave}>
-          {t("common.save")}
+          저장
         </button>
       </div>
     </dialog>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import { createActivityItem, selectableActivityItems } from "@/lib/activityItems";
 import { generateId } from "@/lib/id";
 import { selectOnFocus } from "@/lib/selectOnFocus";
@@ -61,7 +60,6 @@ export function ActivityEntryDialog({
   onSave,
   onItemsChange,
 }: Props) {
-  const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
   const [rows, setRows] = useState<DraftRow[]>([]);
 
@@ -152,39 +150,39 @@ export function ActivityEntryDialog({
     >
       <div className={styles.screen}>
         <div className={styles.header}>
-          <h2 className={styles.title}>{t("secretaryReport.activityDialogTitle")}</h2>
+          <h2 className={styles.title}>활동 입력</h2>
           <p className={styles.subtitle}>
             {personLabel} · {sessionNumber}
-            {t("week.sessionNumberUnit")}
+            {"회차"}
           </p>
         </div>
 
         <div className={styles.content}>
           {rows.length === 0 ? (
-            <p className={styles.empty}>{t("secretaryReport.activityDialogEmpty")}</p>
+            <p className={styles.empty}>입력된 활동이 없습니다. 아래 [항목 추가]를 눌러 주세요.</p>
           ) : (
             <div className={styles.tableScroll}>
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>{t("secretaryReport.activityItemLabel")}</th>
+                    <th>활동 항목</th>
                     <th className={styles.countColumn}>
-                      {t("secretaryReport.activityCountLabel")}
+                      횟수
                     </th>
-                    <th>{t("secretaryReport.activityNoteLabel")}</th>
+                    <th>내용</th>
                     <th>
-                      <span className={styles.srOnly}>{t("common.delete")}</span>
+                      <span className={styles.srOnly}>삭제</span>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((row) => (
                     <tr key={row.id}>
-                      <td data-label={t("secretaryReport.activityItemLabel")}>
+                      <td data-label="활동 항목">
                         <select
                           className={styles.select}
                           value={row.itemKey}
-                          aria-label={t("secretaryReport.activityItemLabel")}
+                          aria-label="활동 항목"
                           onChange={(e) => patchRow(row.id, { itemKey: e.target.value })}
                         >
                           {options.map((item) => (
@@ -193,7 +191,7 @@ export function ActivityEntryDialog({
                             </option>
                           ))}
                           <option value={CUSTOM}>
-                            {t("secretaryReport.activityCustomOption")}
+                            직접 입력…
                           </option>
                         </select>
                         {row.itemKey === CUSTOM && (
@@ -201,30 +199,30 @@ export function ActivityEntryDialog({
                             type="text"
                             className={styles.customLabel}
                             value={row.customLabel}
-                            placeholder={t("secretaryReport.activityCustomPlaceholder")}
-                            aria-label={t("secretaryReport.activityCustomPlaceholder")}
+                            placeholder="새 활동 이름"
+                            aria-label="새 활동 이름"
                             onChange={(e) => patchRow(row.id, { customLabel: e.target.value })}
                           />
                         )}
                       </td>
-                      <td data-label={t("secretaryReport.activityCountLabel")}>
+                      <td data-label="횟수">
                         <input
                           type="number"
                           inputMode="numeric"
                           className={styles.count}
                           value={row.count}
                           onFocus={selectOnFocus}
-                          aria-label={t("secretaryReport.activityCountLabel")}
+                          aria-label="횟수"
                           onChange={(e) => patchRow(row.id, { count: toNumber(e.target.value) })}
                         />
                       </td>
-                      <td data-label={t("secretaryReport.activityNoteLabel")}>
+                      <td data-label="내용">
                         <input
                           type="text"
                           className={styles.note}
                           value={row.note}
-                          placeholder={t("secretaryReport.activityNotePlaceholder")}
-                          aria-label={t("secretaryReport.activityNoteLabel")}
+                          placeholder="예: 김요한 형제 상가"
+                          aria-label="내용"
                           onChange={(e) => patchRow(row.id, { note: e.target.value })}
                         />
                       </td>
@@ -234,7 +232,7 @@ export function ActivityEntryDialog({
                           className={styles.removeButton}
                           onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}
                         >
-                          {t("common.delete")}
+                          삭제
                         </button>
                       </td>
                     </tr>
@@ -245,17 +243,17 @@ export function ActivityEntryDialog({
           )}
 
           <button type="button" className={styles.addButton} onClick={addRow}>
-            {t("secretaryReport.activityAddRow")}
+            항목 추가
           </button>
-          <p className={styles.hint}>{t("secretaryReport.activityNoteHint")}</p>
+          <p className={styles.hint}>내용은 앱에서만 참고용으로 보이고 보고서에는 나오지 않습니다.</p>
         </div>
 
         <div className={styles.actions}>
           <button type="button" className={styles.secondaryButton} onClick={onClose}>
-            {t("common.cancel")}
+            취소
           </button>
           <button type="button" className={styles.primaryButton} onClick={handleSave}>
-            {t("common.save")}
+            저장
           </button>
         </div>
       </div>

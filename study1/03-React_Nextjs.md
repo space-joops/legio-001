@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ## 📌 2. `"use client"`는 언제 붙일까?
 
-파일들을 보다 보면 맨 위에 `"use client";` 라고 적힌 것들이 있습니다. (`src/components/LanguageToggle.tsx` 등)
+파일들을 보다 보면 맨 위에 `"use client";` 라고 적힌 것들이 있습니다. (`src/components/FontScaleToggle.tsx` 등)
 Next.js는 기본적으로 컴퓨터(서버)가 미리 HTML 화면을 다 그려서(렌더링) 사용자에게 보내줍니다. 엄청 빠르죠!
 
 하지만 사용자가 **버튼을 클릭**하거나, **글자를 입력**하거나, **브라우저의 기능(로컬 스토리지 등)**을 써야 한다면? 이것은 사용자의 휴대폰이나 컴퓨터(클라이언트)에서 직접 실행되어야 합니다.
@@ -42,7 +42,7 @@ Next.js는 기본적으로 컴퓨터(서버)가 미리 HTML 화면을 다 그려
 버튼을 눌렀을 때 숫자가 올라가거나, 화면이 바뀌는 것은 어떻게 만들까요?
 React의 마법 지팡이 두 개, `useState`와 `useEffect`를 사용합니다.
 
-`src/hooks/useLocalStorageReady.ts` 파일과 `src/components/LanguageToggle.tsx`를 단순화해서 설명해 드릴게요.
+`src/hooks/useLocalStorageReady.ts` 파일과 `src/components/FontScaleToggle.tsx`를 단순화해서 설명해 드릴게요.
 
 ### 🪄 1) `useState`: 변하는 값을 기억하는 마법
 일반 변수(`let a = 1`)는 값이 바뀌어도 화면이 다시 그려지지 않습니다. 하지만 `useState`를 쓰면, 값이 바뀔 때마다 React가 화면을 **자동으로 새로 그려줍니다.**

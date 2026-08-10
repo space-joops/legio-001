@@ -80,14 +80,11 @@ export interface Profile {
   parishName: string;
 }
 
-export type Language = "ko" | "en";
-
 export type FontScale = "small" | "medium" | "large" | "xlarge";
 export type FontFamily = "system";
 
-/** 앱 전역 설정. 화면에 보이는 것(언어·글자)과 동작(스플래시)만 담는다. */
+/** 앱 전역 설정. 화면에 보이는 것(글자 크기)과 동작(스플래시)만 담는다. */
 export interface Settings {
-  language: Language;
   fontScale: FontScale;
   /** 앱을 열 때 레지오 마리애 성화 스플래시를 보여줄지. */
   splashEnabled: boolean;

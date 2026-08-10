@@ -6,7 +6,6 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
-import { useTranslation } from "@/i18n/useTranslation";
 import {
   createDefaultExpenseItems,
   createExpenseItem,
@@ -23,7 +22,6 @@ import styles from "./page.module.css";
  * 적힐 때 이름을 복사해 두기 때문이다(제출한 달의 숫자가 나중에 바뀌면 안 된다).
  */
 export default function ExpenseItemsPage() {
-  const { t } = useTranslation();
   const { showToast } = useToast();
   const ready = useLocalStorageReady();
   const [items, setItems] = useState<ExpenseItem[]>([]);
@@ -36,7 +34,7 @@ export default function ExpenseItemsPage() {
   }, [ready]);
 
   if (!ready) {
-    return <PageShell title={t("secretaryExpenseItems.title")} wide>{null}</PageShell>;
+    return <PageShell title="지출 항목 관리" wide>{null}</PageShell>;
   }
 
   const persist = (next: ExpenseItem[]) => {
@@ -67,44 +65,44 @@ export default function ExpenseItemsPage() {
   };
 
   return (
-    <PageShell title={t("secretaryExpenseItems.title")} wide>
+    <PageShell title="지출 항목 관리" wide>
       <div className={styles.topActions}>
         <Link href="/secretary" className={styles.secondaryButton}>
-          {t("secretaryReport.backToList")}
+          보고서 목록으로
         </Link>
         <button type="button" className={styles.secondaryButton} onClick={() => setResetOpen(true)}>
-          {t("secretaryExpenseItems.restoreDefaults")}
+          기본 항목으로 되돌리기
         </button>
       </div>
-      <p className={styles.hint}>{t("secretaryExpenseItems.description")}</p>
-      <p className={styles.autoSaveNotice}>{t("common.autoSaveNotice")}</p>
+      <p className={styles.hint}>회계에서 지출을 적을 때 고를 항목을 관리합니다. 목록에 없는 지출은 입력할 때 직접 쓸 수도 있습니다.</p>
+      <p className={styles.autoSaveNotice}>모든 변경 사항은 자동으로 저장됩니다.</p>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryExpenseItems.addTitle")}</h2>
+        <h2 className={styles.sectionTitle}>항목 추가</h2>
         <div className={styles.row}>
           <input
             type="text"
             className={styles.input}
             value={draftLabel}
-            placeholder={t("secretaryExpenseItems.labelPlaceholder")}
-            aria-label={t("secretaryExpenseItems.labelColumn")}
+            placeholder="예: 성물비"
+            aria-label="항목 이름"
             onChange={(e) => setDraftLabel(e.target.value)}
           />
           <button type="button" className={styles.primaryButton} onClick={handleAdd}>
-            {t("secretaryExpenseItems.add")}
+            추가
           </button>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryExpenseItems.listTitle")}</h2>
+        <h2 className={styles.sectionTitle}>항목 목록</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>{t("secretaryExpenseItems.labelColumn")}</th>
-                <th>{t("secretaryExpenseItems.visibleColumn")}</th>
-                <th>{t("secretaryExpenseItems.orderColumn")}</th>
+                <th>항목 이름</th>
+                <th>사용</th>
+                <th>순서</th>
               </tr>
             </thead>
             <tbody>
@@ -115,7 +113,7 @@ export default function ExpenseItemsPage() {
                       type="text"
                       className={styles.input}
                       value={item.label}
-                      aria-label={t("secretaryExpenseItems.labelColumn")}
+                      aria-label="항목 이름"
                       onChange={(e) => patchItem(item.id, { label: e.target.value })}
                     />
                   </td>
@@ -126,7 +124,7 @@ export default function ExpenseItemsPage() {
                       type="checkbox"
                       className={styles.checkbox}
                       checked={!item.hidden}
-                      aria-label={`${item.label} ${t("secretaryExpenseItems.visibleColumn")}`}
+                      aria-label={`${item.label} ${"사용"}`}
                       onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
                     />
                   </td>
@@ -134,7 +132,7 @@ export default function ExpenseItemsPage() {
                     <button
                       type="button"
                       className={styles.moveButton}
-                      aria-label={`${item.label} ${t("secretaryExpenseItems.moveUp")}`}
+                      aria-label={`${item.label} ${"위로"}`}
                       onClick={() => move(item.id, -1)}
                     >
                       ↑
@@ -142,7 +140,7 @@ export default function ExpenseItemsPage() {
                     <button
                       type="button"
                       className={styles.moveButton}
-                      aria-label={`${item.label} ${t("secretaryExpenseItems.moveDown")}`}
+                      aria-label={`${item.label} ${"아래로"}`}
                       onClick={() => move(item.id, 1)}
                     >
                       ↓
@@ -153,21 +151,21 @@ export default function ExpenseItemsPage() {
             </tbody>
           </table>
         </div>
-        <p className={styles.hint}>{t("secretaryExpenseItems.hiddenHint")}</p>
+        <p className={styles.hint}>사용을 끄면 새로 입력할 때 목록에 나오지 않습니다. 이미 적어 둔 지출은 그대로 남습니다.</p>
       </section>
 
       <ConfirmDialog
         open={resetOpen}
-        title={t("secretaryExpenseItems.restoreConfirmTitle")}
-        body={t("secretaryExpenseItems.restoreConfirmBody")}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
+        title="기본 항목으로 되돌릴까요?"
+        body="직접 추가하거나 고친 항목이 모두 사라집니다. 이미 적어 둔 지출은 남습니다."
+        confirmLabel="확인"
+        cancelLabel="취소"
         danger
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
           persist(createDefaultExpenseItems());
           setResetOpen(false);
-          showToast(t("secretaryExpenseItems.restored"));
+          showToast("기본 항목으로 되돌렸습니다.");
         }}
       />
     </PageShell>

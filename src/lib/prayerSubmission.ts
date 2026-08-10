@@ -75,7 +75,8 @@ function expandDateTime(compact: string): string {
 
 /** The label line is prose so the member isn't alarmed by the payload; parsing
     keys off the magic string alone, so a mangled or deleted label is harmless. */
-export function formatSubmissionBlock(report: WeeklyReport, label: string): string {
+export function formatSubmissionBlock(report: WeeklyReport): string {
+  const label = "--- 서기 입력용 (지우지 마세요) ---";
   const fields = [
     SUBMISSION_MAGIC,
     String(report.sessionNumber),

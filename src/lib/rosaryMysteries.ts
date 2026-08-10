@@ -1,22 +1,14 @@
 import {
-  APOSTLES_CREED_EN,
-  APOSTLES_CREED_KO,
-  FATIMA_PRAYER_EN,
-  GLORY_BE_EN,
-  GLORY_BE_KO,
-  HAIL_MARY_EN,
-  HAIL_MARY_KO,
-  OUR_FATHER_EN,
-  OUR_FATHER_KO,
-  ROSARY_MYSTERY_SECTIONS_EN,
-  ROSARY_MYSTERY_SECTIONS_KO,
-  SALVATION_PRAYER_KO,
-  SALVE_REGINA_EN,
-  SALVE_REGINA_KO,
+  APOSTLES_CREED,
+  GLORY_BE,
+  HAIL_MARY,
+  OUR_FATHER,
+  ROSARY_MYSTERY_SECTIONS,
+  SALVATION_PRAYER,
+  SALVE_REGINA,
   type PrayerTextSection,
 } from "./prayerTexts";
 import { MYSTERY_MEDITATIONS } from "./rosaryMeditations";
-import type { Language } from "./types";
 
 /**
  * 묵주기도 안내 화면이 따라가는 **순서표를 만드는 곳**. 화면은 여기 없다.
@@ -28,7 +20,6 @@ import type { Language } from "./types";
  * 그리고 하지 않는 일:
  *   - 기도문 원문을 여기 적지 않는다 → `prayerTexts.ts` 의 것을 가리킨다
  *   - 묵상 문장을 여기 적지 않는다 → `rosaryMeditations.ts`
- *   - 번역 사전을 알지 못한다 → 기도 이름 6개를 `labels` 인자로 받아 쓴다
  *   - React 를 모른다 → 순수 함수뿐이라 화면 없이도 테스트할 수 있다
  *
  * 실제 화면은 `src/components/RosaryGuide.tsx` 가 그린다. 이 파일이 만든
@@ -46,7 +37,7 @@ import type { Language } from "./types";
 export type MysteryId = "joyful" | "sorrowful" | "glorious" | "luminous";
 
 /**
- * `ROSARY_MYSTERY_SECTIONS_KO/EN` 배열에 네 신비가 놓여 있는 순서
+ * `ROSARY_MYSTERY_SECTIONS` 배열에 네 신비가 놓여 있는 순서
  * (환희 · 고통 · 영광 · 빛).
  *
  * 그 배열들은 가톨릭 기도서 공식 문구를 검수해 담고 있고 뗏세라 화면과도
@@ -102,9 +93,8 @@ export function getMysteryIdForDate(date: Date): MysteryId {
  * [TS] `MYSTERY_ORDER.indexOf(id)` 는 파이썬의 `list.index(id)` 다. 위에서 경고한
  *      "암묵적 순서 결합"이 바로 이 한 줄이다.
  */
-export function getMysterySection(id: MysteryId, language: Language): PrayerTextSection {
-  const sections = language === "ko" ? ROSARY_MYSTERY_SECTIONS_KO : ROSARY_MYSTERY_SECTIONS_EN;
-  return sections[MYSTERY_ORDER.indexOf(id)];
+export function getMysterySection(id: MysteryId): PrayerTextSection {
+  return ROSARY_MYSTERY_SECTIONS[MYSTERY_ORDER.indexOf(id)];
 }
 
 /**
@@ -123,24 +113,19 @@ export interface RosaryStep {
   decade?: number;
   /** 성화 이미지 경로. 신비 선포 화면 5장에만 붙는다. */
   image?: string;
-  /** 성화를 눌렀을 때 뜨는 묵상 문장들. 한국어일 때만 채워진다. */
+  /** 성화를 눌렀을 때 뜨는 묵상 문장들. 묵상문이 없는 단은 빈 배열. */
   explanation?: string[];
 }
 
-/**
- * 기도 이름 6개.
- *
- * 이걸 인자로 받는 덕분에 이 파일이 번역 계층(`useTranslation`)을 몰라도 된다.
- * 부르는 쪽(`RosaryGuide`)이 `t("rosary.creed")` 같은 값을 넣어 준다.
- */
-export interface RosaryStepLabels {
-  creed: string;
-  ourFather: string;
-  hailMary: string;
-  gloryBe: string;
-  salvation: string;
-  closing: string;
-}
+/** 화면 제목으로 쓰는 기도 이름 6개. 기도문 본문은 `prayerTexts.ts` 에 있다. */
+const PRAYER_TITLE = {
+  creed: "시작 기도 · 사도신경",
+  ourFather: "주님의 기도",
+  hailMary: "성모송",
+  gloryBe: "영광송",
+  salvation: "구원을 비는 기도",
+  closing: "마침 기도 · 성모찬송",
+};
 
 /**
  * 묵주기도 한 바퀴를 화면 77장의 **평평한 배열**로 펼친다.
@@ -155,22 +140,8 @@ export interface RosaryStepLabels {
  * 번째 기도인가"를 매번 계산해야 하지만, 한 줄로 펴 두면 **인덱스 하나만 있으면
  * 된다.** 그래서 다음/이전이 `index + 1` / `index - 1` 로 끝난다.
  */
-export function buildRosarySteps(
-  id: MysteryId,
-  language: Language,
-  labels: RosaryStepLabels
-): RosaryStep[] {
-  // 언어에 맞는 기도문 원문을 고른다. 여기서 한 번만 고르고 아래에서는 변수만 쓴다.
-  // 참고: 같은 기도인데 한국어는 "구원을 비는 기도", 영어는 "Fatima Prayer" 라
-  // 상수 이름이 서로 다르다(`salvation` 줄).
-  const ko = language === "ko";
-  const creed = ko ? APOSTLES_CREED_KO : APOSTLES_CREED_EN;
-  const ourFather = ko ? OUR_FATHER_KO : OUR_FATHER_EN;
-  const hailMary = ko ? HAIL_MARY_KO : HAIL_MARY_EN;
-  const gloryBe = ko ? GLORY_BE_KO : GLORY_BE_EN;
-  const salvation = ko ? SALVATION_PRAYER_KO : FATIMA_PRAYER_EN;
-  const closing = ko ? SALVE_REGINA_KO : SALVE_REGINA_EN;
-  const mystery = getMysterySection(id, language);
+export function buildRosarySteps(id: MysteryId): RosaryStep[] {
+  const mystery = getMysterySection(id);
 
   /**
    * 성모송 화면을 `count` 장 만든다. `decade` 를 주면 각 화면에 몇 단인지 표시된다.
@@ -183,21 +154,21 @@ export function buildRosarySteps(
    */
   const hailMarys = (count: number, decade?: number): RosaryStep[] =>
     Array.from({ length: count }, (_, i) => ({
-      title: labels.hailMary,
+      title: PRAYER_TITLE.hailMary,
       // [TS] 백틱 문자열 안의 `${...}` 는 파이썬 f-string 과 같다. → "3 / 10"
       ordinal: `${i + 1} / ${count}`,
-      lines: hailMary,
+      lines: HAIL_MARY,
       decade,
     }));
 
   return [
     // ── 시작 기도 6장 ────────────────────────────────────────────
-    { title: labels.creed, lines: creed },
-    { title: labels.ourFather, lines: ourFather },
+    { title: PRAYER_TITLE.creed, lines: APOSTLES_CREED },
+    { title: PRAYER_TITLE.ourFather, lines: OUR_FATHER },
     // [TS] `...` 는 배열을 그 자리에 펼쳐 넣는다. 파이썬의 `*hail_marys(3)`.
     //      이게 없으면 배열이 통째로 한 원소로 들어가 버린다.
     ...hailMarys(OPENING_HAIL_MARYS),
-    { title: labels.gloryBe, lines: gloryBe },
+    { title: PRAYER_TITLE.gloryBe, lines: GLORY_BE },
 
     // ── 1단~5단, 각 14장 ─────────────────────────────────────────
     // [TS] 여기 `Array.from(...)` 은 "배열 5개가 든 배열"(5 × 14장)을 만들고,
@@ -205,8 +176,7 @@ export function buildRosarySteps(
     //      펴기 때문에, 안쪽의 `hailMarys(...)` 는 `...` 로 미리 풀어 둬야 한다.
     ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => [
       // 신비 선포 화면. 제목이 곧 본문이라 `lines` 가 빈 배열이고, 대신 성화와
-      // 묵상이 붙는다. 묵상은 한국어에만 있어서 영어에서는 항상 빈 배열이 되고,
-      // 그 결과 영어로 보면 성화를 눌러도 아무 일이 일어나지 않는다.
+      // 묵상이 붙는다.
       {
         title: mystery.lines[d],
         lines: [],
@@ -214,15 +184,15 @@ export function buildRosarySteps(
         // 경로를 문자열로 조립한다. 그래서 파일이 없어도 빌드는 통과하고,
         // 대신 화면에서 404 가 난다(`RosaryStepView` 가 조용히 숨긴다).
         image: `/images/rosary/${id}-${d + 1}.jpeg`,
-        explanation: ko && MYSTERY_MEDITATIONS[id]?.[d + 1] ? MYSTERY_MEDITATIONS[id][d + 1] : [],
+        explanation: MYSTERY_MEDITATIONS[id]?.[d + 1] ?? [],
       },
-      { title: labels.ourFather, lines: ourFather, decade: d + 1 },
+      { title: PRAYER_TITLE.ourFather, lines: OUR_FATHER, decade: d + 1 },
       ...hailMarys(HAIL_MARYS_PER_DECADE, d + 1),
-      { title: labels.gloryBe, lines: gloryBe, decade: d + 1 },
-      { title: labels.salvation, lines: salvation, decade: d + 1 },
+      { title: PRAYER_TITLE.gloryBe, lines: GLORY_BE, decade: d + 1 },
+      { title: PRAYER_TITLE.salvation, lines: SALVATION_PRAYER, decade: d + 1 },
     ]).flat(),
 
     // ── 마침 기도 1장 ────────────────────────────────────────────
-    { title: labels.closing, lines: closing },
+    { title: PRAYER_TITLE.closing, lines: SALVE_REGINA },
   ];
 }

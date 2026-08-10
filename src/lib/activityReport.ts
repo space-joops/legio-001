@@ -5,13 +5,8 @@ import type { ActivityItem, ActivityLine, MonthlyReport } from "./types";
 
 /**
  * 단원들의 활동 기록을 합쳐 공식 양식의 "주요 활동 내역" 네 줄을 만든다.
- * 편집 화면·인쇄 화면·내보내기가 모두 이 결과를 그대로 쓴다.
- *
- * Builds the four "주요 활동 내역" lines of the official form.
- *
- * The edit screen, the print view and the RTF export all render these, and
- * before this they each assembled the strings themselves — with different
- * separators. One source keeps them identical.
+ * 편집 화면과 인쇄 화면이 모두 이 결과를 그대로 쓴다. 예전에는 두 화면이 각자
+ * 문자열을 조립하느라 구분자가 서로 달랐는데, 출처를 하나로 모아 맞췄다.
  */
 
 export interface ActivityTally {
@@ -51,25 +46,18 @@ export interface ActivityLines {
   praesidium: string;
 }
 
-/**
- * @param labels prayer labels resolved by the caller — this runs both inside
- *   React (useTranslation) and outside it (RTF), which have separate lookups.
- */
-export function buildActivityLines(
-  report: MonthlyReport,
-  items: ActivityItem[],
-  labels: { massCommunion: string; prayer: Record<string, string> }
-): ActivityLines {
+export function buildActivityLines(report: MonthlyReport, items: ActivityItem[]): ActivityLines {
+  const weekdayMass = PRAYER_ITEMS.find((item) => item.key === "weekdayMass")!;
   const diocese = [
-    `${labels.massCommunion}(${computeMassCommunion(report)})`,
+    `미사영성체(${computeMassCommunion(report)})`,
     // Weekday Mass belongs to the parish line, not this one.
     ...PRAYER_ITEMS.filter((item) => item.key !== "weekdayMass").map(
-      (item) => `${labels.prayer[item.key]}(${report.prayerCounts[item.key] ?? 0})`
+      (item) => `${item.label}(${report.prayerCounts[item.key] ?? 0})`
     ),
   ].join(", ");
 
   const parish = formatTallies([
-    { label: labels.prayer.weekdayMass, count: report.prayerCounts.weekdayMass ?? 0 },
+    { label: weekdayMass.label, count: report.prayerCounts.weekdayMass ?? 0 },
     ...tallyActivities(report, items, "parish"),
   ]);
 

@@ -1,11 +1,11 @@
-import type { Language, PrayerItemKey } from "./types";
+import type { PrayerItemKey } from "./types";
 
 /**
  * 기도문 **원문**이 사는 곳. 이 앱에서 기도문 글자를 적는 유일한 파일이다.
  *
  * 두 갈래로 쓰인다.
  *   1. `PRAYER_TEXTS` — 카운터의 [기도문 보기] 창에 통째로 보여 주는 전문
- *   2. 개별 상수(`OUR_FATHER_KO` 등) — `rosaryMysteries.ts` 가 가져가 77단계로 쪼갬
+ *   2. 개별 상수(`OUR_FATHER` 등) — `rosaryMysteries.ts` 가 가져가 77단계로 쪼갬
  *
  * 둘 다 같은 상수를 참조하므로 **원문을 고칠 일이 생기면 여기 한 곳만 고치면 된다.**
  * 뗏세라 화면(`tesseraTexts.ts`)도 신비 명칭을 여기서 가져다 쓴다.
@@ -26,9 +26,9 @@ export interface PrayerTextEntry {
   note?: string;
 }
 
-type PrayerTextMap = Partial<Record<PrayerItemKey, Record<Language, PrayerTextEntry>>>;
+type PrayerTextMap = Partial<Record<PrayerItemKey, PrayerTextEntry>>;
 
-export const OUR_FATHER_KO = [
+export const OUR_FATHER = [
   "하늘에 계신 우리 아버지,",
   "아버지의 이름이 거룩히 빛나시며 아버지의 나라가 오시며",
   "아버지의 뜻이 하늘에서와 같이 땅에서도 이루어지소서!",
@@ -37,7 +37,7 @@ export const OUR_FATHER_KO = [
   "저희를 유혹에 빠지지 않게 하시고 악에서 구하소서. 아멘.",
 ];
 
-export const HAIL_MARY_KO = [
+export const HAIL_MARY = [
   "은총이 가득하신 마리아님, 기뻐하소서!",
   "주님께서 함께 계시니 여인 중에 복되시며",
   "태중의 아들 예수님 또한 복되시나이다.",
@@ -45,17 +45,17 @@ export const HAIL_MARY_KO = [
   "저희 죄인을 위하여 빌어 주소서. 아멘.",
 ];
 
-export const GLORY_BE_KO = ["영광이 성부와 성자와 성령께,", "처음과 같이 이제와 항상 영원히. 아멘."];
+export const GLORY_BE = ["영광이 성부와 성자와 성령께,", "처음과 같이 이제와 항상 영원히. 아멘."];
 
 /** 구원을 비는 기도 — 2011년 주교회의 통일안. */
-export const SALVATION_PRAYER_KO = [
+export const SALVATION_PRAYER = [
   "예수님, 저희 죄를 용서하시며",
   "저희를 지옥 불에서 구하시고",
   "연옥 영혼을 돌보시며",
   "가장 버림받은 영혼을 돌보소서.",
 ];
 
-export const APOSTLES_CREED_KO = [
+export const APOSTLES_CREED = [
   "전능하신 천주 성부 천지의 창조주를 저는 믿나이다.",
   "그 외아들 우리 주 예수 그리스도님,",
   "성령으로 인하여 동정 마리아께 잉태되어 나시고",
@@ -69,7 +69,7 @@ export const APOSTLES_CREED_KO = [
 ];
 
 /** 성모찬송 — 가톨릭 기도서의 현행 공식 문구(마침 계응 포함). */
-export const SALVE_REGINA_KO = [
+export const SALVE_REGINA = [
   "모후이시며 사랑이 넘친 어머니,",
   "우리의 생명, 기쁨, 희망이시여.",
   "당신 우러러 하와의 그 자손들이",
@@ -83,62 +83,8 @@ export const SALVE_REGINA_KO = [
   "그리스도께서 약속하신 영원한 생명을 얻게 하소서.",
 ];
 
-export const OUR_FATHER_EN = [
-  "Our Father, who art in heaven, hallowed be thy name;",
-  "thy kingdom come, thy will be done on earth as it is in heaven.",
-  "Give us this day our daily bread,",
-  "and forgive us our trespasses as we forgive those who trespass against us;",
-  "and lead us not into temptation, but deliver us from evil. Amen.",
-];
-
-export const HAIL_MARY_EN = [
-  "Hail Mary, full of grace, the Lord is with thee.",
-  "Blessed art thou amongst women,",
-  "and blessed is the fruit of thy womb, Jesus.",
-  "Holy Mary, Mother of God, pray for us sinners,",
-  "now and at the hour of our death. Amen.",
-];
-
-export const GLORY_BE_EN = [
-  "Glory be to the Father, and to the Son, and to the Holy Spirit,",
-  "as it was in the beginning, is now, and ever shall be, world without end. Amen.",
-];
-
-export const FATIMA_PRAYER_EN = [
-  "O my Jesus, forgive us our sins, save us from the fires of hell,",
-  "and lead all souls to Heaven,",
-  "especially those most in need of thy mercy. Amen.",
-];
-
-export const APOSTLES_CREED_EN = [
-  "I believe in God, the Father almighty, Creator of heaven and earth,",
-  "and in Jesus Christ, his only Son, our Lord,",
-  "who was conceived by the Holy Spirit, born of the Virgin Mary,",
-  "suffered under Pontius Pilate,",
-  "was crucified, died and was buried;",
-  "he descended into hell; on the third day he rose again from the dead;",
-  "he ascended into heaven, and is seated at the right hand of God the Father almighty;",
-  "from there he will come to judge the living and the dead.",
-  "I believe in the Holy Spirit, the holy catholic Church,",
-  "the communion of saints, the forgiveness of sins,",
-  "the resurrection of the body, and life everlasting. Amen.",
-];
-
-export const SALVE_REGINA_EN = [
-  "Hail, holy Queen, Mother of mercy,",
-  "our life, our sweetness, and our hope.",
-  "To thee do we cry, poor banished children of Eve;",
-  "to thee do we send up our sighs,",
-  "mourning and weeping in this valley of tears.",
-  "Turn then, most gracious advocate,",
-  "thine eyes of mercy toward us,",
-  "and after this our exile,",
-  "show unto us the blessed fruit of thy womb, Jesus.",
-  "O clement, O loving, O sweet Virgin Mary. Amen.",
-];
-
 /** 묵주기도 신비 4종 — 홈 묵주기도 다이얼로그와 뗏세라 페이지가 같은 검수 문구를 공유한다. */
-export const ROSARY_MYSTERY_SECTIONS_KO: PrayerTextSection[] = [
+export const ROSARY_MYSTERY_SECTIONS: PrayerTextSection[] = [
   {
     heading: "환희의 신비 (월요일·토요일)",
     lines: [
@@ -181,168 +127,62 @@ export const ROSARY_MYSTERY_SECTIONS_KO: PrayerTextSection[] = [
   },
 ];
 
-export const ROSARY_MYSTERY_SECTIONS_EN: PrayerTextSection[] = [
-  {
-    heading: "Joyful Mysteries (Mon & Sat)",
-    lines: [
-      "1. The Annunciation",
-      "2. The Visitation",
-      "3. The Nativity",
-      "4. The Presentation in the Temple",
-      "5. The Finding in the Temple",
-    ],
-  },
-  {
-    heading: "Sorrowful Mysteries (Tue & Fri)",
-    lines: [
-      "1. The Agony in the Garden",
-      "2. The Scourging at the Pillar",
-      "3. The Crowning with Thorns",
-      "4. The Carrying of the Cross",
-      "5. The Crucifixion",
-    ],
-  },
-  {
-    heading: "Glorious Mysteries (Wed & Sun)",
-    lines: [
-      "1. The Resurrection",
-      "2. The Ascension",
-      "3. The Descent of the Holy Spirit",
-      "4. The Assumption of Mary",
-      "5. The Coronation of Mary",
-    ],
-  },
-  {
-    heading: "Luminous Mysteries (Thu)",
-    lines: [
-      "1. The Baptism of Jesus",
-      "2. The Wedding at Cana",
-      "3. The Proclamation of the Kingdom",
-      "4. The Transfiguration",
-      "5. The Institution of the Eucharist",
-    ],
-  },
-];
-
 export const PRAYER_TEXTS: PrayerTextMap = {
   priestPrayer: {
-    ko: {
-      sections: [
-        {
-          lines: [
-            "○ 영원한 사제이신 예수님, 주님을 본받으려는 사제들을 지켜 주시어 어느 누구도 그들을 해 치지 못하게 하소서.",
-            "● 주님의 영광스러운 사제직에 올라 날마다 주 님의 몸과 피를 축성하는 사제들을 언제나 깨 끗하고 거룩하게 지켜 주소서.",
-            "○ 주님의 뜨거운 사랑으로 사제들을 세속에 물 들지 않도록 지켜 주소서.",
-            "● 사제들이 하는 모든 일에 강복하시어 은총의 풍부한 열매를 맺게 하시고",
-            "○ 저희로 말미암아 세상에서는 그들이 더없는 기쁨과 위안을 얻고 천국에서는 찬란히 빛나 는 영광을 누리게 하소서.",
-            "◎ 아멘.",
-          ],
-        },
-      ],
-    },
-    en: {
-      sections: [
-        {
-          lines: [
-            "Lord, send good priests to your Church,",
-            "priests after your own heart,",
-            "priests who will be true shepherds of your people.",
-            "Give them the courage to lead, the wisdom to guide,",
-            "and the compassion to heal.",
-            "Bless them in their labours and comfort them in their loneliness. Amen.",
-          ],
-        },
-      ],
-      note: "A commonly used version, not an official Legion of Mary Handbook translation.",
-    },
+    sections: [
+      {
+        lines: [
+          "○ 영원한 사제이신 예수님, 주님을 본받으려는 사제들을 지켜 주시어 어느 누구도 그들을 해 치지 못하게 하소서.",
+          "● 주님의 영광스러운 사제직에 올라 날마다 주 님의 몸과 피를 축성하는 사제들을 언제나 깨 끗하고 거룩하게 지켜 주소서.",
+          "○ 주님의 뜨거운 사랑으로 사제들을 세속에 물 들지 않도록 지켜 주소서.",
+          "● 사제들이 하는 모든 일에 강복하시어 은총의 풍부한 열매를 맺게 하시고",
+          "○ 저희로 말미암아 세상에서는 그들이 더없는 기쁨과 위안을 얻고 천국에서는 찬란히 빛나 는 영광을 누리게 하소서.",
+          "◎ 아멘.",
+        ],
+      },
+    ],
   },
 
   chainPrayer: {
-    ko: {
-      sections: [
-        { heading: "주님의 기도", lines: OUR_FATHER_KO },
-        { heading: "성모송", lines: HAIL_MARY_KO },
-        { heading: "영광송", lines: GLORY_BE_KO },
-      ],
-    },
-    en: {
-      sections: [
-        { heading: "Our Father", lines: OUR_FATHER_EN },
-        { heading: "Hail Mary", lines: HAIL_MARY_EN },
-        { heading: "Glory Be", lines: GLORY_BE_EN },
-      ],
-    },
+    sections: [
+      { heading: "주님의 기도", lines: OUR_FATHER },
+      { heading: "성모송", lines: HAIL_MARY },
+      { heading: "영광송", lines: GLORY_BE },
+    ],
   },
 
   rosaryDecades: {
-    ko: {
-      sections: [
-        { heading: "시작 기도 · 사도신경", lines: APOSTLES_CREED_KO },
-        { heading: "주님의 기도", lines: OUR_FATHER_KO },
-        { heading: "성모송 (3번 · 믿음·희망·사랑을 청하며)", lines: HAIL_MARY_KO },
-        { heading: "영광송", lines: GLORY_BE_KO },
-        {
-          heading: "한 단의 순서",
-          lines: [
-            "그 단의 신비를 묵상하며 주님의 기도 1번 →",
-            "성모송 10번 → 영광송 → 구원을 비는 기도",
-            "(위 주님의 기도·성모송·영광송을 그대로 반복합니다)",
-          ],
-        },
-        { heading: "구원을 비는 기도 (파티마의 기도)", lines: SALVATION_PRAYER_KO },
-        ...ROSARY_MYSTERY_SECTIONS_KO,
-        { heading: "마침 기도 · 성모찬송", lines: SALVE_REGINA_KO },
-      ],
-      note: "가톨릭 기도서의 현행 공식 문구를 따랐습니다. ◎ 표시는 함께 바치는 마침 계응입니다.",
-    },
-    en: {
-      sections: [
-        { heading: "Opening · Apostles' Creed", lines: APOSTLES_CREED_EN },
-        { heading: "Our Father", lines: OUR_FATHER_EN },
-        { heading: "Hail Mary (x3, for faith, hope, and charity)", lines: HAIL_MARY_EN },
-        { heading: "Glory Be", lines: GLORY_BE_EN },
-        {
-          heading: "Order of one decade",
-          lines: [
-            "Announce the mystery, then one Our Father →",
-            "ten Hail Marys → one Glory Be → the Fatima Prayer",
-            "(repeat the Our Father, Hail Mary, and Glory Be above)",
-          ],
-        },
-        { heading: "Fatima Prayer", lines: FATIMA_PRAYER_EN },
-        ...ROSARY_MYSTERY_SECTIONS_EN,
-        { heading: "Closing · Hail Holy Queen", lines: SALVE_REGINA_EN },
-      ],
-      note: "The closing 'Hail Holy Queen' is a commonly used version, not a specific official translation. The rest are standard liturgical texts.",
-    },
+    sections: [
+      { heading: "시작 기도 · 사도신경", lines: APOSTLES_CREED },
+      { heading: "주님의 기도", lines: OUR_FATHER },
+      { heading: "성모송 (3번 · 믿음·희망·사랑을 청하며)", lines: HAIL_MARY },
+      { heading: "영광송", lines: GLORY_BE },
+      {
+        heading: "한 단의 순서",
+        lines: [
+          "그 단의 신비를 묵상하며 주님의 기도 1번 →",
+          "성모송 10번 → 영광송 → 구원을 비는 기도",
+          "(위 주님의 기도·성모송·영광송을 그대로 반복합니다)",
+        ],
+      },
+      { heading: "구원을 비는 기도 (파티마의 기도)", lines: SALVATION_PRAYER },
+      ...ROSARY_MYSTERY_SECTIONS,
+      { heading: "마침 기도 · 성모찬송", lines: SALVE_REGINA },
+    ],
+    note: "가톨릭 기도서의 현행 공식 문구를 따랐습니다. ◎ 표시는 함께 바치는 마침 계응입니다.",
   },
 
   aspirations: {
-    ko: {
-      sections: [
-        {
-          heading: "자주 바치는 화살기도 예시",
-          lines: [
-            "\"오 마리아님, 원죄 없이 잉태되신 마리아님, 당신께 의탁하는 저희를 위하여 빌어 주소서.\"",
-            "\"평화의 모후여, 저희를 위하여 빌어 주소서.\"",
-            "\"예수 마리아 요셉이여, 저희를 도와주소서.\"",
-          ],
-        },
-      ],
-      note: "정해진 한 가지 문구가 아니라 그때그때 짧게 바치는 기도입니다. 위는 자주 쓰이는 예시입니다.",
-    },
-    en: {
-      sections: [
-        {
-          heading: "Commonly used aspirations",
-          lines: [
-            "\"O Mary, conceived without sin, pray for us who have recourse to thee.\"",
-            "\"Queen of Peace, pray for us.\"",
-            "\"Jesus, Mary, Joseph, help us.\"",
-          ],
-        },
-      ],
-      note: "Aspirations are short, spontaneous prayers rather than one fixed text; these are common examples.",
-    },
+    sections: [
+      {
+        heading: "자주 바치는 화살기도 예시",
+        lines: [
+          "\"오 마리아님, 원죄 없이 잉태되신 마리아님, 당신께 의탁하는 저희를 위하여 빌어 주소서.\"",
+          "\"평화의 모후여, 저희를 위하여 빌어 주소서.\"",
+          "\"예수 마리아 요셉이여, 저희를 도와주소서.\"",
+        ],
+      },
+    ],
+    note: "정해진 한 가지 문구가 아니라 그때그때 짧게 바치는 기도입니다. 위는 자주 쓰이는 예시입니다.",
   },
 };

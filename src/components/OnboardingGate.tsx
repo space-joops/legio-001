@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { storage } from "@/lib/storage";
 import type { Profile } from "@/lib/types";
@@ -28,7 +27,6 @@ function isProfileComplete(profile: Profile): boolean {
 
 export function OnboardingGate({ children }: { children: ReactNode }) {
   const ready = useLocalStorageReady();
-  const { t } = useTranslation();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [draft, setDraft] = useState<Profile>({
     name: "",
@@ -71,55 +69,55 @@ export function OnboardingGate({ children }: { children: ReactNode }) {
   return (
     <div className={styles.screen}>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <h1 className={styles.title}>{t("onboarding.title")}</h1>
-        <p className={styles.subtitle}>{t("onboarding.subtitle")}</p>
+        <h1 className={styles.title}>시작하기 전에</h1>
+        <p className={styles.subtitle}>레지오 마리애 주간 활동 보고를 사용하려면 아래 정보를 입력해 주세요.</p>
 
         <label className={styles.field}>
-          <span className={styles.label}>{t("settings.nameLabel")}</span>
+          <span className={styles.label}>이름</span>
           <input
             type="text"
             className={styles.input}
             value={draft.name}
-            placeholder={t("settings.namePlaceholder")}
+            placeholder="단원 이름을 입력하세요"
             onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
           />
         </label>
 
         <label className={styles.field}>
-          <span className={styles.label}>{t("settings.baptismalNameLabel")}</span>
+          <span className={styles.label}>세례명</span>
           <input
             type="text"
             className={styles.input}
             value={draft.baptismalName}
-            placeholder={t("settings.baptismalNamePlaceholder")}
+            placeholder="세례명을 입력하세요"
             onChange={(e) => setDraft((d) => ({ ...d, baptismalName: e.target.value }))}
           />
         </label>
 
         <label className={styles.field}>
-          <span className={styles.label}>{t("settings.praesidiumNameLabel")}</span>
+          <span className={styles.label}>쁘레시디움 이름</span>
           <input
             type="text"
             className={styles.input}
             value={draft.praesidiumName}
-            placeholder={t("settings.praesidiumNamePlaceholder")}
+            placeholder="쁘레시디움 이름을 입력하세요"
             onChange={(e) => setDraft((d) => ({ ...d, praesidiumName: e.target.value }))}
           />
         </label>
 
         <label className={styles.field}>
-          <span className={styles.label}>{t("settings.parishNameLabel")}</span>
+          <span className={styles.label}>성당명</span>
           <input
             type="text"
             className={styles.input}
             value={draft.parishName}
-            placeholder={t("settings.parishNamePlaceholder")}
+            placeholder="성당명을 입력하세요"
             onChange={(e) => setDraft((d) => ({ ...d, parishName: e.target.value }))}
           />
         </label>
 
         <button type="submit" className={styles.submitButton} disabled={!canSubmit}>
-          {t("onboarding.start")}
+          시작하기
         </button>
       </form>
     </div>

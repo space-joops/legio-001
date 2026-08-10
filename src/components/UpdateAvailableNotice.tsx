@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./UpdateAvailableNotice.module.css";
 
 /**
@@ -14,7 +13,6 @@ import styles from "./UpdateAvailableNotice.module.css";
  */
 
 export function UpdateAvailableNotice() {
-  const { t } = useTranslation();
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
@@ -70,13 +68,13 @@ export function UpdateAvailableNotice() {
 
   return (
     <div className={styles.banner} role="status">
-      <p className={styles.text}>{t("update.available")}</p>
+      <p className={styles.text}>새 버전이 있습니다.</p>
       <button
         type="button"
         className={styles.button}
         onClick={() => waitingWorker.postMessage("SKIP_WAITING")}
       >
-        {t("update.action")}
+        업데이트
       </button>
     </div>
   );

@@ -30,7 +30,7 @@
 | **1주차** | **CSS와 UI 배치** | `01-HTML_CSS.md` 읽기, `BottomNav.module.css` 수정해보기 | 앱 하단 메뉴의 색상을 바꿔보고, 간격을 넓혀보기 |
 | **2주차** | **CSS 애니메이션** | `SplashOverlay.module.css` 분석 및 수정 | 스플래시 이미지가 나타나는 애니메이션 속도 조절하기 |
 | **3주차** | **데이터 저장 (Storage)** | `02-JS_TS_LocalStorage.md` 읽기, `src/lib/storage.ts` 살펴보기 | 브라우저 콘솔에서 로컬 스토리지 데이터 확인하기 |
-| **4주차** | **React 기초 (상태 관리)** | `03-React_Nextjs.md` 읽기, `LanguageToggle.tsx` 분석 | 한국어/영어 버튼을 눌렀을 때 어떻게 상태가 변하는지 이해하기 |
+| **4주차** | **React 기초 (상태 관리)** | `03-React_Nextjs.md` 읽기, `FontScaleToggle.tsx` 분석 | 글자 크기 버튼을 눌렀을 때 어떻게 상태가 변하는지 이해하기 |
 | **5주차** | **나만의 기능 추가해보기** | 배운 것을 바탕으로 작은 버튼 하나 추가해보기 | `Next.js` 프로젝트에서 새 컴포넌트를 만들고 화면에 띄우기 |
 
 이제 **[01-HTML_CSS.md](./01-HTML_CSS.md)** 파일부터 열어서 차근차근 시작해볼까요? 파이팅!

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSwipe } from "@/hooks/useSwipe";
-import { useTranslation } from "@/i18n/useTranslation";
 import { ROSARY_SET_SIZE } from "@/lib/constants";
 import {
   buildRosarySteps,
@@ -51,7 +50,6 @@ interface RosaryGuideProps {
 }
 
 export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
-  const { t, language } = useTranslation();
 
   /** 오늘의 신비. 처음엔 null — 아래 useEffect 가 브라우저에서 정한다. */
   const [mysteryId, setMysteryId] = useState<MysteryId | null>(null);
@@ -83,24 +81,8 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
     setMysteryId(getMysteryIdForDate(new Date()));
   }, []);
 
-  const steps = useMemo(
-    () =>
-      mysteryId
-        ? buildRosarySteps(mysteryId, language, {
-            creed: t("rosary.creed"),
-            ourFather: t("rosary.ourFather"),
-            hailMary: t("rosary.hailMary"),
-            gloryBe: t("rosary.gloryBe"),
-            salvation: t("rosary.salvation"),
-            closing: t("rosary.closing"),
-          })
-        : [],
-    // 의존성에 `t` 를 넣지 않는 게 핵심이다. `t` 는 렌더할 때마다 새로 만들어지는
-    // 함수라, 넣으면 매번 77장을 다시 만들게 되어 useMemo 가 아무 의미가 없어진다.
-    // 문구를 실제로 바꾸는 건 `language` 다.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mysteryId, language]
-  );
+  // 77장을 매 렌더마다 새로 만들 이유가 없다. 신비가 바뀔 때만 다시 만든다.
+  const steps = useMemo(() => (mysteryId ? buildRosarySteps(mysteryId) : []), [mysteryId]);
 
   /**
    * "이미 바친 단은 건너뛰기"를 딱 한 번만 하기 위한 표시.
@@ -180,12 +162,12 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
   // 상단에 작게 뜨는 현재 위치. 예) "환희의 신비 (월요일·토요일) · 3단"
   // 시작·마침 기도에는 단이 없으므로 신비 이름만 남는다.
-  const mysteryHeading = getMysterySection(mysteryId, language).heading;
-  const decadeLabel = step.decade ? t("rosary.decade").replace("{n}", String(step.decade)) : null;
+  const mysteryHeading = getMysterySection(mysteryId).heading;
+  const decadeLabel = step.decade ? `${step.decade}단` : null;
   const context = [mysteryHeading, decadeLabel].filter(Boolean).join(" · ");
 
-  // 묵상 문장이 없는 화면(기도문 화면 전부, 그리고 영어의 신비 선포 화면)에서는
-  // 성화를 눌러도 팝업이 열리지 않도록 아예 핸들러를 넘기지 않는다.
+  // 묵상 문장이 없는 화면(기도문 화면 전부)에서는 성화를 눌러도 팝업이 열리지
+  // 않도록 아예 핸들러를 넘기지 않는다.
   const canOpenImage = Boolean(step.image && step.explanation && step.explanation.length > 0);
   const openImage = canOpenImage
     ? () =>
@@ -200,7 +182,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
     <section
       ref={rootRef}
       className={styles.guide}
-      aria-label={t("rosary.guideLabel")}
+      aria-label="오늘의 묵주기도"
       // [TS] `{...객체}` 를 JSX 속성 자리에 쓰면 그 객체의 키가 전부 속성이 된다.
       //      여기서는 onTouchStart / onTouchMove / onTouchEnd 세 개가 붙는다.
       {...swipeHandlers}
@@ -226,33 +208,31 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           /* 중첩 <dialog> 대신 그냥 이 자리에 그린다. 이미 열려 있는 창 안에
              모달을 또 띄우는 것보다, 같은 흐름의 한 단계로 보여 주는 편이 안전하다. */
           <div className={styles.confirm}>
-            <p className={styles.confirmText}>
-              {t("rosary.recordQuestion").replace("{count}", String(ROSARY_SET_SIZE))}
-            </p>
+            <p className={styles.confirmText}>묵주기도 {ROSARY_SET_SIZE}단을 기록할까요?</p>
             <div className={styles.actions}>
               <button
                 type="button"
                 className={styles.secondaryButton}
                 onClick={() => setAsking(false)}
               >
-                {t("common.cancel")}
+                취소
               </button>
               <button type="button" className={styles.primaryButton} onClick={handleConfirm}>
-                {t("rosary.record")}
+                기록하기
               </button>
             </div>
           </div>
         ) : (
           <>
-            {recorded && <p className={styles.recorded}>{t("rosary.recorded")}</p>}
+            {recorded && <p className={styles.recorded}>묵주기도 5단을 기록했습니다.</p>}
             <div className={styles.bottomNav}>
               <button
                 type="button"
                 className={styles.bottomNavButton}
                 onClick={handlePrev}
                 disabled={index === 0}
-                aria-label={t("rosary.previous")}
-                title={t("rosary.previous")}
+                aria-label="이전"
+                title="이전"
               >
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                   <polygon points="15,4 5,12 15,20"></polygon>
@@ -261,17 +241,15 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
               {/* "12 / 77" — 어디쯤 왔는지 알려 주는 유일한 표시다. */}
               <p className={styles.position}>
-                {t("rosary.position")
-                  .replace("{current}", String(index + 1))
-                  .replace("{total}", String(steps.length))}
+                {index + 1} / {steps.length}
               </p>
 
               <button
                 type="button"
                 className={styles.bottomNavButton}
                 onClick={handleNext}
-                aria-label={t("rosary.next")}
-                title={t("rosary.next")}
+                aria-label="다음"
+                title="다음"
               >
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                   <polygon points="9,4 19,12 9,20"></polygon>

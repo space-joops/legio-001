@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { storage } from "@/lib/storage";
-import { useTranslation } from "@/i18n/useTranslation";
 import Image from "next/image";
 import styles from "./PlatformChoicePopup.module.css";
 
@@ -30,7 +29,6 @@ const GIVE_UP_MS = 20000;
 type Variant = "prompt" | "ios" | "androidManual" | "none";
 
 export function PlatformChoicePopup() {
-  const { t } = useTranslation();
   const ready = useLocalStorageReady();
   const { installed, canInstall, isIos, isAndroid, isInAppBrowser, promptInstall } =
     useInstallPrompt();
@@ -90,11 +88,20 @@ export function PlatformChoicePopup() {
   };
 
   const copy = {
-    prompt: { title: "platformChoice.installTitle", body: "platformChoice.installBody" },
-    ios: { title: "platformChoice.iosTitle", body: "platformChoice.iosBody" },
+    // 안드로이드·크롬 계열: 브라우저가 실제 설치 프롬프트를 띄워 준다.
+    prompt: {
+      title: "홈 화면에 추가할까요?",
+      body: "설치하면 홈 화면 아이콘으로 바로 열 수 있고, 인터넷이 느린 곳에서도 잘 열립니다.",
+    },
+    // 아이폰·아이패드: 사파리 공유 메뉴로만 가능해서 '설치'가 아니라 '추가'로 안내한다.
+    ios: {
+      title: "홈 화면에 추가할까요?",
+      body: "아래 [공유] 버튼을 누른 뒤 '홈 화면에 추가'를 선택하면 앱처럼 쓸 수 있습니다.",
+    },
+    // 안드로이드지만 설치 프롬프트가 없는 브라우저(파이어폭스 등).
     androidManual: {
-      title: "platformChoice.androidManualTitle",
-      body: "platformChoice.androidManualBody",
+      title: "홈 화면에 추가할까요?",
+      body: "브라우저 메뉴(⋮)에서 '앱 설치' 또는 '홈 화면에 추가'를 선택하면 앱처럼 쓸 수 있습니다.",
     },
   }[variant];
 
@@ -110,8 +117,8 @@ export function PlatformChoicePopup() {
       <div className={styles.iconWrapper}>
         <Image src="/icons/icon-192.png" alt="App Icon" className={styles.appIcon} width={64} height={64} unoptimized />
       </div>
-      <h2 className={styles.title}>{t(copy.title)}</h2>
-      <p className={styles.body}>{t(copy.body)}</p>
+      <h2 className={styles.title}>{copy.title}</h2>
+      <p className={styles.body}>{copy.body}</p>
 
       {variant === "prompt" && (
         <button
@@ -122,12 +129,12 @@ export function PlatformChoicePopup() {
             handleClose();
           }}
         >
-          {t("platformChoice.installAction")}
+          바로 설치하기
         </button>
       )}
 
       <button type="button" className={styles.laterButton} onClick={handleClose}>
-        {t("platformChoice.later")}
+        지금은 그냥 쓰기
       </button>
 
       <label className={styles.checkboxLabel}>
@@ -137,7 +144,7 @@ export function PlatformChoicePopup() {
           onChange={(e) => setDontShowAgain(e.target.checked)}
           className={styles.checkbox}
         />
-        {t("platformChoice.dontShowAgain")}
+        다시 보지 않기
       </label>
     </dialog>
   );

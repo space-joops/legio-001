@@ -9,7 +9,6 @@ import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/components/ToastProvider";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
 import { useRoster } from "@/hooks/useRoster";
-import { useTranslation } from "@/i18n/useTranslation";
 import { shareOrDownloadMonthExport, shareOrDownloadSecretaryExport } from "@/lib/exportData";
 import { addMonthToYearMonth, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
 import type { MonthlyReport } from "@/lib/types";
@@ -24,7 +23,6 @@ function currentYearMonth(): string {
 }
 
 export default function SecretaryPage() {
-  const { t, language } = useTranslation();
   const { showToast } = useToast();
   const router = useRouter();
   const { ready: reportsReady, reports, createReport, removeReport } = useMonthlyReports();
@@ -40,13 +38,13 @@ export default function SecretaryPage() {
   }, [reportsReady, reports]);
 
   if (!reportsReady || !rosterReady || !roster) {
-    return <PageShell title={t("secretary.title")} wide>{null}</PageShell>;
+    return <PageShell title="월례보고서(서기용)" wide>{null}</PageShell>;
   }
 
   const handleCreate = () => {
     if (!yearMonth) return;
     if (reports.some((r) => r.yearMonth === yearMonth)) {
-      showToast(t("secretary.alreadyExists"));
+      showToast("이미 작성된 연월입니다. 목록에서 열어 수정해 주세요.");
       return;
     }
     const created = createReport(yearMonth, roster);
@@ -54,39 +52,39 @@ export default function SecretaryPage() {
   };
 
   const handleExportMonth = async (report: MonthlyReport) => {
-    const outcome = await shareOrDownloadMonthExport(report, t("app.shortName"));
-    if (outcome === "downloaded") showToast(t("settings.exportSaved"));
+    const outcome = await shareOrDownloadMonthExport(report, "레지오 활동보고");
+    if (outcome === "downloaded") showToast("파일이 저장되었습니다.");
   };
 
   const handleExportSecretary = async () => {
     const outcome = await shareOrDownloadSecretaryExport();
-    if (outcome === "downloaded") showToast(t("settings.exportSaved"));
+    if (outcome === "downloaded") showToast("파일이 저장되었습니다.");
   };
 
   return (
-    <PageShell title={t("secretary.title")} wide>
-      <p className={styles.subtitle}>{t("secretary.subtitle")}</p>
+    <PageShell title="월례보고서(서기용)" wide>
+      <p className={styles.subtitle}>쁘레시디움 월례 보고서를 작성하고 인쇄·공유할 수 있습니다.</p>
 
       <div className={styles.topRow}>
         <section className={styles.section}>
           <Link href="/secretary/roster" className={styles.secondaryButton}>
-            {t("secretary.rosterLink")}
+            현재 명단 관리
           </Link>
-          <p className={styles.description}>{t("secretary.rosterLinkDescription")}</p>
+          <p className={styles.description}>간부 명단과 단원 수를 관리합니다.</p>
           <Link href="/secretary/activity-items" className={styles.secondaryButton}>
-            {t("secretaryActivityItems.link")}
+            Pr.활동사항 관리
           </Link>
-          <p className={styles.description}>{t("secretaryActivityItems.linkDescription")}</p>
+          <p className={styles.description}>단원이 고르는 활동 항목을 추가하거나 이름을 고칩니다.</p>
           <Link href="/secretary/expense-items" className={styles.secondaryButton}>
-            {t("secretaryExpenseItems.link")}
+            지출 항목 관리
           </Link>
-          <p className={styles.description}>{t("secretaryExpenseItems.linkDescription")}</p>
+          <p className={styles.description}>회계에서 고르는 지출 항목을 추가하거나 이름을 고칩니다.</p>
         </section>
 
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>{t("secretary.newReportTitle")}</h2>
+          <h2 className={styles.sectionTitle}>새 보고서 작성</h2>
           <label className={styles.field}>
-            <span className={styles.label}>{t("secretary.yearMonthLabel")}</span>
+            <span className={styles.label}>작성할 연월</span>
             <input
               type="month"
               className={styles.input}
@@ -95,21 +93,21 @@ export default function SecretaryPage() {
             />
           </label>
           <button type="button" className={styles.primaryButton} onClick={handleCreate}>
-            {t("secretary.create")}
+            만들기
           </button>
         </section>
       </div>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretary.listTitle")}</h2>
+        <h2 className={styles.sectionTitle}>월례 보고서 목록</h2>
         {reports.length === 0 ? (
-          <p className={styles.empty}>{t("secretary.empty")}</p>
+          <p className={styles.empty}>작성된 월례 보고서가 없습니다.</p>
         ) : (
           <ul className={styles.list}>
             {reports.map((report) => (
               <li key={report.id} className={styles.item}>
                 <Link href={`/secretary/report?id=${report.id}`} className={styles.itemLink}>
-                  {formatYearMonthLabel(report.yearMonth, language)}
+                  {formatYearMonthLabel(report.yearMonth)}
                 </Link>
                 <button
                   type="button"
@@ -118,14 +116,14 @@ export default function SecretaryPage() {
                     void handleExportMonth(report);
                   }}
                 >
-                  {t("secretary.exportMonth")}
+                  내보내기
                 </button>
                 <button
                   type="button"
                   className={styles.deleteButton}
                   onClick={() => setDeleteTarget(report.id)}
                 >
-                  {t("secretary.delete")}
+                  삭제
                 </button>
               </li>
             ))}
@@ -134,8 +132,8 @@ export default function SecretaryPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretary.transferSection")}</h2>
-        <p className={styles.description}>{t("secretary.transferDescription")}</p>
+        <h2 className={styles.sectionTitle}>데이터 옮기기</h2>
+        <p className={styles.description}>PC와 휴대폰 사이에서 서기 자료(명단·월례 보고서·활동/지출 항목)를 파일로 주고받습니다. 가져오기를 해도 내 활동 기록은 지워지지 않습니다.</p>
         <button
           type="button"
           className={styles.secondaryButton}
@@ -143,10 +141,10 @@ export default function SecretaryPage() {
             void handleExportSecretary();
           }}
         >
-          {t("secretary.exportSecretaryData")}
+          서기 데이터 내보내기
         </button>
         <ImportDataButton
-          label={t("secretary.importData")}
+          label="파일 가져오기"
           buttonClassName={styles.secondaryButton}
           reloadTo="/secretary/"
         />
@@ -154,10 +152,10 @@ export default function SecretaryPage() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title={t("secretary.deleteConfirmTitle")}
-        body={t("secretary.deleteConfirmBody")}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
+        title="이 월례 보고서를 삭제할까요?"
+        body="삭제하면 되돌릴 수 없습니다."
+        confirmLabel="삭제"
+        cancelLabel="취소"
         danger
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {
