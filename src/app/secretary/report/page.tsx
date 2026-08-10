@@ -13,7 +13,6 @@ import { useToast } from "@/components/ToastProvider";
 import { TreasuryExpenseDialog } from "@/components/TreasuryExpenseDialog";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
-import { useTranslation } from "@/i18n/useTranslation";
 import { buildActivityLines, personActivityCount } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { shareOrDownloadFile, shareOrDownloadMonthExport } from "@/lib/exportData";
@@ -126,11 +125,11 @@ function formatDay(date: Date): string {
 }
 
 /** "의연금 70,000" — with "외 1건" appended when the session had more. */
-function summariseExpenses(expenses: TreasuryExpense[], moreSuffix: string): string {
+function summariseExpenses(expenses: TreasuryExpense[]): string {
   const [first, ...rest] = expenses;
   if (!first) return "";
   const head = `${first.label} ${formatWon(first.amount)}`;
-  return rest.length === 0 ? head : `${head} ${moreSuffix.replace("{n}", String(rest.length))}`;
+  return rest.length === 0 ? head : `${head} 외 ${rest.length}건`;
 }
 
 /**
@@ -195,7 +194,6 @@ function SessionTabBar({
 }
 
 function ReportPageContent() {
-  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
@@ -245,7 +243,7 @@ function ReportPageContent() {
   if (!reportsReady || !historyReady) return null;
 
   if (!report) {
-    return <p>{t("secretaryReport.notFound")}</p>;
+    return <p>해당 보고서를 찾을 수 없습니다.</p>;
   }
 
   const sessionNumbers = sessionRangeNumbers(report.sessionRangeStart, report.sessionRangeEnd);
@@ -337,11 +335,11 @@ function ReportPageContent() {
   };
 
   const exportFileName = (ext: string) =>
-    `${report.roster.praesidiumName || t("app.shortName")}_${report.yearMonth}.${ext}`;
+    `${report.roster.praesidiumName || "레지오 활동보고"}_${report.yearMonth}.${ext}`;
 
   const handleExportJson = async () => {
-    const outcome = await shareOrDownloadMonthExport(report, t("app.shortName"));
-    if (outcome === "downloaded") showToast(t("secretaryReport.jsonSaved"));
+    const outcome = await shareOrDownloadMonthExport(report, "레지오 활동보고");
+    if (outcome === "downloaded") showToast("보고서 파일로 저장했습니다.");
   };
 
   const handleExportPdf = async () => {
@@ -349,9 +347,9 @@ function ReportPageContent() {
       const canvas = await captureReportCanvas();
       const blob = buildSinglePageImagePdf(canvas);
       const outcome = await shareOrDownloadFile(blob, exportFileName("pdf"));
-      if (outcome === "downloaded") showToast(t("secretaryReport.pdfSaved"));
+      if (outcome === "downloaded") showToast("PDF 파일로 저장했습니다.");
     } catch {
-      showToast(t("secretaryReport.exportFailed"));
+      showToast("내보내기에 실패했습니다. 다시 시도해 주세요.");
     }
   };
 
@@ -367,9 +365,9 @@ function ReportPageContent() {
       try {
         const blob = await blobPromise;
         const outcome = await shareOrDownloadFile(blob, exportFileName("png"));
-        if (outcome === "downloaded") showToast(t("secretaryReport.imageSaved"));
+        if (outcome === "downloaded") showToast("이미지 파일로 저장했습니다.");
       } catch {
-        showToast(t("secretaryReport.exportFailed"));
+        showToast("내보내기에 실패했습니다. 다시 시도해 주세요.");
       }
     };
     if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) {
@@ -378,7 +376,7 @@ function ReportPageContent() {
     }
     navigator.clipboard
       .write([new ClipboardItem({ "image/png": blobPromise })])
-      .then(() => showToast(t("secretaryReport.imageCopied")))
+      .then(() => showToast("이미지가 클립보드에 복사되었습니다."))
       .catch(() => void fallbackToFile());
   };
 
@@ -548,7 +546,7 @@ function ReportPageContent() {
       <>
         <div className={styles.previewActions} data-app-chrome>
           <button type="button" className={styles.secondaryButton} onClick={() => setMode("edit")}>
-            {t("secretaryReport.edit")}
+            수정
           </button>
           <button
             type="button"
@@ -557,10 +555,10 @@ function ReportPageContent() {
               void handleExportPdf();
             }}
           >
-            {t("secretaryReport.exportPdf")}
+            PDF 저장
           </button>
           <button type="button" className={styles.secondaryButton} onClick={handleCopyImage}>
-            {t("secretaryReport.exportImage")}
+            이미지 복사
           </button>
           <button
             type="button"
@@ -569,17 +567,17 @@ function ReportPageContent() {
               void handleExportJson();
             }}
           >
-            {t("secretaryReport.exportJson")}
+            다른 기기로 보내기
           </button>
           <button
             type="button"
             className={styles.primaryButton}
             onClick={() => window.print()}
           >
-            {t("secretaryReport.print")}
+            인쇄
           </button>
           <ShareButton
-            title={`${t("app.shortName")} ${formatYearMonthLabel(report.yearMonth)}`}
+            title={`${"레지오 활동보고"} ${formatYearMonthLabel(report.yearMonth)}`}
             text={formatMonthlyShareText(report)}
           />
         </div>
@@ -602,19 +600,19 @@ function ReportPageContent() {
     <>
       <div className={styles.topActions}>
         <Link href="/secretary" className={styles.secondaryButton}>
-          {t("secretaryReport.backToList")}
+          보고서 목록으로
         </Link>
         <button type="button" className={styles.secondaryButton} onClick={() => setMode("preview")}>
-          {t("secretaryReport.preview")}
+          미리보기
         </button>
       </div>
-      <p className={styles.autoSaveNotice}>{t("common.autoSaveNotice")}</p>
+      <p className={styles.autoSaveNotice}>모든 변경 사항은 자동으로 저장됩니다.</p>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.meetingInfoSection")}</h2>
+        <h2 className={styles.sectionTitle}>회합 정보</h2>
         <div className={styles.row}>
           <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.sessionRangeStartLabel")}</span>
+            <span className={styles.label}>시작 회차</span>
             <input
               type="number"
               inputMode="numeric"
@@ -625,7 +623,7 @@ function ReportPageContent() {
             />
           </label>
           <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.sessionRangeEndLabel")}</span>
+            <span className={styles.label}>종료 회차</span>
             <input
               type="number"
               inputMode="numeric"
@@ -636,15 +634,15 @@ function ReportPageContent() {
             />
           </label>
         </div>
-        <p className={styles.hint}>{t("secretaryReport.maxSessionsHint")}</p>
+        <p className={styles.hint}>출석·기도 집계표는 최대 6회차까지 기록됩니다. 회차 범위를 줄이면 범위 밖 회차의 입력은 삭제됩니다.</p>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.meetingWeekdayLabel")}</span>
+          <span className={styles.label}>요일</span>
           <select
             className={styles.input}
             value={report.meetingWeekday}
             onChange={(e) => patch({ meetingWeekday: Number(e.target.value) })}
           >
-            <option value={-1}>{t("secretaryRoster.weekdayNotSet")}</option>
+            <option value={-1}>미설정</option>
             {WEEKDAY_LABELS.map((label, index) => (
               <option key={label} value={index}>
                 {label}
@@ -653,7 +651,7 @@ function ReportPageContent() {
           </select>
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.meetingTimeLabel")}</span>
+          <span className={styles.label}>시간</span>
           <input
             type="time"
             className={styles.input}
@@ -662,7 +660,7 @@ function ReportPageContent() {
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.meetingLocationLabel")}</span>
+          <span className={styles.label}>장소</span>
           <input
             type="text"
             className={styles.input}
@@ -673,32 +671,32 @@ function ReportPageContent() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.activityReportSection")}</h2>
+        <h2 className={styles.sectionTitle}>활동보고</h2>
         <div className={styles.row}>
           <p className={styles.attendanceSummary}>
-            {t("secretaryReport.officersPresentLabel")} {report.attendance.officersPresent}/
+            {"간부 출석"} {report.attendance.officersPresent}/
             {report.attendance.officersTotal}
           </p>
           <p className={styles.attendanceSummary}>
-            {t("secretaryReport.membersPresentLabel")} {report.attendance.membersPresent}/
+            {"단원 출석"} {report.attendance.membersPresent}/
             {report.attendance.membersTotal}
           </p>
         </div>
 
         <div className={styles.sectionHeaderRow}>
-          <h3 className={styles.sectionTitle}>{t("secretaryReport.activityReportGrid")}</h3>
+          <h3 className={styles.sectionTitle}>활동보고 (회차별)</h3>
           <div className={styles.topActions}>
             <button
               type="button"
               className={styles.secondaryButton}
               onClick={() => setImportOpen(true)}
             >
-              {t("secretaryReport.importOpen")}
+              단원 보고 붙여넣기
             </button>
           </div>
         </div>
-        <p className={styles.hint}>{t("secretaryReport.activityReportHint")}</p>
-        <p className={styles.hint}>{t("secretaryReport.nameEditHint")}</p>
+        <p className={styles.hint}>미·사·주·묵·화 숫자를 넣으면 그 회차 출석이 자동으로 체크되고, 모두 0이 되면 해제됩니다. 필요하면 출석은 직접 고칠 수 있습니다.</p>
+        <p className={styles.hint}>이름과 단원 목록은 [명단 관리]를 따라갑니다. 명단에서 고치거나 추가하면 이 표에 바로 반영됩니다.</p>
         <SessionTabBar
           sessions={sessionNumbers}
           active={activeSession}
@@ -708,12 +706,12 @@ function ReportPageContent() {
           <table className={styles.sessionTable}>
             <thead>
               <tr>
-                <th>{t("secretaryReport.personColumnLabel")}</th>
+                <th>단원명</th>
                 {PRAYER_ITEMS.map((item) => (
                   <th key={item.key}>{item.abbrev}</th>
                 ))}
-                <th>{t("secretaryReport.activityColumn")}</th>
-                <th>{t("secretaryReport.attendance")}</th>
+                <th>활동</th>
+                <th>출석</th>
               </tr>
             </thead>
             <tbody>
@@ -751,7 +749,7 @@ function ReportPageContent() {
                         type="button"
                         className={styles.activityButton}
                         onClick={() => setActivityTarget(record.personId)}
-                        aria-label={`${person.name} ${t("secretaryReport.activityColumn")}`}
+                        aria-label={`${person.name} ${"활동"}`}
                       >
                         {activityCount > 0 ? activityCount : "+"}
                       </button>
@@ -762,7 +760,7 @@ function ReportPageContent() {
                         className={styles.attendanceCheckbox}
                         checked={record.sessions[activeSession] ?? false}
                         onChange={() => toggleAttendance(record.personId, activeSession)}
-                        aria-label={`${person.name || t("secretaryReport.attendanceRowNamePlaceholder")} ${activeSession}${t("week.sessionNumberUnit")} ${t("secretaryReport.attendance")}`}
+                        aria-label={`${person.name || "이름"} ${activeSession}${"회차"} ${"출석"}`}
                       />
                     </td>
                   </tr>
@@ -775,10 +773,10 @@ function ReportPageContent() {
 
       <details className={styles.section}>
         <summary className={styles.sectionSummary}>
-          <h2 className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</h2>
+          <h2 className={styles.sectionTitle}>간부 명단</h2>
         </summary>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryRoster.councilAffiliationLabel")}</span>
+          <span className={styles.label}>소속 평의회</span>
           <input
             type="text"
             className={styles.input}
@@ -787,7 +785,7 @@ function ReportPageContent() {
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryRoster.spiritualDirectorNameLabel")}</span>
+          <span className={styles.label}>영적지도자 성명</span>
           <input
             type="text"
             className={styles.input}
@@ -803,7 +801,7 @@ function ReportPageContent() {
               <span className={styles.officerRoleLabel}>{OFFICER_ROLE_LABEL[role]}</span>
               <div className={styles.row}>
                 <label className={styles.field}>
-                  <span className={styles.label}>{t("secretaryRoster.nameLabel")}</span>
+                  <span className={styles.label}>성명</span>
                   <input
                     type="text"
                     className={styles.input}
@@ -812,7 +810,7 @@ function ReportPageContent() {
                   />
                 </label>
                 <label className={styles.field}>
-                  <span className={styles.label}>{t("secretaryRoster.baptismalNameLabel")}</span>
+                  <span className={styles.label}>세례명</span>
                   <input
                     type="text"
                     className={styles.input}
@@ -828,7 +826,7 @@ function ReportPageContent() {
 
       <details className={styles.section}>
         <summary className={styles.sectionSummary}>
-          <h2 className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</h2>
+          <h2 className={styles.sectionTitle}>단원 현황</h2>
         </summary>
         {MEMBER_COUNT_FIELDS.map(({ key, label }) => (
           <div key={key} className={styles.memberCountRow}>
@@ -853,23 +851,23 @@ function ReportPageContent() {
       </details>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.agendaSection")}</h2>
+        <h2 className={styles.sectionTitle}>주요 사항</h2>
         {report.agendaItems.map((item) => (
           <div key={item.id} className={styles.agendaRow}>
             <div className={styles.row}>
               <label className={styles.field}>
-                <span className={styles.smallLabel}>{t("secretaryReport.agendaStatusLabel")}</span>
+                <span className={styles.smallLabel}>구분</span>
                 <select
                   className={styles.input}
                   value={item.status}
                   onChange={(e) => patchAgendaItem(item.id, "status", e.target.value)}
                 >
-                  <option value="실시">{t("secretaryReport.agendaStatusDone")}</option>
-                  <option value="계획">{t("secretaryReport.agendaStatusPlanned")}</option>
+                  <option value="실시">실시</option>
+                  <option value="계획">계획</option>
                 </select>
               </label>
               <label className={styles.field}>
-                <span className={styles.smallLabel}>{t("secretaryReport.agendaTitleLabel")}</span>
+                <span className={styles.smallLabel}>사항</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -880,7 +878,7 @@ function ReportPageContent() {
             </div>
             <div className={styles.row}>
               <label className={styles.field}>
-                <span className={styles.smallLabel}>{t("secretaryReport.agendaOrganizerLabel")}</span>
+                <span className={styles.smallLabel}>주관</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -889,7 +887,7 @@ function ReportPageContent() {
                 />
               </label>
               <label className={styles.field}>
-                <span className={styles.smallLabel}>{t("secretaryReport.agendaDateTimeLabel")}</span>
+                <span className={styles.smallLabel}>일시</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -900,7 +898,7 @@ function ReportPageContent() {
             </div>
             <div className={styles.row}>
               <label className={styles.field}>
-                <span className={styles.smallLabel}>{t("secretaryReport.agendaLocationLabel")}</span>
+                <span className={styles.smallLabel}>장소</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -910,7 +908,7 @@ function ReportPageContent() {
               </label>
               <label className={styles.field}>
                 <span className={styles.smallLabel}>
-                  {t("secretaryReport.agendaAttendanceNoteLabel")}
+                  참석/비고
                 </span>
                 <input
                   type="text"
@@ -925,30 +923,30 @@ function ReportPageContent() {
               className={styles.removeButton}
               onClick={() => setRemovingAgendaId(item.id)}
             >
-              {t("secretaryReport.agendaRemove")}
+              삭제
             </button>
           </div>
         ))}
         <button type="button" className={styles.secondaryButton} onClick={addAgendaItem}>
-          {t("secretaryReport.agendaAdd")}
+          행 추가
         </button>
       </section>
 
       <section className={styles.section}>
         <div className={styles.sectionHeaderRow}>
-          <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
+          <h2 className={styles.sectionTitle}>회계</h2>
           <Link href="/secretary/expense-items" className={styles.secondaryButton}>
-            {t("secretaryReport.manageExpenseItems")}
+            항목 관리
           </Link>
         </div>
-        <p className={styles.hint}>{t("secretaryReport.treasuryHint")}</p>
+        <p className={styles.hint}>회차마다 비밀헌금과 지출을 넣으면 아래 합계가 저절로 계산됩니다.</p>
 
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.broughtForwardLabel")}</span>
+          <span className={styles.label}>전월이월금</span>
           <CurrencyInput
             value={report.treasury.broughtForward}
             className={styles.input}
-            ariaLabel={t("secretaryReport.broughtForwardLabel")}
+            ariaLabel="전월이월금"
             onChange={(value) => patchLedger(treasuryLedger, toNumber(value))}
           />
         </label>
@@ -957,10 +955,10 @@ function ReportPageContent() {
           <table className={`${styles.sessionTable} ${styles.treasuryTable}`}>
             <thead>
               <tr>
-                <th>{t("secretaryReport.sessionColumn")}</th>
-                <th>{t("secretaryReport.offeringColumn")}</th>
-                <th>{t("secretaryReport.expenseLabel")}</th>
-                <th>{t("secretaryReport.balanceLabel")}</th>
+                <th>회차</th>
+                <th>비밀헌금</th>
+                <th>지출</th>
+                <th>잔액</th>
               </tr>
             </thead>
             <tbody>
@@ -971,7 +969,7 @@ function ReportPageContent() {
                     <CurrencyInput
                       value={row.offering}
                       className={styles.moneyInput}
-                      ariaLabel={`${row.sessionNumber}${t("week.sessionNumberUnit")} ${t("secretaryReport.offeringColumn")}`}
+                      ariaLabel={`${row.sessionNumber}${"회차"} ${"비밀헌금"}`}
                       onChange={(value) => patchOffering(row.sessionNumber, value)}
                     />
                   </td>
@@ -979,7 +977,7 @@ function ReportPageContent() {
                     <button
                       type="button"
                       className={styles.expenseButton}
-                      aria-label={`${row.sessionNumber}${t("week.sessionNumberUnit")} ${t("secretaryReport.expenseLabel")}`}
+                      aria-label={`${row.sessionNumber}${"회차"} ${"지출"}`}
                       onClick={() => setExpenseTarget(row.sessionNumber)}
                     >
                       {row.expenses.length === 0 ? (
@@ -989,7 +987,7 @@ function ReportPageContent() {
                           {/* A phone has no room for both; the item names are
                               spelled out in 중요 지출 내역 just below. */}
                           <span className={styles.expenseNamed}>
-                            {summariseExpenses(row.expenses, t("secretaryReport.expenseMoreSuffix"))}
+                            {summariseExpenses(row.expenses)}
                           </span>
                           <span className={styles.expenseAmountOnly}>{formatWon(row.expense)}</span>
                         </>
@@ -1002,7 +1000,7 @@ function ReportPageContent() {
             </tbody>
             <tfoot>
               <tr>
-                <th scope="row">{t("secretaryReport.treasuryTotalRow")}</th>
+                <th scope="row">합계</th>
                 <td className={styles.moneyCell}>{formatWon(treasury.income)}</td>
                 <td className={styles.moneyCell}>{formatWon(treasury.expense)}</td>
                 <td className={styles.moneyCell}>{formatWon(treasury.balance)}</td>
@@ -1011,14 +1009,14 @@ function ReportPageContent() {
           </table>
         </div>
 
-        <span className={styles.label}>{t("secretaryReport.expenseBreakdownLabel")}</span>
+        <span className={styles.label}>중요 지출 내역</span>
         <output className={styles.autoLine}>
           {formatExpenseBreakdown(treasury.breakdown) || "-"}
         </output>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.prayerSection")}</h2>
+        <h2 className={styles.sectionTitle}>기도 집계</h2>
         <div className={styles.row}>
           {PRAYER_ITEMS.map((item) => (
             <p key={item.key} className={styles.attendanceSummary}>
@@ -1029,7 +1027,7 @@ function ReportPageContent() {
 
         <div className={styles.row}>
           <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.sundayMassLabel")}</span>
+            <span className={styles.label}>주일미사 참례 합계</span>
             <input
               type="number"
               inputMode="numeric"
@@ -1040,27 +1038,29 @@ function ReportPageContent() {
             />
           </label>
           <label className={styles.field}>
-            <span className={styles.label}>{t("secretaryReport.massCommunionResult")}</span>
+            <span className={styles.label}>미사영성체(계산값)</span>
             <output className={styles.derivedValue}>{computeMassCommunion(report)}</output>
           </label>
         </div>
-        <p className={styles.hint}>{t("secretaryReport.sundayMassHint")}</p>
+        <p className={styles.hint}>
+          {"미사영성체는 '평일미사참례 + 주일미사'로 계산됩니다. 주일미사는 명단 인원이 그 달 주일에 모두 참례한 것으로 잡아 두었으니, 다른 경우에만 고쳐 주세요."}
+        </p>
         {sundayBasis && (
           <p className={styles.hint}>
-            {t("secretaryReport.sundayMassBasis")}: {formatDay(sundayBasis.from)} ~{" "}
-            {formatDay(sundayBasis.to)} · {t("secretaryReport.sundayCountLabel")}{" "}
+            {"계산 구간"}: {formatDay(sundayBasis.from)} ~{" "}
+            {formatDay(sundayBasis.to)} · {"일요일"}{" "}
             {sundayBasis.sundayCount} × {sundayBasis.peopleCount}
-            {t("secretaryRoster.memberCountUnit")} = {sundayBasis.total}
+            {"명"} = {sundayBasis.total}
           </p>
         )}
 
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.activityDetailSection")}</h2>
-        <p className={styles.hint}>{t("secretaryReport.autoLineHint")}</p>
+        <h2 className={styles.sectionTitle}>주요 활동 내역</h2>
+        <p className={styles.hint}>아래 회색 줄은 입력한 값으로 보고서에 실제 인쇄될 내용입니다. 직접 고칠 수 없고, 위 칸과 활동 입력을 바꾸면 따라서 바뀝니다.</p>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.dioceseInstructionsLabel")}</span>
+          <span className={styles.label}>교구 지시사항</span>
           <textarea
             className={styles.textarea}
             rows={3}
@@ -1070,7 +1070,7 @@ function ReportPageContent() {
         </label>
         <output className={styles.autoLine}>{activityLines.diocese}</output>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.parishInstructionsLabel")}</span>
+          <span className={styles.label}>본당 지시사항</span>
           <textarea
             className={styles.textarea}
             rows={3}
@@ -1080,7 +1080,7 @@ function ReportPageContent() {
         </label>
         <output className={styles.autoLine}>{activityLines.parish}</output>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.councilInstructionsLabel")}</span>
+          <span className={styles.label}>평의회 지시사항</span>
           <textarea
             className={styles.textarea}
             rows={3}
@@ -1091,19 +1091,19 @@ function ReportPageContent() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.activitySummarySection")}</h2>
+        <h2 className={styles.sectionTitle}>쁘레시디움 활동사항</h2>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.activitySummary")}</span>
+          <span className={styles.label}>활동사항</span>
           <textarea
             className={styles.textarea}
             rows={4}
-            placeholder={t("secretaryReport.activitySummaryPlaceholder")}
+            placeholder="이번 달 쁘레시디움 활동을 자유롭게 적어 주세요."
             value={report.activitySummary}
             onChange={(e) => patch({ activitySummary: e.target.value })}
           />
         </label>
         <output className={styles.autoLine}>{activityLines.praesidium}</output>
-        <h3 className={styles.sectionTitle}>{t("secretaryReport.evangelizationSection")}</h3>
+        <h3 className={styles.sectionTitle}>선교실적 누계 (실적/목표)</h3>
         {EVANGELIZATION_FIELDS.map(({ key, label }) => (
           <div key={key} className={styles.memberCountRow}>
             <span className={styles.label}>{label}</span>
@@ -1134,7 +1134,7 @@ function ReportPageContent() {
           </div>
         ))}
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.cumulativeEvangelizationLabel")}</span>
+          <span className={styles.label}>선교실적 누계</span>
           <textarea
             className={styles.textarea}
             rows={2}
@@ -1143,7 +1143,7 @@ function ReportPageContent() {
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryReport.otherNotesLabel")}</span>
+          <span className={styles.label}>기타</span>
           <textarea
             className={styles.textarea}
             rows={3}
@@ -1199,16 +1199,16 @@ function ReportPageContent() {
             attendance: computeAttendanceSummary(attendanceRoll),
           });
           setImportOpen(false);
-          showToast(t("secretaryReport.importApplied"));
+          showToast("단원 보고를 반영했습니다.");
         }}
       />
 
       <ConfirmDialog
         open={pendingRange !== null}
-        title={t("secretaryReport.sessionRangeConfirmTitle")}
-        body={t("secretaryReport.sessionRangeConfirmBody")}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
+        title="회차 범위를 줄일까요?"
+        body="범위 밖 회차에 입력된 출석·기도 기록이 삭제됩니다. 이 작업은 되돌릴 수 없습니다."
+        confirmLabel="확인"
+        cancelLabel="취소"
         danger
         onCancel={() => setPendingRange(null)}
         onConfirm={() => {
@@ -1219,10 +1219,10 @@ function ReportPageContent() {
 
       <ConfirmDialog
         open={removingAgendaId !== null}
-        title={t("secretaryReport.agendaRemoveConfirmTitle")}
-        body={t("secretaryReport.agendaRemoveConfirmBody")}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
+        title="이 행을 삭제할까요?"
+        body="삭제하면 되돌릴 수 없습니다."
+        confirmLabel="삭제"
+        cancelLabel="취소"
         danger
         onCancel={() => setRemovingAgendaId(null)}
         onConfirm={() => {
@@ -1235,10 +1235,9 @@ function ReportPageContent() {
 }
 
 export default function SecretaryReportPage() {
-  const { t } = useTranslation();
 
   return (
-    <PageShell title={t("secretaryReport.title")} wide>
+    <PageShell title="월례 보고서" wide>
       <Suspense fallback={null}>
         <ReportPageContent />
       </Suspense>

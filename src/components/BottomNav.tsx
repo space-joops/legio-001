@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "@/i18n/useTranslation";
 import {
   CalendarIcon,
   HistoryIcon,
@@ -21,15 +20,14 @@ import styles from "./BottomNav.module.css";
  * 서기용 화면을 오갈 때 길을 잃지 않게 하려는 장치다.
  */
 export function BottomNav() {
-  const { t } = useTranslation();
   const pathname = usePathname();
   const isSecretary = pathname.startsWith("/secretary");
 
   const defaultItems = [
-    { href: "/", label: t("nav.home"), Icon: HomeIcon, swappable: false, isActive: pathname === "/" },
+    { href: "/", label: "홈", Icon: HomeIcon, swappable: false, isActive: pathname === "/" },
     {
       href: "/history",
-      label: t("nav.history"),
+      label: "기록",
       Icon: HistoryIcon,
       swappable: true,
       // A weekly report detail is part of the history flow, so the tab stays lit
@@ -38,21 +36,21 @@ export function BottomNav() {
     },
     {
       href: "/schedule",
-      label: t("nav.schedule"),
+      label: "일정",
       Icon: CalendarIcon,
       swappable: true,
       isActive: pathname.startsWith("/schedule"),
     },
     {
       href: "/tessera",
-      label: t("nav.tessera"),
+      label: "뗏세라",
       Icon: TesseraIcon,
       swappable: true,
       isActive: pathname.startsWith("/tessera"),
     },
     {
       href: "/settings",
-      label: t("nav.settings"),
+      label: "설정",
       Icon: SettingsIcon,
       swappable: true,
       isActive: pathname.startsWith("/settings"),
@@ -62,20 +60,20 @@ export function BottomNav() {
   const secretaryItems = [
     {
       href: "/secretary",
-      label: t("secretary.navReportList"),
+      label: "보고서",
       Icon: ReportListIcon,
       isActive: pathname === "/secretary" || pathname.startsWith("/secretary/report"),
     },
     {
       href: "/secretary/roster",
-      label: t("secretary.navSettings"),
+      label: "명단 관리",
       Icon: SecretarySettingsIcon,
       isActive: pathname.startsWith("/secretary/roster"),
     },
   ];
 
   return (
-    <nav className={styles.nav} aria-label={t("nav.menuLabel")} data-app-chrome data-secretary={isSecretary}>
+    <nav className={styles.nav} aria-label="주 메뉴" data-app-chrome data-secretary={isSecretary}>
       {defaultItems.map(({ href, label, Icon, swappable, isActive }) => (
         <Link
           key={href}

@@ -1,4 +1,3 @@
-import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { formatMeetingDateTime, formatSessionLabel } from "@/lib/reportUtils";
 import { selectOnFocus } from "@/lib/selectOnFocus";
@@ -29,7 +28,6 @@ export function ReportSummary({
   draftNote,
   onNoteChange,
 }: ReportSummaryProps) {
-  const { t } = useTranslation();
   const counts = editable && draftCounts ? draftCounts : report.counts;
   const note = editable ? draftNote ?? "" : report.activityNote ?? "";
 
@@ -41,11 +39,11 @@ export function ReportSummary({
         </div>
         <div className={styles.metaText}>
           <p>
-            {t("report.meetingLabel")}:{" "}
+            {"주회 일시"}:{" "}
             {formatMeetingDateTime(report.meetingDateTime)}
           </p>
           <p>
-            {t("report.memberLabel")}: {report.memberName || "-"}
+            {"단원"}: {report.memberName || "-"}
           </p>
         </div>
       </div>
@@ -78,7 +76,7 @@ export function ReportSummary({
       </ul>
       {editable ? (
         <label className={styles.noteField}>
-          <span className={styles.noteLabel}>{t("report.activityNoteLabel")}</span>
+          <span className={styles.noteLabel}>활동 사항</span>
           <textarea
             className={styles.noteInput}
             rows={4}
@@ -89,7 +87,7 @@ export function ReportSummary({
       ) : (
         note && (
           <div className={styles.noteField}>
-            <span className={styles.noteLabel}>{t("report.activityNoteLabel")}</span>
+            <span className={styles.noteLabel}>활동 사항</span>
             <p className={styles.noteText}>{note}</p>
           </div>
         )

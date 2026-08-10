@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useToast } from "@/components/ToastProvider";
-import { useTranslation } from "@/i18n/useTranslation";
 import {
   applyImportedFile,
   inspectImportFile,
@@ -65,7 +64,6 @@ const CONFIRM_BODIES: Record<Exclude<ExportScope, "secretaryMonth">, string> = {
 };
 
 export function ImportDataButton({ label, buttonClassName, reloadTo }: ImportDataButtonProps) {
-  const { t } = useTranslation();
   const { showToast } = useToast();
   const [pending, setPending] = useState<PendingImport | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +84,7 @@ export function ImportDataButton({ label, buttonClassName, reloadTo }: ImportDat
       parsed = JSON.parse(await file.text());
     } catch {
       clearFileInput();
-      showToast(t("settings.importError"));
+      showToast("파일을 읽을 수 없습니다. 올바른 내보내기 파일인지 확인해 주세요.");
       return;
     }
     const check = inspectImportFile(parsed);
@@ -94,8 +92,8 @@ export function ImportDataButton({ label, buttonClassName, reloadTo }: ImportDat
       clearFileInput();
       showToast(
         check.reason === "futureVersion"
-          ? t("settings.importFutureVersion")
-          : t("settings.importError")
+          ? "더 새로운 버전에서 만든 파일입니다. 앱을 먼저 업데이트해 주세요."
+          : "파일을 읽을 수 없습니다. 올바른 내보내기 파일인지 확인해 주세요."
       );
       return;
     }
@@ -133,14 +131,14 @@ export function ImportDataButton({ label, buttonClassName, reloadTo }: ImportDat
       : "";
     switch (summary.scope) {
       case "personal":
-        return [summary.memberName, exported, `${t("history.title")} ${summary.historyCount}`]
+        return [summary.memberName, exported, `${"지난 활동 기록"} ${summary.historyCount}`]
           .filter(Boolean)
           .join(" · ");
       case "secretary":
         return [
           exported,
-          `${t("secretary.listTitle")} ${summary.monthlyReportCount}`,
-          `${t("secretaryRoster.memberCountsSection")} ${summary.rosterMemberCount}`,
+          `${"월례 보고서 목록"} ${summary.monthlyReportCount}`,
+          `${"현재 단원 수"} ${summary.rosterMemberCount}`,
         ]
           .filter(Boolean)
           .join(" · ");
@@ -156,9 +154,9 @@ export function ImportDataButton({ label, buttonClassName, reloadTo }: ImportDat
         return [
           summary.memberName,
           exported,
-          `${t("history.title")} ${summary.historyCount}`,
-          `${t("secretary.listTitle")} ${summary.monthlyReportCount}`,
-          `${t("secretaryRoster.memberCountsSection")} ${summary.rosterMemberCount}`,
+          `${"지난 활동 기록"} ${summary.historyCount}`,
+          `${"월례 보고서 목록"} ${summary.monthlyReportCount}`,
+          `${"현재 단원 수"} ${summary.rosterMemberCount}`,
         ]
           .filter(Boolean)
           .join(" · ");
@@ -189,8 +187,8 @@ export function ImportDataButton({ label, buttonClassName, reloadTo }: ImportDat
         title={pending ? CONFIRM_TITLES[pending.summary.scope] : ""}
         body={pending ? bodyText(pending.summary) : ""}
         detail={pending ? detailText(pending.summary) : ""}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
+        confirmLabel="확인"
+        cancelLabel="취소"
         // Adding a month that doesn't exist here yet destroys nothing, so it
         // gets a plain confirm; everything else overwrites and stays red.
         danger={

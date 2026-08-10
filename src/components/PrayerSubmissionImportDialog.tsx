@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import {
   matchSubmissionsToRoster,
@@ -43,7 +42,6 @@ interface RowState {
 type Stage = "paste" | "review" | "confirm";
 
 export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }: Props) {
-  const { t } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
   const [stage, setStage] = useState<Stage>("paste");
   const [text, setText] = useState("");
@@ -142,14 +140,14 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
   };
 
   const statusLabel = (match: SubmissionMatch, row: RowState) => {
-    if (!sessions.includes(row.sessionNumber)) return t("secretaryReport.importStatusOutOfRange");
-    if (match.confidence === "ambiguous") return t("secretaryReport.importStatusAmbiguous");
+    if (!sessions.includes(row.sessionNumber)) return "회차 범위 밖";
+    if (match.confidence === "ambiguous") return "같은 이름 여럿 — 확인 필요";
     if (match.confidence === "none" && !row.personId)
-      return t("secretaryReport.importStatusNone");
+      return "명단에 없음";
     if (row.include && match.overwriteCount > 0 && match.personId === row.personId)
-      return t("secretaryReport.importStatusOverwrite");
-    if (match.confidence === "nameOnly") return t("secretaryReport.importStatusNameOnly");
-    return t("secretaryReport.importStatusExact");
+      return "기존 입력 덮어씀";
+    if (match.confidence === "nameOnly") return "이름만 일치";
+    return "확인됨";
   };
 
   const updateRow = (index: number, patch: Partial<RowState>) => {
@@ -165,22 +163,22 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
         onCancel();
       }}
     >
-      <h2 className={styles.title}>{t("secretaryReport.importTitle")}</h2>
+      <h2 className={styles.title}>단원 주간 보고 불러오기</h2>
 
       {stage === "paste" && (
         <>
-          <p className={styles.hint}>{t("secretaryReport.importPasteHint")}</p>
+          <p className={styles.hint}>카카오톡에서 단원이 보낸 주간 보고 메시지를 길게 눌러 복사한 뒤 아래에 붙여넣으세요. 여러 사람 것을 한꺼번에 붙여넣어도 됩니다.</p>
           <textarea
             className={styles.textarea}
             rows={8}
             value={text}
-            placeholder={t("secretaryReport.importPastePlaceholder")}
+            placeholder="여기에 붙여넣으세요"
             onChange={(e) => setText(e.target.value)}
           />
-          {notFound && <p className={styles.error}>{t("secretaryReport.importNothingFound")}</p>}
+          {notFound && <p className={styles.error}>붙여넣은 내용에서 단원 보고를 찾지 못했습니다. 단원에게 앱을 최신으로 업데이트한 뒤 다시 공유해 달라고 알려 주세요.</p>}
           <div className={styles.actions}>
             <button type="button" className={styles.secondaryButton} onClick={onCancel}>
-              {t("common.cancel")}
+              취소
             </button>
             <button
               type="button"
@@ -189,7 +187,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
                 void handlePasteFromClipboard();
               }}
             >
-              {t("secretaryReport.importPasteFromClipboard")}
+              클립보드에서 붙여넣기
             </button>
             <button
               type="button"
@@ -197,7 +195,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
               onClick={handleLoad}
               disabled={!text.trim()}
             >
-              {t("secretaryReport.importLoad")}
+              불러오기
             </button>
           </div>
         </>
@@ -206,7 +204,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
       {stage === "review" && (
         <>
           <p className={styles.hint}>
-            {t("secretaryReport.importSessionRangeHint")} {report.sessionRangeStart}~
+            {"이 보고서의 회차 범위"} {report.sessionRangeStart}~
             {report.sessionRangeEnd}
           </p>
           {matches.length > 0 && (
@@ -214,12 +212,12 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>{t("secretaryReport.importColumnSender")}</th>
-                    <th>{t("secretaryReport.importColumnPerson")}</th>
-                    <th>{t("secretaryReport.importColumnSession")}</th>
-                    <th>{t("secretaryReport.importColumnCounts")}</th>
-                    <th>{t("secretaryReport.importColumnStatus")}</th>
-                    <th>{t("secretaryReport.importColumnInclude")}</th>
+                    <th>보낸 사람</th>
+                    <th>명단에서 선택</th>
+                    <th>회차</th>
+                    <th>기도 (미·사·주·묵·화)</th>
+                    <th>상태</th>
+                    <th>반영</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -241,7 +239,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
                           <select
                             className={styles.select}
                             value={row.personId}
-                            aria-label={t("secretaryReport.importColumnPerson")}
+                            aria-label="명단에서 선택"
                             onChange={(e) =>
                               updateRow(index, {
                                 personId: e.target.value,
@@ -249,7 +247,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
                               })
                             }
                           >
-                            <option value="">{t("secretaryReport.importSelectPerson")}</option>
+                            <option value="">선택하세요</option>
                             {match.candidates.map((person) => (
                               <option key={person.id} value={person.id}>
                                 {person.label}
@@ -261,7 +259,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
                           <select
                             className={styles.select}
                             value={row.sessionNumber}
-                            aria-label={t("secretaryReport.importColumnSession")}
+                            aria-label="회차"
                             onChange={(e) =>
                               updateRow(index, { sessionNumber: Number(e.target.value) })
                             }
@@ -286,7 +284,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
                             className={styles.checkbox}
                             checked={row.include}
                             disabled={!row.personId || !sessions.includes(row.sessionNumber)}
-                            aria-label={`${match.submission.name} ${t("secretaryReport.importColumnInclude")}`}
+                            aria-label={`${match.submission.name} ${"반영"}`}
                             onChange={(e) => updateRow(index, { include: e.target.checked })}
                           />
                         </td>
@@ -301,7 +299,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
           {malformed.length > 0 && (
             <div className={styles.malformed}>
               <p className={styles.malformedLabel}>
-                {t("secretaryReport.importMalformedLabel")} {malformed.length}
+                {"형식이 맞지 않아 건너뛴 줄"} {malformed.length}
               </p>
               <ul>
                 {malformed.map((line, i) => (
@@ -312,11 +310,11 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
           )}
 
           <p className={styles.summary}>
-            {t("secretaryReport.importFoundLabel")} {decisions.length}
-            {t("secretaryReport.importUnit")}
+            {"반영할 보고"} {decisions.length}
+            {"건"}
           </p>
           {decisions.length === 0 && matches.length > 0 && (
-            <p className={styles.error}>{t("secretaryReport.importNoneSelected")}</p>
+            <p className={styles.error}>반영할 보고가 없습니다. 명단과 회차를 확인해 주세요.</p>
           )}
 
           <div className={styles.actions}>
@@ -325,10 +323,10 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
               className={styles.secondaryButton}
               onClick={() => setStage("paste")}
             >
-              {t("secretaryReport.importBack")}
+              다시 붙여넣기
             </button>
             <button type="button" className={styles.secondaryButton} onClick={onCancel}>
-              {t("common.cancel")}
+              취소
             </button>
             <button
               type="button"
@@ -336,7 +334,7 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
               onClick={handleApplyClick}
               disabled={decisions.length === 0}
             >
-              {t("secretaryReport.importApply")}
+              반영하기
             </button>
           </div>
         </>
@@ -346,22 +344,22 @@ export function PrayerSubmissionImportDialog({ open, report, onCancel, onApply }
           modals is more fragile than a third step in the same one. */}
       {stage === "confirm" && (
         <>
-          <p className={styles.hint}>{t("secretaryReport.importOverwriteConfirmTitle")}</p>
-          <p className={styles.error}>{t("secretaryReport.importOverwriteConfirmBody")}</p>
+          <p className={styles.hint}>이미 입력된 값을 덮어쓸까요?</p>
+          <p className={styles.error}>이미 숫자가 들어 있는 칸이 있습니다. 반영하면 붙여넣은 값으로 바뀝니다.</p>
           <div className={styles.actions}>
             <button
               type="button"
               className={styles.secondaryButton}
               onClick={() => setStage("review")}
             >
-              {t("common.cancel")}
+              취소
             </button>
             <button
               type="button"
               className={styles.dangerButton}
               onClick={() => onApply(decisions)}
             >
-              {t("secretaryReport.importApply")}
+              반영하기
             </button>
           </div>
         </>

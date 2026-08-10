@@ -4,7 +4,6 @@ import { useState } from "react";
 import { PRAYER_ITEMS, ROSARY_SET_SIZE } from "@/lib/constants";
 import { PRAYER_TEXTS } from "@/lib/prayerTexts";
 import type { PrayerCounts, PrayerItemKey } from "@/lib/types";
-import { useTranslation } from "@/i18n/useTranslation";
 import { CounterButton } from "./CounterButton";
 import { PrayerTextDialog } from "./PrayerTextDialog";
 import { RosaryGuide } from "./RosaryGuide";
@@ -57,7 +56,6 @@ export function CounterGrid({
   rosarySetProgress,
   onRosaryRecordSet,
 }: CounterGridProps) {
-  const { t } = useTranslation();
   // 지금 기도문 창이 열려 있는 카운터. null 이면 창이 닫힌 상태다.
   const [viewingKey, setViewingKey] = useState<PrayerItemKey | null>(null);
 
@@ -73,11 +71,7 @@ export function CounterGrid({
   const rosaryGuide = isRosary ? (
     <RosaryGuide onRecordSet={onRosaryRecordSet} progress={rosarySetProgress} />
   ) : undefined;
-  const rosaryCaption = isRosary
-    ? t("counters.setProgress")
-        .replace("{done}", String(rosarySetProgress))
-        .replace("{total}", String(ROSARY_SET_SIZE))
-    : undefined;
+  const rosaryCaption = isRosary ? `${rosarySetProgress} / ${ROSARY_SET_SIZE}단` : undefined;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>

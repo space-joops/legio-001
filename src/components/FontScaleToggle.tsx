@@ -1,7 +1,6 @@
 "use client";
 
 import { useDisplayPreferences } from "./DisplayPreferencesProvider";
-import { useTranslation } from "@/i18n/useTranslation";
 import type { FontScale } from "@/lib/types";
 import styles from "./FontScaleToggle.module.css";
 
@@ -19,10 +18,9 @@ const OPTIONS: { value: FontScale; label: string }[] = [
 
 export function FontScaleToggle() {
   const { fontScale, setFontScale } = useDisplayPreferences();
-  const { t } = useTranslation();
 
   return (
-    <div className={styles.group} role="group" aria-label={t("settings.fontSizeLabel")}>
+    <div className={styles.group} role="group" aria-label="글자 크기">
       {OPTIONS.map((option) => (
         <button
           key={option.value}

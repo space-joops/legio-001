@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { MysteryImageDialog } from "@/components/MysteryImageDialog";
 import { PageShell } from "@/components/PageShell";
-import { useTranslation } from "@/i18n/useTranslation";
 import { MYSTERY_MEDITATIONS } from "@/lib/rosaryMeditations";
 import {
   DECADES_PER_ROSARY,
@@ -54,7 +53,6 @@ function vibrate(pattern: number | number[]) {
 }
 
 export default function RosaryPage() {
-  const { t } = useTranslation();
 
   /** 오늘의 신비. 처음엔 null — 아래 useEffect 가 브라우저에서 정한다. */
   const [mysteryId, setMysteryId] = useState<MysteryId | null>(null);
@@ -108,24 +106,21 @@ export default function RosaryPage() {
     setBeads(beads - 1);
   };
 
-  const decadeLabel = (n: number) => t("rosary.decade").replace("{n}", String(n));
-  const beadStatus = t("lab.beadStatus")
-    .replace("{n}", String(beadInDecade))
-    .replace("{total}", String(HAIL_MARYS_PER_DECADE));
+  const beadStatus = `성모송 ${beadInDecade} / ${HAIL_MARYS_PER_DECADE}`;
   const statusText = done
-    ? `${t("lab.roundDone")} · ${t("lab.tapForNewRound")}`
-    : `${decadeLabel(decadeIndex + 1)} · ${beadStatus}`;
+    ? "5단을 모두 바쳤습니다 · 눌러서 새로 시작"
+    : `${decadeIndex + 1}단 · ${beadStatus}`;
 
   if (!mysteryId || !mystery) {
     return (
-      <PageShell title={t("lab.digitalRosary")}>
+      <PageShell title="디지털 묵주">
         <div className={styles.container} />
       </PageShell>
     );
   }
 
   return (
-    <PageShell title={t("lab.digitalRosary")}>
+    <PageShell title="디지털 묵주">
       <div className={styles.container}>
         {/* 오늘의 신비 + 지금 단의 묵상 주제. 성화를 누르면 묵상 팝업. */}
         <section className={styles.mysteryCard} aria-label={mystery.heading}>
@@ -134,7 +129,7 @@ export default function RosaryPage() {
               type="button"
               className={styles.medallionButton}
               onClick={() => setMeditationOpen(true)}
-              aria-label={t("lab.viewMeditation")}
+              aria-label="성화와 묵상 보기"
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- 정적 export + images.unoptimized 라 next/image 는 용량만 늘린다 */}
               <img
@@ -198,19 +193,17 @@ export default function RosaryPage() {
           <span className={styles.center} aria-hidden="true">
             {done ? (
               <>
-                <span className={styles.doneTitle}>{t("lab.roundDone")}</span>
-                <span className={styles.doneHint}>{t("lab.tapForNewRound")}</span>
+                <span className={styles.doneTitle}>5단을 모두 바쳤습니다</span>
+                <span className={styles.doneHint}>눌러서 새로 시작</span>
               </>
             ) : (
               <>
                 <span className={styles.count}>{beadInDecade}</span>
                 <span className={styles.countLabel}>
-                  {beads === 0 ? t("lab.tapToStart") : beadStatus}
+                  {beads === 0 ? "눌러서 시작하세요" : beadStatus}
                 </span>
                 <span className={styles.totalLabel}>
-                  {t("lab.totalStatus")
-                    .replace("{n}", String(beads))
-                    .replace("{total}", String(ROSARY_TOTAL))}
+                  전체 {beads} / {ROSARY_TOTAL}알
                 </span>
               </>
             )}
@@ -236,7 +229,7 @@ export default function RosaryPage() {
                   }`}
                   aria-current={isCurrent ? "step" : undefined}
                 >
-                  {decadeLabel(d + 1)}
+                  {d + 1}단
                   {isDone && <span aria-hidden="true">✓</span>}
                 </li>
               );
@@ -250,7 +243,7 @@ export default function RosaryPage() {
               onClick={handleUndo}
               disabled={beads === 0}
             >
-              {t("lab.undoBead")}
+              한 알 되돌리기
             </button>
             <button
               type="button"
@@ -258,23 +251,23 @@ export default function RosaryPage() {
               onClick={() => setConfirmingReset(true)}
               disabled={beads === 0}
             >
-              {t("lab.resetRound")}
+              처음부터
             </button>
           </div>
 
           {rounds > 0 && (
-            <p className={styles.rounds}>{t("lab.roundsCount").replace("{n}", String(rounds))}</p>
+            <p className={styles.rounds}>완주 {rounds}바퀴</p>
           )}
-          <p className={styles.notice}>{t("lab.notSaved")}</p>
+          <p className={styles.notice}>여기서 센 숫자는 저장되지 않고, 주간 보고에도 반영되지 않습니다.</p>
         </div>
       </div>
 
       <ConfirmDialog
         open={confirmingReset}
-        title={t("lab.resetConfirmTitle")}
-        body={t("lab.resetConfirmBody").replace("{n}", String(beads))}
-        confirmLabel={t("lab.resetRound")}
-        cancelLabel={t("common.cancel")}
+        title="처음부터 다시 셀까요?"
+        body={`지금까지 센 ${beads}알을 지우고 1단부터 다시 시작합니다.`}
+        confirmLabel="처음부터"
+        cancelLabel="취소"
         danger
         onConfirm={() => {
           setBeads(0);

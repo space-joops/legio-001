@@ -1,5 +1,4 @@
 import { buildActivityLines } from "@/lib/activityReport";
-import { PRAYER_ITEMS } from "@/lib/constants";
 import {
   OFFICER_ROLE_LABEL,
   OFFICER_ROLES,
@@ -13,7 +12,6 @@ import type {
   MemberCounts,
   MonthlyReport,
 } from "@/lib/types";
-import { useTranslation } from "@/i18n/useTranslation";
 import styles from "./SecretaryReportPrintView.module.css";
 
 /**
@@ -76,7 +74,6 @@ export function SecretaryReportPrintView({
   /** One-page A4 tuning shared by print, the PDF button, and the image button. */
   compact?: boolean;
 }) {
-  const { t } = useTranslation();
   const president = report.roster.officers.find((officer) => officer.role === "president");
 
   // All three outputs (this view, the editor and the RTF) go through the same
@@ -91,10 +88,10 @@ export function SecretaryReportPrintView({
   return (
     <div className={`${styles.page} ${compact ? styles.compact : ""}`}>
       <header className={styles.header}>
-        <p className={styles.orgLine}>{t("app.name")}</p>
-        <h1 className={styles.title}>{t("secretaryReport.title")}</h1>
+        <p className={styles.orgLine}>레지오 마리애 주간 활동 보고</p>
+        <h1 className={styles.title}>월례 보고서</h1>
         <p className={styles.yearMonth}>
-          {formatYearMonthLabel(report.yearMonth)} {t("secretaryReport.asOfSuffix")} · {t("week.sessionNumber")}{" "}
+          {formatYearMonthLabel(report.yearMonth)} {"말 현재"} · {"회차"}{" "}
           {report.sessionRangeStart} ~ {report.sessionRangeEnd}
         </p>
         <p className={styles.councilLine}>
@@ -103,39 +100,39 @@ export function SecretaryReportPrintView({
       </header>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.meetingInfoSection")}</h2>
+        <h2 className={styles.sectionTitle}>회합 정보</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <tbody>
               <tr>
-                <th>{t("week.sessionNumber")}</th>
+                <th>회차</th>
                 <td>
                   {report.sessionRangeStart} ~ {report.sessionRangeEnd}
                 </td>
-                <th>{t("secretaryReport.meetingWeekdayLabel")}</th>
+                <th>요일</th>
                 {/* >= 0, not truthiness: Sunday is 0 and used to print as "-". */}
                 <td>
                   {report.meetingWeekday >= 0 ? WEEKDAY_LABELS[report.meetingWeekday] : "-"}
                 </td>
               </tr>
               <tr>
-                <th>{t("secretaryReport.meetingTimeLabel")}</th>
+                <th>시간</th>
                 <td>{report.meetingTime || "-"}</td>
-                <th>{t("secretaryReport.meetingLocationLabel")}</th>
+                <th>장소</th>
                 <td>{report.meetingLocation || "-"}</td>
               </tr>
               <tr>
-                <th>{t("secretaryReport.attendanceSection")} ({t("secretaryReport.officers")})</th>
+                <th>{"출석"} ({"간부"})</th>
                 <td>
                   {report.attendance.officersPresent} / {report.attendance.officersTotal}
                 </td>
-                <th>{t("secretaryReport.attendanceSection")} ({t("secretaryReport.members")})</th>
+                <th>{"출석"} ({"단원"})</th>
                 <td>
                   {report.attendance.membersPresent} / {report.attendance.membersTotal}
                 </td>
               </tr>
               <tr>
-                <th>{t("secretaryRoster.spiritualDirectorNameLabel")}</th>
+                <th>영적지도자 성명</th>
                 <td colSpan={3}>
                   {report.roster.spiritualDirectorName} {report.roster.spiritualDirectorBaptismalName}
                 </td>
@@ -146,16 +143,16 @@ export function SecretaryReportPrintView({
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.rosterSection")}</h2>
+        <h2 className={styles.sectionTitle}>간부 명단</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>{t("secretaryRoster.officersSection")}</th>
-                <th>{t("secretaryRoster.nameLabel")}</th>
-                <th>{t("secretaryRoster.baptismalNameLabel")}</th>
-                <th>{t("secretaryRoster.appointedDateLabel")}</th>
-                <th>{t("secretaryRoster.noteLabel")}</th>
+                <th>간부 명단</th>
+                <th>성명</th>
+                <th>세례명</th>
+                <th>임명일</th>
+                <th>참고사항</th>
               </tr>
             </thead>
             <tbody>
@@ -178,16 +175,16 @@ export function SecretaryReportPrintView({
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</h2>
+        <h2 className={styles.sectionTitle}>단원 현황</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
               <tr>
                 <th />
-                <th>{t("secretaryReport.prevMonthLabel")}</th>
-                <th>{t("secretaryReport.thisMonthLabel")}</th>
-                <th>{t("secretaryReport.increaseLabel")}</th>
-                <th>{t("secretaryReport.decreaseLabel")}</th>
+                <th>전월</th>
+                <th>금월</th>
+                <th>증가</th>
+                <th>감소</th>
               </tr>
             </thead>
             <tbody>
@@ -217,7 +214,7 @@ export function SecretaryReportPrintView({
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.agendaSection")}</h2>
+        <h2 className={styles.sectionTitle}>주요 사항</h2>
         {report.agendaItems.length === 0 ? (
           <p className={styles.empty}>-</p>
         ) : (
@@ -225,12 +222,12 @@ export function SecretaryReportPrintView({
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>{t("secretaryReport.agendaStatusLabel")}</th>
-                  <th>{t("secretaryReport.agendaTitleLabel")}</th>
-                  <th>{t("secretaryReport.agendaOrganizerLabel")}</th>
-                  <th>{t("secretaryReport.agendaDateTimeLabel")}</th>
-                  <th>{t("secretaryReport.agendaLocationLabel")}</th>
-                  <th>{t("secretaryReport.agendaAttendanceNoteLabel")}</th>
+                  <th>구분</th>
+                  <th>사항</th>
+                  <th>주관</th>
+                  <th>일시</th>
+                  <th>장소</th>
+                  <th>참석/비고</th>
                 </tr>
               </thead>
               <tbody>
@@ -251,24 +248,24 @@ export function SecretaryReportPrintView({
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.treasurySection")}</h2>
+        <h2 className={styles.sectionTitle}>회계</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <tbody>
               <tr>
-                <th>{t("secretaryReport.broughtForwardLabel")}</th>
+                <th>전월이월금</th>
                 <td>{formatWon(report.treasury.broughtForward)}</td>
-                <th>{t("secretaryReport.incomeLabel")}</th>
+                <th>수입</th>
                 <td>{formatWon(report.treasury.income)}</td>
               </tr>
               <tr>
-                <th>{t("secretaryReport.expenseLabel")}</th>
+                <th>지출</th>
                 <td>{formatWon(report.treasury.expense)}</td>
-                <th>{t("secretaryReport.balanceLabel")}</th>
+                <th>잔액</th>
                 <td>{formatWon(report.treasury.balance)}</td>
               </tr>
               <tr>
-                <th>{t("secretaryReport.expenseBreakdownLabel")}</th>
+                <th>중요 지출 내역</th>
                 <td colSpan={3}>{report.treasury.expenseBreakdown || "-"}</td>
               </tr>
             </tbody>
@@ -279,44 +276,44 @@ export function SecretaryReportPrintView({
       {/* The official form has no standalone prayer table: the tallies belong on
           the 교구/본당 지시사항 lines, which is where a reviewer looks for them. */}
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.activityDetailSection")}</h2>
+        <h2 className={styles.sectionTitle}>주요 활동 내역</h2>
         <TextBlock
-          label={t("secretaryReport.dioceseInstructionsLabel")}
+          label="교구 지시사항"
           value={joinLines(report.dioceseInstructions, lines.diocese)}
         />
         <TextBlock
-          label={t("secretaryReport.parishInstructionsLabel")}
+          label="본당 지시사항"
           value={joinLines(report.parishInstructions, lines.parish)}
         />
         <TextBlock
-          label={t("secretaryReport.councilInstructionsLabel")}
+          label="평의회 지시사항"
           value={report.councilInstructions}
         />
-        <TextBlock label={t("secretaryReport.activitySummary")} value={joinLines(lines.praesidium, report.activitySummary)} />
+        <TextBlock label="활동사항" value={joinLines(lines.praesidium, report.activitySummary)} />
         <TextBlock
-          label={t("secretaryReport.cumulativeEvangelizationLabel")}
+          label="선교실적 누계"
           value={joinLines(evangelizationLine, report.cumulativeEvangelization)}
         />
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryReport.otherNotesLabel")}</h2>
-        <TextBlock label={t("secretaryReport.otherNotesLabel")} value={report.otherNotes} />
+        <h2 className={styles.sectionTitle}>기타</h2>
+        <TextBlock label="기타" value={report.otherNotes} />
       </section>
 
       <footer className={styles.signature}>
         <p>
-          ({t("secretaryRoster.councilAffiliationLabel")}) {report.roster.councilAffiliation || "-"}{" "}
-          {t("secretaryReport.directlyUnder")}
+          ({"소속 평의회"}) {report.roster.councilAffiliation || "-"}{" "}
+          {"직속"}
         </p>
         <p className={styles.signatureLine}>
-          {report.roster.praesidiumName || "-"} {t("secretaryReport.praesidiumSuffix")}{" "}
+          {report.roster.praesidiumName || "-"} {"쁘레시디움"}{" "}
           {OFFICER_ROLE_LABEL.president} {president?.name || "-"}{" "}
-          {president?.baptismalName || ""} ({t("secretaryReport.signature")})
+          {president?.baptismalName || ""} ({"서명"})
         </p>
         {/* The official form number stays off this sheet on purpose: the app's
             output is a transcription reference, not the Senatus form itself. */}
-        <p className={styles.referenceNote}>{t("secretaryReport.referenceNote")}</p>
+        <p className={styles.referenceNote}>※ 참고용 문서 — 공식 보고서는 세나뚜스 양식(한글 문서)에 옮겨 적어 제출합니다.</p>
       </footer>
     </div>
   );

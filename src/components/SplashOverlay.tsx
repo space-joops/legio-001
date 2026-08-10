@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import { storage } from "@/lib/storage";
 import styles from "./SplashOverlay.module.css";
 
@@ -49,7 +48,6 @@ function anotherDialogIsOpen(self: HTMLDialogElement | null): boolean {
 }
 
 export function SplashOverlay() {
-  const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>("hidden");
   const ref = useRef<HTMLDialogElement>(null);
   const phaseRef = useRef<Phase>("hidden");
@@ -151,7 +149,7 @@ export function SplashOverlay() {
           {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
           <img className={styles.backdrop} src="/splash.jpg" alt="" aria-hidden="true" />
           {/* eslint-disable-next-line @next/next/no-img-element -- static export with images.unoptimized, so next/image would only add weight */}
-          <img className={styles.image} src="/splash.jpg" alt={t("splash.imageAlt")} />
+          <img className={styles.image} src="/splash.jpg" alt="레지오 마리애 성화 (레지오의 기)" />
         </div>
       )}
     </dialog>

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import { storage } from "@/lib/storage";
-import { useTranslation } from "@/i18n/useTranslation";
 import Image from "next/image";
 import styles from "./PlatformChoicePopup.module.css";
 
@@ -30,7 +29,6 @@ const GIVE_UP_MS = 20000;
 type Variant = "prompt" | "ios" | "androidManual" | "none";
 
 export function PlatformChoicePopup() {
-  const { t } = useTranslation();
   const ready = useLocalStorageReady();
   const { installed, canInstall, isIos, isAndroid, isInAppBrowser, promptInstall } =
     useInstallPrompt();
@@ -131,12 +129,12 @@ export function PlatformChoicePopup() {
             handleClose();
           }}
         >
-          {t("platformChoice.installAction")}
+          바로 설치하기
         </button>
       )}
 
       <button type="button" className={styles.laterButton} onClick={handleClose}>
-        {t("platformChoice.later")}
+        지금은 그냥 쓰기
       </button>
 
       <label className={styles.checkboxLabel}>
@@ -146,7 +144,7 @@ export function PlatformChoicePopup() {
           onChange={(e) => setDontShowAgain(e.target.checked)}
           className={styles.checkbox}
         />
-        {t("platformChoice.dontShowAgain")}
+        다시 보지 않기
       </label>
     </dialog>
   );

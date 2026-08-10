@@ -6,7 +6,6 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/components/ToastProvider";
 import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
-import { useTranslation } from "@/i18n/useTranslation";
 import {
   createActivityItem,
   createDefaultActivityItems,
@@ -28,7 +27,6 @@ const LINES: { value: ActivityLine; label: string }[] = [
 ];
 
 export default function ActivityItemsPage() {
-  const { t } = useTranslation();
   const { showToast } = useToast();
   const ready = useLocalStorageReady();
   const [items, setItems] = useState<ActivityItem[]>([]);
@@ -42,7 +40,7 @@ export default function ActivityItemsPage() {
   }, [ready]);
 
   if (!ready) {
-    return <PageShell title={t("secretaryActivityItems.title")} wide>{null}</PageShell>;
+    return <PageShell title="Pr.활동사항 관리" wide>{null}</PageShell>;
   }
 
   /** Shown 가나다순; each item keeps its own `order`, which is what the
@@ -64,33 +62,33 @@ export default function ActivityItemsPage() {
   };
 
   return (
-    <PageShell title={t("secretaryActivityItems.title")} wide>
+    <PageShell title="Pr.활동사항 관리" wide>
       <div className={styles.topActions}>
         <Link href="/secretary" className={styles.secondaryButton}>
-          {t("secretaryReport.backToList")}
+          보고서 목록으로
         </Link>
         <button type="button" className={styles.secondaryButton} onClick={() => setResetOpen(true)}>
-          {t("secretaryActivityItems.restoreDefaults")}
+          기본 항목으로 되돌리기
         </button>
       </div>
-      <p className={styles.hint}>{t("secretaryActivityItems.description")}</p>
-      <p className={styles.autoSaveNotice}>{t("common.autoSaveNotice")}</p>
+      <p className={styles.hint}>단원이 활동을 입력할 때 고를 항목을 관리합니다. 항목마다 보고서의 어느 줄로 갈지 정해 두면, 월례 보고서가 알아서 나눠 적습니다.</p>
+      <p className={styles.autoSaveNotice}>모든 변경 사항은 자동으로 저장됩니다.</p>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryActivityItems.addTitle")}</h2>
+        <h2 className={styles.sectionTitle}>항목 추가</h2>
         <div className={styles.row}>
           <input
             type="text"
             className={styles.input}
             value={draftLabel}
-            placeholder={t("secretaryActivityItems.labelPlaceholder")}
-            aria-label={t("secretaryActivityItems.labelColumn")}
+            placeholder="예: 교우 가정 방문"
+            aria-label="항목 이름"
             onChange={(e) => setDraftLabel(e.target.value)}
           />
           <select
             className={styles.input}
             value={draftLine}
-            aria-label={t("secretaryActivityItems.lineColumn")}
+            aria-label="들어갈 줄"
             onChange={(e) => setDraftLine(e.target.value as ActivityLine)}
           >
             {LINES.map(({ value, label }) => (
@@ -100,20 +98,20 @@ export default function ActivityItemsPage() {
             ))}
           </select>
           <button type="button" className={styles.primaryButton} onClick={handleAdd}>
-            {t("secretaryActivityItems.add")}
+            추가
           </button>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryActivityItems.listTitle")}</h2>
+        <h2 className={styles.sectionTitle}>항목 목록</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>{t("secretaryActivityItems.labelColumn")}</th>
-                <th>{t("secretaryActivityItems.lineColumn")}</th>
-                <th>{t("secretaryActivityItems.visibleColumn")}</th>
+                <th>항목 이름</th>
+                <th>들어갈 줄</th>
+                <th>사용</th>
               </tr>
             </thead>
             <tbody>
@@ -124,7 +122,7 @@ export default function ActivityItemsPage() {
                       type="text"
                       className={styles.input}
                       value={item.label}
-                      aria-label={t("secretaryActivityItems.labelColumn")}
+                      aria-label="항목 이름"
                       onChange={(e) => patchItem(item.id, { label: e.target.value })}
                     />
                   </td>
@@ -132,7 +130,7 @@ export default function ActivityItemsPage() {
                     <select
                       className={styles.input}
                       value={item.line}
-                      aria-label={t("secretaryActivityItems.lineColumn")}
+                      aria-label="들어갈 줄"
                       onChange={(e) =>
                         patchItem(item.id, { line: e.target.value as ActivityLine })
                       }
@@ -151,7 +149,7 @@ export default function ActivityItemsPage() {
                       type="checkbox"
                       className={styles.checkbox}
                       checked={!item.hidden}
-                      aria-label={`${item.label} ${t("secretaryActivityItems.visibleColumn")}`}
+                      aria-label={`${item.label} ${"사용"}`}
                       onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
                     />
                   </td>
@@ -160,21 +158,21 @@ export default function ActivityItemsPage() {
             </tbody>
           </table>
         </div>
-        <p className={styles.hint}>{t("secretaryActivityItems.hiddenHint")}</p>
+        <p className={styles.hint}>사용을 끄면 새로 입력할 때 목록에 나오지 않습니다. 이미 입력된 기록은 그대로 남아 보고서에 계속 집계됩니다.</p>
       </section>
 
       <ConfirmDialog
         open={resetOpen}
-        title={t("secretaryActivityItems.restoreConfirmTitle")}
-        body={t("secretaryActivityItems.restoreConfirmBody")}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
+        title="기본 항목으로 되돌릴까요?"
+        body="직접 추가하거나 고친 항목이 모두 사라집니다. 이미 입력된 활동 기록은 남습니다."
+        confirmLabel="확인"
+        cancelLabel="취소"
         danger
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
           persist(createDefaultActivityItems());
           setResetOpen(false);
-          showToast(t("secretaryActivityItems.restored"));
+          showToast("기본 항목으로 되돌렸습니다.");
         }}
       />
     </PageShell>

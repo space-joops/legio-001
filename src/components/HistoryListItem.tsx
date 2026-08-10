@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { useTranslation } from "@/i18n/useTranslation";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { formatMeetingDateTime, formatSessionLabel } from "@/lib/reportUtils";
 import type { WeeklyReport } from "@/lib/types";
@@ -13,7 +12,6 @@ import styles from "./HistoryListItem.module.css";
  */
 
 export function HistoryListItem({ report }: { report: WeeklyReport }) {
-  const { t } = useTranslation();
 
   // Recorded numbers at a glance: without them "how much did I do last week?"
   // means opening every entry one by one.

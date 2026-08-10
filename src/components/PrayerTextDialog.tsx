@@ -4,7 +4,6 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 // 다국어 지원을 위한 훅을 가져옵니다. 텍스트를 번역할 때 사용됩니다.
-import { useTranslation } from "@/i18n/useTranslation";
 // 기도문 데이터 구조에 대한 타입 정의를 가져옵니다.
 import type { PrayerTextEntry } from "@/lib/prayerTexts";
 // CSS 모듈을 통해 컴포넌트 스코프의 스타일을 가져옵니다.
@@ -49,7 +48,6 @@ export function PrayerTextDialog({
   incrementCaption,
 }: PrayerTextDialogProps) {
   // 다국어 번역 함수 t를 추출합니다.
-  const { t } = useTranslation();
 
   // HTML <dialog> 엘리먼트에 직접 접근하기 위해 useRef를 사용합니다.
   // 이를 통해 네이티브 dialog API인 showModal()과 close()를 호출할 수 있습니다.
@@ -129,7 +127,7 @@ export function PrayerTextDialog({
                 <details className={styles.fullText}>
                   {/* <summary>는 <details> 태그의 클릭 가능한 제목 부분입니다. */}
                   <summary className={styles.fullTextToggle}>
-                    {t("prayerText.showFullText")} {/* "전체 텍스트 보기" 등으로 번역됨 */}
+                    {"기도문 전문 보기"} {/* "전체 텍스트 보기" 등으로 번역됨 */}
                   </summary>
                   {/* 클릭하면 이 fullText 영역이 펼쳐집니다. */}
                   {fullText}
@@ -149,19 +147,19 @@ export function PrayerTextDialog({
               className={styles.incrementButton}
               onClick={onIncrement}
               // 스크린 리더 등 접근성을 위한 라벨 (예: "주님의 기도 기록하려면 탭하세요")
-              aria-label={`${title} ${t("counters.tapToRecord")}`}
+              aria-label={`${title} ${"탭하여 기록"}`}
             >
               {/* 현재 카운트 표시 */}
               <span className={styles.incrementCount}>{count}</span>
               {/* 버튼 하단의 힌트 텍스트. incrementCaption이 전달되면 그것을 쓰고, 아니면 기본 번역 텍스트를 씁니다. */}
               <span className={styles.incrementHint}>
-                {incrementCaption ?? t("counters.tapToRecord")}
+                {incrementCaption ?? "탭하여 기록"}
               </span>
             </button>
 
             {/* 닫기 버튼 */}
             <button type="button" className={styles.closeButton} onClick={onClose}>
-              {t("common.close")} {/* "닫기" 등으로 번역됨 */}
+              {"닫기"} {/* "닫기" 등으로 번역됨 */}
             </button>
           </div>
         </div>

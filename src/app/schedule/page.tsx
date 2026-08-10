@@ -5,7 +5,6 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { useToast } from "@/components/ToastProvider";
 import { useSchedule } from "@/hooks/useSchedule";
-import { useTranslation } from "@/i18n/useTranslation";
 import { formatMeetingDateTime, toDateTimeLocalValue } from "@/lib/reportUtils";
 import styles from "./page.module.css";
 
@@ -40,7 +39,6 @@ function reminderLabel(minutes: number): string {
 type PermissionState = NotificationPermission | "unsupported";
 
 export default function SchedulePage() {
-  const { t } = useTranslation();
   const { ready, events, pastEvents, addEvent, removeEvent } = useSchedule();
   const { showToast } = useToast();
 
@@ -58,7 +56,7 @@ export default function SchedulePage() {
   }, []);
 
   if (!ready) {
-    return <PageShell title={t("schedule.title")}>{null}</PageShell>;
+    return <PageShell title="일정">{null}</PageShell>;
   }
 
   const handleAdd = (e: FormEvent) => {
@@ -68,7 +66,7 @@ export default function SchedulePage() {
     setTitle("");
     setDateTime(toDateTimeLocalValue(new Date()));
     // The new item lands below the fold on phones, so confirm out loud.
-    showToast(t("schedule.added"));
+    showToast("일정이 추가되었습니다.");
   };
 
   const handleRequestPermission = async () => {
@@ -77,30 +75,30 @@ export default function SchedulePage() {
   };
 
   return (
-    <PageShell title={t("schedule.title")}>
-      <p className={styles.hint}>{t("schedule.notificationHint")}</p>
+    <PageShell title="일정">
+      <p className={styles.hint}>알림은 이 앱을 열어두었을 때만 울립니다.</p>
       {permission === "default" && (
         <button type="button" className={styles.permissionButton} onClick={handleRequestPermission}>
-          {t("schedule.notificationPermissionButton")}
+          알림 켜기
         </button>
       )}
-      {permission === "denied" && <p className={styles.hint}>{t("schedule.notificationPermissionDenied")}</p>}
+      {permission === "denied" && <p className={styles.hint}>브라우저 설정에서 알림 권한이 차단되어 있습니다.</p>}
 
       <form className={styles.form} onSubmit={handleAdd}>
-        <h2 className={styles.formTitle}>{t("schedule.addTitle")}</h2>
+        <h2 className={styles.formTitle}>새 일정 등록</h2>
         <label className={styles.field}>
-          <span className={styles.label}>{t("schedule.titleLabel")}</span>
+          <span className={styles.label}>일정 이름</span>
           <input
             type="text"
             className={styles.input}
             value={title}
             required
-            placeholder={t("schedule.titlePlaceholder")}
+            placeholder="예: 정기 주회, 반상회"
             onChange={(e) => setTitle(e.target.value)}
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("schedule.dateTimeLabel")}</span>
+          <span className={styles.label}>일시</span>
           <input
             type="datetime-local"
             className={styles.input}
@@ -110,7 +108,7 @@ export default function SchedulePage() {
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("schedule.reminderLabel")}</span>
+          <span className={styles.label}>사전 알림</span>
           <select
             className={styles.select}
             value={reminderMinutesBefore}
@@ -124,12 +122,12 @@ export default function SchedulePage() {
           </select>
         </label>
         <button type="submit" className={styles.addButton}>
-          {t("schedule.add")}
+          추가하기
         </button>
       </form>
 
       {events.length === 0 ? (
-        <p className={styles.empty}>{t("schedule.empty")}</p>
+        <p className={styles.empty}>등록된 일정이 없습니다.</p>
       ) : (
         <ul className={styles.list}>
           {events.map((event) => (
@@ -148,7 +146,7 @@ export default function SchedulePage() {
                 className={styles.deleteButton}
                 onClick={() => setDeleteTarget(event.id)}
               >
-                {t("common.delete")}
+                삭제
               </button>
             </li>
           ))}
@@ -157,7 +155,7 @@ export default function SchedulePage() {
 
       {pastEvents.length > 0 && (
         <>
-          <h2 className={styles.pastTitle}>{t("schedule.pastTitle")}</h2>
+          <h2 className={styles.pastTitle}>지난 일정</h2>
           <ul className={`${styles.list} ${styles.pastList}`}>
             {pastEvents.map((event) => (
               <li key={event.id} className={styles.item}>
@@ -172,7 +170,7 @@ export default function SchedulePage() {
                   className={styles.deleteButton}
                   onClick={() => setDeleteTarget(event.id)}
                 >
-                  {t("common.delete")}
+                  삭제
                 </button>
               </li>
             ))}
@@ -182,10 +180,10 @@ export default function SchedulePage() {
 
       <ConfirmDialog
         open={deleteTarget !== null}
-        title={t("schedule.deleteConfirmTitle")}
-        body={t("schedule.deleteConfirmBody")}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
+        title="이 일정을 삭제할까요?"
+        body="삭제하면 되돌릴 수 없습니다."
+        confirmLabel="삭제"
+        cancelLabel="취소"
         danger
         onCancel={() => setDeleteTarget(null)}
         onConfirm={() => {

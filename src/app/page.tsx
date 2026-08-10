@@ -8,7 +8,6 @@ import { SubmitReportButton } from "@/components/SubmitReportButton";
 import { WeekSessionForm } from "@/components/WeekSessionForm";
 import { useCurrentReport } from "@/hooks/useCurrentReport";
 import { useHistory } from "@/hooks/useHistory";
-import { useTranslation } from "@/i18n/useTranslation";
 import {
   formatMeetingDateTime,
   formatSessionLabel,
@@ -56,7 +55,6 @@ function WeekHeader({
   onSave,
   onStartEditing,
 }: WeekHeaderProps) {
-  const { t } = useTranslation();
 
   if (editing) {
     return (
@@ -66,7 +64,7 @@ function WeekHeader({
         onSessionNumberChange={onSessionNumberChange}
         onMeetingDateTimeChange={onMeetingDateTimeChange}
         onSubmit={onSave}
-        submitLabel={t("common.save")}
+        submitLabel="저장"
       />
     );
   }
@@ -77,13 +75,12 @@ function WeekHeader({
       <span className={styles.weekSummaryDate}>
         {formatMeetingDateTime(report.meetingDateTime)}
       </span>
-      <span className={styles.weekSummaryEdit}>{t("week.editWeek")}</span>
+      <span className={styles.weekSummaryEdit}>회차 정보 수정</span>
     </button>
   );
 }
 
 export default function HomePage() {
-  const { t } = useTranslation();
   const router = useRouter();
   // [TS] `const { a, b } = 객체` 는 구조 분해다. 파이썬에는 없지만 딕셔너리에서
   //      키를 꺼내 같은 이름의 변수로 만드는 것과 같다.
@@ -148,7 +145,7 @@ export default function HomePage() {
   // 아직 localStorage 를 읽기 전이라 진행 중인 회차가 있는지 알 수 없다.
   // 빈 껍데기만 그려 두고, 준비되면 아래 화면 중 하나로 넘어간다.
   if (!ready) {
-    return <PageShell title={t("app.shortName")}>{null}</PageShell>;
+    return <PageShell title="레지오 활동보고">{null}</PageShell>;
   }
 
   const handleStart = () => {
@@ -174,15 +171,15 @@ export default function HomePage() {
   // ── 화면 1. 진행 중인 회차가 없을 때 ──────────────────────────────
   if (!report) {
     return (
-      <PageShell title={t("app.shortName")}>
-        <p className={styles.emptyNotice}>{t("week.noActiveWeek")}</p>
+      <PageShell title="레지오 활동보고">
+        <p className={styles.emptyNotice}>진행 중인 주가 없습니다. 새로운 주를 시작해 주세요.</p>
         <WeekSessionForm
           sessionNumber={sessionNumber}
           meetingDateTime={meetingDateTime}
           onSessionNumberChange={setSessionNumber}
           onMeetingDateTimeChange={setMeetingDateTime}
           onSubmit={handleStart}
-          submitLabel={t("week.startWeek")}
+          submitLabel="이번 주 시작하기"
         />
       </PageShell>
     );
@@ -204,7 +201,7 @@ export default function HomePage() {
   };
 
   return (
-    <PageShell title={t("app.shortName")}>
+    <PageShell title="레지오 활동보고">
       <WeekHeader
         report={report}
         editing={editing}
@@ -216,7 +213,7 @@ export default function HomePage() {
         onStartEditing={() => setEditing(true)}
       />
 
-      <h2 className={styles.sectionTitle}>{t("home.title")}</h2>
+      <h2 className={styles.sectionTitle}>이번 주 활동</h2>
       <CounterGrid
         counts={report.counts}
         onIncrement={handleIncrement}
@@ -227,12 +224,12 @@ export default function HomePage() {
       />
 
       <label className={styles.noteField}>
-        <span className={styles.sectionTitle}>{t("home.activityNoteLabel")}</span>
+        <span className={styles.sectionTitle}>활동 사항</span>
         <textarea
           className={styles.noteInput}
           rows={5}
           value={noteDraft}
-          placeholder={t("home.activityNotePlaceholder")}
+          placeholder="방문, 특이사항 등 이번 주 활동을 자유롭게 적어 주세요."
           // 타이핑하는 동안은 화면 state 만 바꾸고, 입력칸을 벗어날 때(onBlur)
           // 한 번만 저장한다. 글자 하나마다 localStorage 에 쓰지 않기 위해서다.
           onChange={(e) => setNoteDraft(e.target.value)}

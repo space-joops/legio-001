@@ -5,7 +5,6 @@ import { useState } from "react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { useRoster } from "@/hooks/useRoster";
-import { useTranslation } from "@/i18n/useTranslation";
 import { OFFICER_ROLE_LABEL, OFFICER_ROLES, WEEKDAY_LABELS } from "@/lib/monthlyReportUtils";
 import type { MemberCounts } from "@/lib/types";
 import styles from "./page.module.css";
@@ -41,7 +40,6 @@ const EMPTY_DRAFT: Draft = {
 };
 
 export default function SecretaryRosterPage() {
-  const { t } = useTranslation();
   const {
     ready,
     roster,
@@ -59,7 +57,7 @@ export default function SecretaryRosterPage() {
   } | null>(null);
 
   if (!ready || !roster) {
-    return <PageShell title={t("secretaryRoster.title")} wide>{null}</PageShell>;
+    return <PageShell title="현재 명단 관리" wide>{null}</PageShell>;
   }
 
   const handleAddMember = (category: keyof MemberCounts) => {
@@ -70,31 +68,31 @@ export default function SecretaryRosterPage() {
   };
 
   return (
-    <PageShell title={t("secretaryRoster.title")} wide>
+    <PageShell title="현재 명단 관리" wide>
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryRoster.headerSection")}</h2>
+        <h2 className={styles.sectionTitle}>쁘레시디움 정보</h2>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryRoster.praesidiumNameLabel")}</span>
+          <span className={styles.label}>쁘레시디움 이름</span>
           <input
             type="text"
             className={styles.input}
             value={roster.praesidiumName}
-            placeholder={t("secretaryRoster.praesidiumNamePlaceholder")}
+            placeholder="예: 천상은총의 어머니"
             onChange={(e) => updateHeader({ praesidiumName: e.target.value })}
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryRoster.councilAffiliationLabel")}</span>
+          <span className={styles.label}>소속 평의회</span>
           <input
             type="text"
             className={styles.input}
             value={roster.councilAffiliation}
-            placeholder={t("secretaryRoster.councilAffiliationPlaceholder")}
+            placeholder="예: 하늘의 문 Cu."
             onChange={(e) => updateHeader({ councilAffiliation: e.target.value })}
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryRoster.spiritualDirectorNameLabel")}</span>
+          <span className={styles.label}>영적지도자 성명</span>
           <input
             type="text"
             className={styles.input}
@@ -104,7 +102,7 @@ export default function SecretaryRosterPage() {
         </label>
         <label className={styles.field}>
           <span className={styles.label}>
-            {t("secretaryRoster.spiritualDirectorBaptismalNameLabel")}
+            영적지도자 세례명
           </span>
           <input
             type="text"
@@ -114,13 +112,13 @@ export default function SecretaryRosterPage() {
           />
         </label>
         <label className={styles.field}>
-          <span className={styles.label}>{t("secretaryRoster.regularMeetingWeekdayLabel")}</span>
+          <span className={styles.label}>정기 회합 요일</span>
           <select
             className={styles.input}
             value={roster.regularMeetingWeekday}
             onChange={(e) => updateRegularMeetingWeekday(Number(e.target.value))}
           >
-            <option value={-1}>{t("secretaryRoster.weekdayNotSet")}</option>
+            <option value={-1}>미설정</option>
             {WEEKDAY_LABELS.map((label, index) => (
               <option key={label} value={index}>
                 {label}
@@ -131,7 +129,7 @@ export default function SecretaryRosterPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>{t("secretaryRoster.officersSection")}</h2>
+        <h2 className={styles.sectionTitle}>간부 명단</h2>
         {OFFICER_ROLES.map((role) => {
           const officer = roster.officers.find((o) => o.role === role);
           if (!officer) return null;
@@ -141,7 +139,7 @@ export default function SecretaryRosterPage() {
                 {OFFICER_ROLE_LABEL[role]}
               </span>
               <label className={styles.field}>
-                <span className={styles.label}>{t("secretaryRoster.nameLabel")}</span>
+                <span className={styles.label}>성명</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -150,7 +148,7 @@ export default function SecretaryRosterPage() {
                 />
               </label>
               <label className={styles.field}>
-                <span className={styles.label}>{t("secretaryRoster.baptismalNameLabel")}</span>
+                <span className={styles.label}>세례명</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -159,7 +157,7 @@ export default function SecretaryRosterPage() {
                 />
               </label>
               <label className={styles.field}>
-                <span className={styles.label}>{t("secretaryRoster.appointedDateLabel")}</span>
+                <span className={styles.label}>임명일</span>
                 <input
                   type="date"
                   className={styles.input}
@@ -168,7 +166,7 @@ export default function SecretaryRosterPage() {
                 />
               </label>
               <label className={styles.field}>
-                <span className={styles.label}>{t("secretaryRoster.noteLabel")}</span>
+                <span className={styles.label}>참고사항</span>
                 <input
                   type="text"
                   className={styles.input}
@@ -181,7 +179,7 @@ export default function SecretaryRosterPage() {
         })}
       </section>
 
-      <h2 className={styles.sectionTitle}>{t("secretaryRoster.memberCountsSection")}</h2>
+      <h2 className={styles.sectionTitle}>현재 단원 수</h2>
       <div className={styles.memberGrid}>
         {MEMBER_COUNT_FIELDS.map(({ key, label }) => (
           <section key={key} className={styles.section}>
@@ -189,11 +187,11 @@ export default function SecretaryRosterPage() {
               {label}
               <span className={styles.memberCount}>
                 {roster.memberCounts[key]}
-                {t("secretaryRoster.memberCountUnit")}
+                {"명"}
               </span>
             </h3>
             {roster.memberRoster[key].length === 0 ? (
-              <p className={styles.memberListEmpty}>{t("secretaryRoster.memberListEmpty")}</p>
+              <p className={styles.memberListEmpty}>등록된 이름이 없습니다.</p>
             ) : (
               <ul className={styles.memberList}>
                 {roster.memberRoster[key].map((entry) => (
@@ -205,7 +203,7 @@ export default function SecretaryRosterPage() {
                       type="text"
                       className={styles.memberNameInput}
                       value={entry.name}
-                      aria-label={t("secretaryRoster.nameLabel")}
+                      aria-label="성명"
                       onChange={(e) =>
                         updateMemberEntry(key, entry.id, { name: e.target.value })
                       }
@@ -214,7 +212,7 @@ export default function SecretaryRosterPage() {
                       type="text"
                       className={styles.memberNameInput}
                       value={entry.baptismalName}
-                      aria-label={t("secretaryRoster.baptismalNameLabel")}
+                      aria-label="세례명"
                       onChange={(e) =>
                         updateMemberEntry(key, entry.id, { baptismalName: e.target.value })
                       }
@@ -224,7 +222,7 @@ export default function SecretaryRosterPage() {
                       className={styles.removeButton}
                       onClick={() => setRemoveTarget({ category: key, id: entry.id })}
                     >
-                      {t("secretaryRoster.removeMember")}
+                      삭제
                     </button>
                   </li>
                 ))}
@@ -234,8 +232,8 @@ export default function SecretaryRosterPage() {
               <input
                 type="text"
                 className={styles.input}
-                aria-label={t("secretaryRoster.nameLabel")}
-                placeholder={t("secretaryRoster.memberNamePlaceholder")}
+                aria-label="성명"
+                placeholder="이름"
                 value={draft[key].name}
                 onChange={(e) =>
                   setDraft((prev) => ({ ...prev, [key]: { ...prev[key], name: e.target.value } }))
@@ -244,8 +242,8 @@ export default function SecretaryRosterPage() {
               <input
                 type="text"
                 className={styles.input}
-                aria-label={t("secretaryRoster.baptismalNameLabel")}
-                placeholder={t("secretaryRoster.memberBaptismalNamePlaceholder")}
+                aria-label="세례명"
+                placeholder="세례명"
                 value={draft[key].baptismalName}
                 onChange={(e) =>
                   setDraft((prev) => ({
@@ -259,25 +257,25 @@ export default function SecretaryRosterPage() {
                 className={styles.addButton}
                 onClick={() => handleAddMember(key)}
               >
-                {t("secretaryRoster.addMemberButton")}
+                이름 추가
               </button>
             </div>
           </section>
         ))}
       </div>
 
-      <p className={styles.autoSaveNotice}>{t("common.autoSaveNotice")}</p>
+      <p className={styles.autoSaveNotice}>모든 변경 사항은 자동으로 저장됩니다.</p>
 
       <Link href="/secretary" className={styles.backLink}>
-        {t("secretaryRoster.backToSecretary")}
+        월례보고서 화면으로
       </Link>
 
       <ConfirmDialog
         open={removeTarget !== null}
-        title={t("secretaryRoster.removeMemberConfirmTitle")}
-        body={t("secretaryRoster.removeMemberConfirmBody")}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
+        title="이 이름을 삭제할까요?"
+        body="삭제하면 되돌릴 수 없습니다."
+        confirmLabel="삭제"
+        cancelLabel="취소"
         danger
         onCancel={() => setRemoveTarget(null)}
         onConfirm={() => {
