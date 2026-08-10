@@ -17,13 +17,30 @@ import styles from "./page.module.css";
  * 즉 알림은 앱을 한 번이라도 열어야 뜬다.
  */
 
-/** 알림 시점 선택지(분 단위). 1440 = 하루 전. */
-const REMINDER_OPTIONS = [10, 30, 60, 180, 1440] as const;
+/**
+ * 알림 시점 선택지. 분 단위 값과 화면에 보일 이름을 한 쌍으로 둔다.
+ * 선택지를 늘리려면 여기 한 줄만 추가하면 된다.
+ */
+const REMINDER_OPTIONS = [
+  { minutes: 10, label: "10분 전" },
+  { minutes: 30, label: "30분 전" },
+  { minutes: 60, label: "1시간 전" },
+  { minutes: 180, label: "3시간 전" },
+  { minutes: 1440, label: "1일 전" },
+] as const;
+
+/**
+ * 저장된 분값을 이름으로 바꾼다. 선택지에 없는 값(예전 버전이나 가져온 데이터)이
+ * 들어와도 빈칸이 되지 않도록 "N분 전"으로 만들어 준다.
+ */
+function reminderLabel(minutes: number): string {
+  return REMINDER_OPTIONS.find((option) => option.minutes === minutes)?.label ?? `${minutes}분 전`;
+}
 
 type PermissionState = NotificationPermission | "unsupported";
 
 export default function SchedulePage() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { ready, events, pastEvents, addEvent, removeEvent } = useSchedule();
   const { showToast } = useToast();
 
@@ -99,9 +116,9 @@ export default function SchedulePage() {
             value={reminderMinutesBefore}
             onChange={(e) => setReminderMinutesBefore(Number(e.target.value))}
           >
-            {REMINDER_OPTIONS.map((minutes) => (
+            {REMINDER_OPTIONS.map(({ minutes, label }) => (
               <option key={minutes} value={minutes}>
-                {t(`schedule.reminder${minutes}`)}
+                {label}
               </option>
             ))}
           </select>
@@ -120,10 +137,10 @@ export default function SchedulePage() {
               <div>
                 <p className={styles.itemTitle}>{event.title}</p>
                 <p className={styles.itemDate}>
-                  {formatMeetingDateTime(event.dateTime, language)}
+                  {formatMeetingDateTime(event.dateTime)}
                 </p>
                 <p className={styles.itemReminder}>
-                  {t(`schedule.reminder${event.reminderMinutesBefore}`)}
+                  {reminderLabel(event.reminderMinutesBefore)}
                 </p>
               </div>
               <button
@@ -147,7 +164,7 @@ export default function SchedulePage() {
                 <div>
                   <p className={styles.itemTitle}>{event.title}</p>
                   <p className={styles.itemDate}>
-                    {formatMeetingDateTime(event.dateTime, language)}
+                    {formatMeetingDateTime(event.dateTime)}
                   </p>
                 </div>
                 <button

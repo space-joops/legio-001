@@ -29,7 +29,7 @@ export function ReportSummary({
   draftNote,
   onNoteChange,
 }: ReportSummaryProps) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const counts = editable && draftCounts ? draftCounts : report.counts;
   const note = editable ? draftNote ?? "" : report.activityNote ?? "";
 
@@ -37,12 +37,12 @@ export function ReportSummary({
     <div className={styles.card}>
       <div className={styles.meta}>
         <div className={styles.sessionBadge}>
-          {formatSessionLabel(report.sessionNumber, language)}
+          {formatSessionLabel(report.sessionNumber)}
         </div>
         <div className={styles.metaText}>
           <p>
             {t("report.meetingLabel")}:{" "}
-            {formatMeetingDateTime(report.meetingDateTime, language)}
+            {formatMeetingDateTime(report.meetingDateTime)}
           </p>
           <p>
             {t("report.memberLabel")}: {report.memberName || "-"}
@@ -52,7 +52,7 @@ export function ReportSummary({
       <ul className={styles.list}>
         {PRAYER_ITEMS.map((item) => (
           <li key={item.key} className={styles.listItem}>
-            <span>{t(item.labelKey)}</span>
+            <span>{item.label}</span>
             {editable ? (
               <input
                 type="number"
@@ -60,7 +60,7 @@ export function ReportSummary({
                 min={0}
                 className={styles.countInput}
                 value={counts[item.key]}
-                aria-label={t(item.labelKey)}
+                aria-label={item.label}
                 onFocus={selectOnFocus}
                 onChange={(e) => {
                   const parsed = Number.parseInt(e.target.value, 10);
@@ -70,7 +70,7 @@ export function ReportSummary({
             ) : (
               <span className={styles.count}>
                 {counts[item.key]}
-                {item.unitLabelKey ? t(item.unitLabelKey) : ""}
+                {item.unitLabel ?? ""}
               </span>
             )}
           </li>

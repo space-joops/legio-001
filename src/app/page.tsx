@@ -56,7 +56,7 @@ function WeekHeader({
   onSave,
   onStartEditing,
 }: WeekHeaderProps) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
 
   if (editing) {
     return (
@@ -73,9 +73,9 @@ function WeekHeader({
 
   return (
     <button type="button" className={styles.weekSummary} onClick={onStartEditing}>
-      <span>{formatSessionLabel(report.sessionNumber, language)}</span>
+      <span>{formatSessionLabel(report.sessionNumber)}</span>
       <span className={styles.weekSummaryDate}>
-        {formatMeetingDateTime(report.meetingDateTime, language)}
+        {formatMeetingDateTime(report.meetingDateTime)}
       </span>
       <span className={styles.weekSummaryEdit}>{t("week.editWeek")}</span>
     </button>

@@ -25,8 +25,9 @@ import {
 } from "@/lib/reportCapture";
 import {
   MAX_ATTENDANCE_SESSIONS,
+  OFFICER_ROLE_LABEL,
   OFFICER_ROLES,
-  WEEKDAY_LABEL_KEYS,
+  WEEKDAY_LABELS,
   applySubmissionsToPrayerRoll,
   computeAttendanceSummary,
   computeMassCommunion,
@@ -89,28 +90,28 @@ import styles from "./page.module.css";
  *
  * 계산 로직 자체는 여기 없고 `lib/monthlyReportUtils.ts` 와 `lib/treasury.ts` 에 있다.
  */
-const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
-  { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
-  { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },
-  { key: "praetorium", labelKey: "secretaryRoster.praetoriumLabel" },
-  { key: "auxiliaryMale", labelKey: "secretaryRoster.auxiliaryMaleLabel" },
-  { key: "auxiliaryFemale", labelKey: "secretaryRoster.auxiliaryFemaleLabel" },
-  { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
+const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; label: string }[] = [
+  { key: "activeMale", label: "행동단원(남)" },
+  { key: "activeFemale", label: "행동단원(여)" },
+  { key: "praetorium", label: "쁘레또리움 단원" },
+  { key: "auxiliaryMale", label: "협조단원(남)" },
+  { key: "auxiliaryFemale", label: "협조단원(여)" },
+  { key: "adjutorium", label: "아듀또리움 단원" },
 ];
 
-const EVANGELIZATION_FIELDS: { key: keyof EvangelizationTallies; labelKey: string }[] = [
-  { key: "baptism", labelKey: "secretaryReport.evangelizationBaptism" },
-  { key: "returnToFaith", labelKey: "secretaryReport.evangelizationReturn" },
-  { key: "activeMember", labelKey: "secretaryReport.evangelizationActiveMember" },
-  { key: "praetorium", labelKey: "secretaryReport.evangelizationPraetorium" },
+const EVANGELIZATION_FIELDS: { key: keyof EvangelizationTallies; label: string }[] = [
+  { key: "baptism", label: "영세·외짝" },
+  { key: "returnToFaith", label: "냉담회두" },
+  { key: "activeMember", label: "행동단원" },
+  { key: "praetorium", label: "쁘레또리움" },
 ];
 
 const MEMBER_COUNT_BUCKETS = [
-  { key: "memberCountsPrevMonth", labelKey: "secretaryReport.prevMonthLabel" },
-  { key: "memberCountsThisMonth", labelKey: "secretaryReport.thisMonthLabel" },
-  { key: "memberCountsIncrease", labelKey: "secretaryReport.increaseLabel" },
-  { key: "memberCountsDecrease", labelKey: "secretaryReport.decreaseLabel" },
-] as const satisfies readonly { key: keyof MonthlyReport; labelKey: string }[];
+  { key: "memberCountsPrevMonth", label: "전월" },
+  { key: "memberCountsThisMonth", label: "금월" },
+  { key: "memberCountsIncrease", label: "증가" },
+  { key: "memberCountsDecrease", label: "감소" },
+] as const satisfies readonly { key: keyof MonthlyReport; label: string }[];
 
 /** "민경국(마르코)" — one column instead of two, read-only; names are edited
     in 명단 관리 and reach the report through syncReportWithRoster. */
@@ -194,7 +195,7 @@ function SessionTabBar({
 }
 
 function ReportPageContent() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
@@ -381,10 +382,7 @@ function ReportPageContent() {
       .catch(() => void fallbackToFile());
   };
 
-  const activityLines = buildActivityLines(report, activityItems, {
-    massCommunion: t("secretaryReport.massCommunionLabel"),
-    prayer: Object.fromEntries(PRAYER_ITEMS.map((i) => [i.key, t(i.labelKey)])),
-  });
+  const activityLines = buildActivityLines(report, activityItems);
   const sundayBasis = computeSundayMassBasis(
     report.yearMonth,
     report.meetingWeekday,
@@ -581,8 +579,8 @@ function ReportPageContent() {
             {t("secretaryReport.print")}
           </button>
           <ShareButton
-            title={`${t("app.shortName")} ${formatYearMonthLabel(report.yearMonth, language)}`}
-            text={formatMonthlyShareText(report, language)}
+            title={`${t("app.shortName")} ${formatYearMonthLabel(report.yearMonth)}`}
+            text={formatMonthlyShareText(report)}
           />
         </div>
         <div className={styles.screenPreview}>
@@ -647,9 +645,9 @@ function ReportPageContent() {
             onChange={(e) => patch({ meetingWeekday: Number(e.target.value) })}
           >
             <option value={-1}>{t("secretaryRoster.weekdayNotSet")}</option>
-            {WEEKDAY_LABEL_KEYS.map((key, index) => (
-              <option key={key} value={index}>
-                {t(key)}
+            {WEEKDAY_LABELS.map((label, index) => (
+              <option key={label} value={index}>
+                {label}
               </option>
             ))}
           </select>
@@ -712,7 +710,7 @@ function ReportPageContent() {
               <tr>
                 <th>{t("secretaryReport.personColumnLabel")}</th>
                 {PRAYER_ITEMS.map((item) => (
-                  <th key={item.key}>{t(`secretaryReport.prayerAbbrev.${item.key}`)}</th>
+                  <th key={item.key}>{item.abbrev}</th>
                 ))}
                 <th>{t("secretaryReport.activityColumn")}</th>
                 <th>{t("secretaryReport.attendance")}</th>
@@ -736,7 +734,7 @@ function ReportPageContent() {
                           className={styles.prayerRollInput}
                           value={counts[item.key] ?? 0}
                           onFocus={selectOnFocus}
-                          aria-label={`${person.name} ${t(item.labelKey)}`}
+                          aria-label={`${person.name} ${item.label}`}
                           onChange={(e) =>
                             patchActivityCell(
                               record.personId,
@@ -802,7 +800,7 @@ function ReportPageContent() {
           if (!officer) return null;
           return (
             <div key={role} className={styles.officerRow}>
-              <span className={styles.officerRoleLabel}>{t(`secretaryRoster.roleLabel.${role}`)}</span>
+              <span className={styles.officerRoleLabel}>{OFFICER_ROLE_LABEL[role]}</span>
               <div className={styles.row}>
                 <label className={styles.field}>
                   <span className={styles.label}>{t("secretaryRoster.nameLabel")}</span>
@@ -832,13 +830,13 @@ function ReportPageContent() {
         <summary className={styles.sectionSummary}>
           <h2 className={styles.sectionTitle}>{t("secretaryReport.memberCountsSection")}</h2>
         </summary>
-        {MEMBER_COUNT_FIELDS.map(({ key, labelKey }) => (
+        {MEMBER_COUNT_FIELDS.map(({ key, label }) => (
           <div key={key} className={styles.memberCountRow}>
-            <span className={styles.label}>{t(labelKey)}</span>
+            <span className={styles.label}>{label}</span>
             <div className={styles.row}>
               {MEMBER_COUNT_BUCKETS.map((bucket) => (
                 <label key={bucket.key} className={styles.field}>
-                  <span className={styles.smallLabel}>{t(bucket.labelKey)}</span>
+                  <span className={styles.smallLabel}>{bucket.label}</span>
                   <input
                     type="number"
                     inputMode="numeric"
@@ -1024,7 +1022,7 @@ function ReportPageContent() {
         <div className={styles.row}>
           {PRAYER_ITEMS.map((item) => (
             <p key={item.key} className={styles.attendanceSummary}>
-              {t(item.labelKey)} {report.prayerCounts[item.key]}
+              {item.label} {report.prayerCounts[item.key]}
             </p>
           ))}
         </div>
@@ -1106,14 +1104,14 @@ function ReportPageContent() {
         </label>
         <output className={styles.autoLine}>{activityLines.praesidium}</output>
         <h3 className={styles.sectionTitle}>{t("secretaryReport.evangelizationSection")}</h3>
-        {EVANGELIZATION_FIELDS.map(({ key, labelKey }) => (
+        {EVANGELIZATION_FIELDS.map(({ key, label }) => (
           <div key={key} className={styles.memberCountRow}>
-            <span className={styles.label}>{t(labelKey)}</span>
+            <span className={styles.label}>{label}</span>
             <div className={styles.row}>
               {(["result", "target"] as const).map((slot) => (
                 <label key={slot} className={styles.field}>
                   <span className={styles.smallLabel}>
-                    {t(`secretaryReport.evangelization${slot === "result" ? "Result" : "Target"}`)}
+                    {slot === "result" ? "실적" : "목표"}
                   </span>
                   <input
                     type="number"

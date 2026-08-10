@@ -54,7 +54,7 @@ function vibrate(pattern: number | number[]) {
 }
 
 export default function RosaryPage() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
 
   /** 오늘의 신비. 처음엔 null — 아래 useEffect 가 브라우저에서 정한다. */
   const [mysteryId, setMysteryId] = useState<MysteryId | null>(null);
@@ -78,13 +78,9 @@ export default function RosaryPage() {
   /** 지금 단에서 채운 알 수. 완주 상태에서는 10알이 다 찬 채로 보여 준다. */
   const beadInDecade = done ? HAIL_MARYS_PER_DECADE : beads % HAIL_MARYS_PER_DECADE;
 
-  const mystery = useMemo(
-    () => (mysteryId ? getMysterySection(mysteryId, language) : null),
-    [mysteryId, language]
-  );
+  const mystery = useMemo(() => (mysteryId ? getMysterySection(mysteryId) : null), [mysteryId]);
   const imageSrc = mysteryId ? `/images/rosary/${mysteryId}-${decadeIndex + 1}.jpeg` : "";
-  const meditation =
-    language === "ko" && mysteryId ? (MYSTERY_MEDITATIONS[mysteryId]?.[decadeIndex + 1] ?? []) : [];
+  const meditation = mysteryId ? (MYSTERY_MEDITATIONS[mysteryId]?.[decadeIndex + 1] ?? []) : [];
 
   const handleTap = () => {
     // 완주 상태에서 한 번 더 누르면 새 바퀴를 시작한다.

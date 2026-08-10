@@ -11,11 +11,13 @@ import type { PrayerCounts, PrayerItemKey } from "./types";
 /** 카운터 한 종류의 설정. */
 export interface PrayerItemConfig {
   key: PrayerItemKey;
-  /** 화면에 쓸 번역 키. 실제 문구는 `t(labelKey)` 로 꺼낸다. */
-  labelKey: string;
+  /** 화면에 그대로 보이는 이름. */
+  label: string;
+  /** 월례 보고서의 좁은 표 머리에 쓰는 줄임말. */
+  abbrev: string;
   icon: "mass" | "priest" | "chain" | "rosary" | "aspiration";
   /** 이름 옆과 공유 텍스트에 붙는 단위(묵주기도만 "단"을 갖는다). */
-  unitLabelKey?: string;
+  unitLabel?: string;
   /**
    * 탭 한 번이 숫자를 1 올리는 대신, 이 개수만큼 구슬을 채우고 나서야 숫자가
    * 움직인다. 묵주기도만 해당 — 묵주기도는 5단을 한 묶음으로 바치기 때문이다.
@@ -28,17 +30,18 @@ export const ROSARY_SET_SIZE = 5;
 
 /** 홈 화면에 위에서부터 이 순서대로 카운터가 그려진다. */
 export const PRAYER_ITEMS: PrayerItemConfig[] = [
-  { key: "weekdayMass", labelKey: "counters.weekdayMass", icon: "mass" },
-  { key: "priestPrayer", labelKey: "counters.priestPrayer", icon: "priest" },
-  { key: "chainPrayer", labelKey: "counters.chainPrayer", icon: "chain" },
+  { key: "weekdayMass", label: "평일미사참례", abbrev: "미", icon: "mass" },
+  { key: "priestPrayer", label: "사제를 위한 기도", abbrev: "사", icon: "priest" },
+  { key: "chainPrayer", label: "주모경", abbrev: "주", icon: "chain" },
   {
     key: "rosaryDecades",
-    labelKey: "counters.rosaryDecades",
+    label: "묵주기도",
+    abbrev: "묵",
     icon: "rosary",
-    unitLabelKey: "counters.unitDecade",
+    unitLabel: "단",
     setSize: ROSARY_SET_SIZE,
   },
-  { key: "aspirations", labelKey: "counters.aspirations", icon: "aspiration" },
+  { key: "aspirations", label: "화살기도", abbrev: "화", icon: "aspiration" },
 ];
 
 /**

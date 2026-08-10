@@ -24,7 +24,7 @@ function currentYearMonth(): string {
 }
 
 export default function SecretaryPage() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const router = useRouter();
   const { ready: reportsReady, reports, createReport, removeReport } = useMonthlyReports();
@@ -109,7 +109,7 @@ export default function SecretaryPage() {
             {reports.map((report) => (
               <li key={report.id} className={styles.item}>
                 <Link href={`/secretary/report?id=${report.id}`} className={styles.itemLink}>
-                  {formatYearMonthLabel(report.yearMonth, language)}
+                  {formatYearMonthLabel(report.yearMonth)}
                 </Link>
                 <button
                   type="button"

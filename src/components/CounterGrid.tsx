@@ -57,15 +57,15 @@ export function CounterGrid({
   rosarySetProgress,
   onRosaryRecordSet,
 }: CounterGridProps) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   // 지금 기도문 창이 열려 있는 카운터. null 이면 창이 닫힌 상태다.
   const [viewingKey, setViewingKey] = useState<PrayerItemKey | null>(null);
 
   const viewingItem = viewingKey ? PRAYER_ITEMS.find((item) => item.key === viewingKey) : null;
-  // [TS] `PRAYER_TEXTS[viewingKey]?.[language]` — 그 카운터에 기도문이 없으면
-  //      `?.` 가 거기서 멈추고 undefined 를 준다. 없는 값을 한 겹 더 파고들다
-  //      터지는 걸 막는 장치다. → docs/typescript-for-python.md#5-널-다루기
-  const viewingEntry = viewingKey ? PRAYER_TEXTS[viewingKey]?.[language] ?? null : null;
+  // [TS] `PRAYER_TEXTS[viewingKey] ?? null` — 그 카운터에 기도문이 없으면
+  //      undefined 가 나오므로 `??` 로 null 을 대신 넣는다.
+  //      → docs/typescript-for-python.md#5-널-다루기
+  const viewingEntry = viewingKey ? (PRAYER_TEXTS[viewingKey] ?? null) : null;
 
   // 묵주기도 창에만 5단 안내와 진행 표시가 따로 붙는다. JSX 안에 조건을 끼워
   // 넣으면 괄호가 겹치므로, 값으로 먼저 계산해 두고 아래에서는 넘기기만 한다.
@@ -90,8 +90,8 @@ export function CounterGrid({
         return (
           <CounterButton
             key={item.key}
-            label={t(item.labelKey)}
-            unitLabel={item.unitLabelKey ? t(item.unitLabelKey) : undefined}
+            label={item.label}
+            unitLabel={item.unitLabel}
             icon={<Icon />}
             count={counts[item.key]}
             onIncrement={() => onIncrement(item.key)}
@@ -107,7 +107,7 @@ export function CounterGrid({
       {/* 기도문 창은 카운터마다 하나씩 두지 않고 전체에 하나만 둔다.
           어느 카운터를 눌렀는지는 viewingKey 로 구분한다. */}
       <PrayerTextDialog
-        title={viewingItem ? t(viewingItem.labelKey) : ""}
+        title={viewingItem?.label ?? ""}
         entry={viewingEntry}
         count={viewingKey ? counts[viewingKey] : 0}
         onIncrement={() => viewingKey && onIncrement(viewingKey)}

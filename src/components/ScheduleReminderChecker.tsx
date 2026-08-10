@@ -34,7 +34,7 @@ function notify(title: string, body: string, showToast: (message: string) => voi
 export function ScheduleReminderChecker() {
   const { ready, events, markNotified } = useSchedule();
   const { showToast } = useToast();
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!ready) return;
@@ -46,7 +46,7 @@ export function ScheduleReminderChecker() {
         const eventTime = new Date(event.dateTime).getTime();
         const reminderTime = eventTime - event.reminderMinutesBefore * 60000;
         if (now >= reminderTime && now < eventTime) {
-          const body = `${event.title} · ${formatMeetingDateTime(event.dateTime, language)}`;
+          const body = `${event.title} · ${formatMeetingDateTime(event.dateTime)}`;
           notify(t("schedule.notifyTitle"), body, showToast);
           markNotified(event.id);
         }
@@ -56,7 +56,7 @@ export function ScheduleReminderChecker() {
     checkReminders();
     const interval = setInterval(checkReminders, CHECK_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [ready, events, markNotified, language, t, showToast]);
+  }, [ready, events, markNotified, t, showToast]);
 
   return null;
 }

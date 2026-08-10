@@ -6,7 +6,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { useRoster } from "@/hooks/useRoster";
 import { useTranslation } from "@/i18n/useTranslation";
-import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS } from "@/lib/monthlyReportUtils";
+import { OFFICER_ROLE_LABEL, OFFICER_ROLES, WEEKDAY_LABELS } from "@/lib/monthlyReportUtils";
 import type { MemberCounts } from "@/lib/types";
 import styles from "./page.module.css";
 
@@ -20,13 +20,13 @@ import styles from "./page.module.css";
  * 보고서는 만들 때 명단을 통째로 복사해 가기 때문이다(그래야 지난달 보고서가
  * 나중에 바뀌지 않는다).
  */
-const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; labelKey: string }[] = [
-  { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
-  { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },
-  { key: "praetorium", labelKey: "secretaryRoster.praetoriumLabel" },
-  { key: "auxiliaryMale", labelKey: "secretaryRoster.auxiliaryMaleLabel" },
-  { key: "auxiliaryFemale", labelKey: "secretaryRoster.auxiliaryFemaleLabel" },
-  { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
+const MEMBER_COUNT_FIELDS: { key: keyof MemberCounts; label: string }[] = [
+  { key: "activeMale", label: "행동단원(남)" },
+  { key: "activeFemale", label: "행동단원(여)" },
+  { key: "praetorium", label: "쁘레또리움 단원" },
+  { key: "auxiliaryMale", label: "협조단원(남)" },
+  { key: "auxiliaryFemale", label: "협조단원(여)" },
+  { key: "adjutorium", label: "아듀또리움 단원" },
 ];
 
 type Draft = Record<keyof MemberCounts, { name: string; baptismalName: string }>;
@@ -121,9 +121,9 @@ export default function SecretaryRosterPage() {
             onChange={(e) => updateRegularMeetingWeekday(Number(e.target.value))}
           >
             <option value={-1}>{t("secretaryRoster.weekdayNotSet")}</option>
-            {WEEKDAY_LABEL_KEYS.map((key, index) => (
-              <option key={key} value={index}>
-                {t(key)}
+            {WEEKDAY_LABELS.map((label, index) => (
+              <option key={label} value={index}>
+                {label}
               </option>
             ))}
           </select>
@@ -138,7 +138,7 @@ export default function SecretaryRosterPage() {
           return (
             <div key={role} className={styles.officerRow}>
               <span className={styles.officerRoleLabel}>
-                {t(`secretaryRoster.roleLabel.${role}`)}
+                {OFFICER_ROLE_LABEL[role]}
               </span>
               <label className={styles.field}>
                 <span className={styles.label}>{t("secretaryRoster.nameLabel")}</span>
@@ -183,10 +183,10 @@ export default function SecretaryRosterPage() {
 
       <h2 className={styles.sectionTitle}>{t("secretaryRoster.memberCountsSection")}</h2>
       <div className={styles.memberGrid}>
-        {MEMBER_COUNT_FIELDS.map(({ key, labelKey }) => (
+        {MEMBER_COUNT_FIELDS.map(({ key, label }) => (
           <section key={key} className={styles.section}>
             <h3 className={styles.memberCategoryTitle}>
-              {t(labelKey)}
+              {label}
               <span className={styles.memberCount}>
                 {roster.memberCounts[key]}
                 {t("secretaryRoster.memberCountUnit")}

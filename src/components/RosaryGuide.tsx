@@ -51,7 +51,7 @@ interface RosaryGuideProps {
 }
 
 export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
 
   /** 오늘의 신비. 처음엔 null — 아래 useEffect 가 브라우저에서 정한다. */
   const [mysteryId, setMysteryId] = useState<MysteryId | null>(null);
@@ -83,24 +83,8 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
     setMysteryId(getMysteryIdForDate(new Date()));
   }, []);
 
-  const steps = useMemo(
-    () =>
-      mysteryId
-        ? buildRosarySteps(mysteryId, language, {
-            creed: t("rosary.creed"),
-            ourFather: t("rosary.ourFather"),
-            hailMary: t("rosary.hailMary"),
-            gloryBe: t("rosary.gloryBe"),
-            salvation: t("rosary.salvation"),
-            closing: t("rosary.closing"),
-          })
-        : [],
-    // 의존성에 `t` 를 넣지 않는 게 핵심이다. `t` 는 렌더할 때마다 새로 만들어지는
-    // 함수라, 넣으면 매번 77장을 다시 만들게 되어 useMemo 가 아무 의미가 없어진다.
-    // 문구를 실제로 바꾸는 건 `language` 다.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mysteryId, language]
-  );
+  // 77장을 매 렌더마다 새로 만들 이유가 없다. 신비가 바뀔 때만 다시 만든다.
+  const steps = useMemo(() => (mysteryId ? buildRosarySteps(mysteryId) : []), [mysteryId]);
 
   /**
    * "이미 바친 단은 건너뛰기"를 딱 한 번만 하기 위한 표시.
@@ -180,7 +164,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
   // 상단에 작게 뜨는 현재 위치. 예) "환희의 신비 (월요일·토요일) · 3단"
   // 시작·마침 기도에는 단이 없으므로 신비 이름만 남는다.
-  const mysteryHeading = getMysterySection(mysteryId, language).heading;
+  const mysteryHeading = getMysterySection(mysteryId).heading;
   const decadeLabel = step.decade ? t("rosary.decade").replace("{n}", String(step.decade)) : null;
   const context = [mysteryHeading, decadeLabel].filter(Boolean).join(" · ");
 

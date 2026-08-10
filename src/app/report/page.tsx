@@ -82,7 +82,7 @@ function ViewActions({
 }
 
 function ReportPageContent() {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -159,7 +159,7 @@ function ReportPageContent() {
       ) : (
         <ViewActions
           canModify={fromHistory !== null}
-          shareText={formatShareText(report, language)}
+          shareText={formatShareText(report)}
           onStartEditing={startEditing}
           onRequestDelete={() => setConfirmingDelete(true)}
         />

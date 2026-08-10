@@ -1,10 +1,8 @@
-import { dictionaries } from "@/i18n/dictionaries";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
 import { normalizeName, type ParsedSubmission } from "./prayerSubmission";
 import type {
   AttendanceRecord,
-  Language,
   MemberCounts,
   MemberEntry,
   MemberRoster,
@@ -33,19 +31,21 @@ import type {
 /** 한 달에 둘 수 있는 주회 수의 상한. 5주인 달과 여유분을 감안한 값이다. */
 export const MAX_ATTENDANCE_SESSIONS = 6;
 
-export const WEEKDAY_LABEL_KEYS = [
-  "secretaryRoster.weekdaySun",
-  "secretaryRoster.weekdayMon",
-  "secretaryRoster.weekdayTue",
-  "secretaryRoster.weekdayWed",
-  "secretaryRoster.weekdayThu",
-  "secretaryRoster.weekdayFri",
-  "secretaryRoster.weekdaySat",
+/** `Date.getDay()` 값을 그대로 인덱스로 쓴다(0 = 일요일). */
+export const WEEKDAY_LABELS = [
+  "일요일",
+  "월요일",
+  "화요일",
+  "수요일",
+  "목요일",
+  "금요일",
+  "토요일",
 ] as const;
 
 export const OFFICER_ROLES: OfficerRole[] = ["president", "vicePresident", "secretary", "treasurer"];
 
-const OFFICER_ROLE_LABEL_KO: Record<OfficerRole, string> = {
+/** 간부 직책 이름. 화면·인쇄·명단 관리가 전부 여기를 본다. */
+export const OFFICER_ROLE_LABEL: Record<OfficerRole, string> = {
   president: "단장",
   vicePresident: "부단장",
   secretary: "서기",
@@ -155,7 +155,7 @@ export interface RosterPerson {
 export function rosterPersons(roster: PraesidiumRoster): RosterPerson[] {
   const officers = roster.officers.map((officer) => ({
     id: `officer:${officer.role}`,
-    label: formatPersonLabel(OFFICER_ROLE_LABEL_KO[officer.role], officer.name, officer.baptismalName),
+    label: formatPersonLabel(OFFICER_ROLE_LABEL[officer.role], officer.name, officer.baptismalName),
     name: officer.name,
     baptismalName: officer.baptismalName,
     isOfficer: true,
@@ -176,7 +176,7 @@ export function rosterPersons(roster: PraesidiumRoster): RosterPerson[] {
 function labelPrefixFor(personId: string): string {
   if (personId.startsWith("officer:")) {
     const role = personId.slice("officer:".length) as OfficerRole;
-    return OFFICER_ROLE_LABEL_KO[role] ?? "단원";
+    return OFFICER_ROLE_LABEL[role] ?? "단원";
   }
   return "단원";
 }
@@ -776,22 +776,22 @@ export function addMonthToYearMonth(yearMonth: string): string {
   return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export function formatYearMonthLabel(yearMonth: string, language: Language): string {
+export function formatYearMonthLabel(yearMonth: string): string {
   const [year, month] = yearMonth.split("-").map(Number);
   if (!year || !month) return yearMonth;
-  return language === "ko" ? `${year}년 ${month}월` : `${year}-${String(month).padStart(2, "0")}`;
+  return `${year}년 ${month}월`;
 }
 
-export function formatMonthlyShareText(report: MonthlyReport, language: Language): string {
-  const dict = dictionaries[language];
-  const title = `${dict.app.shortName} ${formatYearMonthLabel(report.yearMonth, language)} ${dict.secretaryReport.title}`;
+export function formatMonthlyShareText(report: MonthlyReport): string {
+  const title = `레지오 활동보고 ${formatYearMonthLabel(report.yearMonth)} 월례 보고서`;
   const prayerLines = PRAYER_ITEMS.map(
-    (item) => `${dict.counters[item.key]}: ${report.prayerCounts[item.key]}`
+    (item) => `${item.label}: ${report.prayerCounts[item.key]}`
   );
-  const attendanceLine = `${dict.secretaryReport.attendance}: ${dict.secretaryReport.officers} ${report.attendance.officersPresent}/${report.attendance.officersTotal}, ${dict.secretaryReport.members} ${report.attendance.membersPresent}/${report.attendance.membersTotal}`;
-  const treasuryLine = `${dict.secretaryReport.treasuryBalance}: ${report.treasury.balance}`;
+  const { officersPresent, officersTotal, membersPresent, membersTotal } = report.attendance;
+  const attendanceLine = `출석: 간부 ${officersPresent}/${officersTotal}, 단원 ${membersPresent}/${membersTotal}`;
+  const treasuryLine = `잔액: ${report.treasury.balance}`;
   const noteLines = report.activitySummary.trim()
-    ? ["", `${dict.secretaryReport.activitySummary}: ${report.activitySummary.trim()}`]
+    ? ["", `활동사항: ${report.activitySummary.trim()}`]
     : [];
   return [title, "", attendanceLine, ...prayerLines, treasuryLine, ...noteLines].join("\n");
 }

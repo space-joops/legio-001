@@ -6,9 +6,9 @@ import styles from "./SplashToggle.module.css";
 
 /** 설정 화면의 성화 스플래시 켜기/끄기. 끄는 방법은 여기 하나뿐이다. */
 
-const OPTIONS: { value: boolean; labelKey: string }[] = [
-  { value: true, labelKey: "settings.splashOn" },
-  { value: false, labelKey: "settings.splashOff" },
+const OPTIONS: { value: boolean; label: string }[] = [
+  { value: true, label: "보기" },
+  { value: false, label: "보지 않기" },
 ];
 
 export function SplashToggle() {
@@ -25,7 +25,7 @@ export function SplashToggle() {
           onClick={() => setSplashEnabled(option.value)}
           aria-pressed={splashEnabled === option.value}
         >
-          {t(option.labelKey)}
+          {option.label}
         </button>
       ))}
     </div>

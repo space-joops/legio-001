@@ -22,9 +22,9 @@ import styles from "./page.module.css";
  * 쁘레시디움마다 활동을 부르는 말이 조금씩 달라서, 내장 목록을 그대로 쓰지 않고
  * 고칠 수 있게 열어 두었다. 항목마다 공식 양식의 어느 줄로 집계될지도 정한다.
  */
-const LINES: { value: ActivityLine; labelKey: string }[] = [
-  { value: "praesidium", labelKey: "secretaryActivityItems.linePraesidium" },
-  { value: "parish", labelKey: "secretaryActivityItems.lineParish" },
+const LINES: { value: ActivityLine; label: string }[] = [
+  { value: "praesidium", label: "Pr.활동사항" },
+  { value: "parish", label: "본당 지시사항" },
 ];
 
 export default function ActivityItemsPage() {
@@ -93,9 +93,9 @@ export default function ActivityItemsPage() {
             aria-label={t("secretaryActivityItems.lineColumn")}
             onChange={(e) => setDraftLine(e.target.value as ActivityLine)}
           >
-            {LINES.map(({ value, labelKey }) => (
+            {LINES.map(({ value, label }) => (
               <option key={value} value={value}>
-                {t(labelKey)}
+                {label}
               </option>
             ))}
           </select>
@@ -137,9 +137,9 @@ export default function ActivityItemsPage() {
                         patchItem(item.id, { line: e.target.value as ActivityLine })
                       }
                     >
-                      {LINES.map(({ value, labelKey }) => (
+                      {LINES.map(({ value, label }) => (
                         <option key={value} value={value}>
-                          {t(labelKey)}
+                          {label}
                         </option>
                       ))}
                     </select>

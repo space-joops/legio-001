@@ -1,6 +1,7 @@
 "use client";
 
 import { dictionaries } from "./dictionaries";
+import type { ko } from "./dictionaries/ko";
 import { useLanguage } from "./LanguageContext";
 
 /**
@@ -35,6 +36,19 @@ function getPath(obj: unknown, path: string): unknown {
   return current;
 }
 
+/**
+ * ⚠️ i18n 제거 작업용 임시 타입. 사전에 실제로 있는 경로만 `t()` 에 넘길 수 있게
+ *    좁혀서, 아직 못 고친 호출부를 컴파일러가 전부 지목하게 만든다.
+ *    작업이 끝나면 이 파일 전체가 사라진다.
+ */
+type Leaf<T> = T extends string
+  ? ""
+  : {
+      [K in keyof T & string]: Leaf<T[K]> extends "" ? K : `${K}.${Leaf<T[K]>}`;
+    }[keyof T & string];
+
+export type TKey = Leaf<typeof ko>;
+
 export function useTranslation() {
   const { language } = useLanguage();
   const dict = dictionaries[language];
@@ -46,7 +60,7 @@ export function useTranslation() {
    * "counters.foo" 같은 글자가 눈에 띄게 보여서 오타를 바로 알아챌 수 있다.
    * (번역 키는 문자열이라 오타가 나도 컴파일러가 잡아 주지 못한다.)
    */
-  const t = (path: string): string => {
+  const t = (path: TKey): string => {
     const value = getPath(dict, path);
     return typeof value === "string" ? value : path;
   };

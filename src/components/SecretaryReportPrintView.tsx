@@ -1,6 +1,11 @@
 import { buildActivityLines } from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
-import { OFFICER_ROLES, WEEKDAY_LABEL_KEYS, formatYearMonthLabel } from "@/lib/monthlyReportUtils";
+import {
+  OFFICER_ROLE_LABEL,
+  OFFICER_ROLES,
+  WEEKDAY_LABELS,
+  formatYearMonthLabel,
+} from "@/lib/monthlyReportUtils";
 import { storage } from "@/lib/storage";
 import { formatWon } from "@/lib/treasury";
 import type {
@@ -21,37 +26,33 @@ import styles from "./SecretaryReportPrintView.module.css";
  * 되기 때문이다. `compact` 로 미리보기와 실제 출력 크기만 구분한다.
  */
 
-const MEMBER_COUNT_ROWS: { key: keyof MemberCounts; labelKey: string }[] = [
-  { key: "activeMale", labelKey: "secretaryRoster.activeMaleLabel" },
-  { key: "activeFemale", labelKey: "secretaryRoster.activeFemaleLabel" },
-  { key: "praetorium", labelKey: "secretaryRoster.praetoriumLabel" },
-  { key: "auxiliaryMale", labelKey: "secretaryRoster.auxiliaryMaleLabel" },
-  { key: "auxiliaryFemale", labelKey: "secretaryRoster.auxiliaryFemaleLabel" },
-  { key: "adjutorium", labelKey: "secretaryRoster.adjutoriumLabel" },
+const MEMBER_COUNT_ROWS: { key: keyof MemberCounts; label: string }[] = [
+  { key: "activeMale", label: "행동단원(남)" },
+  { key: "activeFemale", label: "행동단원(여)" },
+  { key: "praetorium", label: "쁘레또리움 단원" },
+  { key: "auxiliaryMale", label: "협조단원(남)" },
+  { key: "auxiliaryFemale", label: "협조단원(여)" },
+  { key: "adjutorium", label: "아듀또리움 단원" },
 ];
 
 const EVANGELIZATION_ROWS: {
   key: keyof EvangelizationTallies;
-  labelKey: string;
+  label: string;
 }[] = [
-  { key: "baptism", labelKey: "secretaryReport.evangelizationBaptism" },
-  { key: "returnToFaith", labelKey: "secretaryReport.evangelizationReturn" },
-  { key: "activeMember", labelKey: "secretaryReport.evangelizationActiveMember" },
-  { key: "praetorium", labelKey: "secretaryReport.evangelizationPraetorium" },
+  { key: "baptism", label: "영세·외짝" },
+  { key: "returnToFaith", label: "냉담회두" },
+  { key: "activeMember", label: "행동단원" },
+  { key: "praetorium", label: "쁘레또리움" },
 ];
 
 /** 남·여를 합친 "계" 행. 공식 양식이 행동단원과 협조단원에만 계를 둔다. */
 const SUBTOTAL_ROWS: {
-  labelKey: string;
+  label: string;
   male: keyof MemberCounts;
   female: keyof MemberCounts;
 }[] = [
-  { labelKey: "secretaryReport.activeSubtotalLabel", male: "activeMale", female: "activeFemale" },
-  {
-    labelKey: "secretaryReport.auxiliarySubtotalLabel",
-    male: "auxiliaryMale",
-    female: "auxiliaryFemale",
-  },
+  { label: "행동단원 계", male: "activeMale", female: "activeFemale" },
+  { label: "협조단원 계", male: "auxiliaryMale", female: "auxiliaryFemale" },
 ];
 
 function TextBlock({ label, value }: { label: string; value: string }) {
@@ -75,19 +76,16 @@ export function SecretaryReportPrintView({
   /** One-page A4 tuning shared by print, the PDF button, and the image button. */
   compact?: boolean;
 }) {
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
   const president = report.roster.officers.find((officer) => officer.role === "president");
 
   // All three outputs (this view, the editor and the RTF) go through the same
   // builder so the strings can't drift apart.
-  const lines = buildActivityLines(report, storage.getActivityItems(), {
-    massCommunion: t("secretaryReport.massCommunionLabel"),
-    prayer: Object.fromEntries(PRAYER_ITEMS.map((i) => [i.key, t(i.labelKey)])),
-  });
+  const lines = buildActivityLines(report, storage.getActivityItems());
 
-  const evangelizationLine = EVANGELIZATION_ROWS.map(({ key, labelKey }) => {
+  const evangelizationLine = EVANGELIZATION_ROWS.map(({ key, label }) => {
     const tally = report.evangelization?.[key];
-    return `${t(labelKey)}(${tally?.result ?? 0}/${tally?.target ?? 0})`;
+    return `${label}(${tally?.result ?? 0}/${tally?.target ?? 0})`;
   }).join(", ");
 
   return (
@@ -96,7 +94,7 @@ export function SecretaryReportPrintView({
         <p className={styles.orgLine}>{t("app.name")}</p>
         <h1 className={styles.title}>{t("secretaryReport.title")}</h1>
         <p className={styles.yearMonth}>
-          {formatYearMonthLabel(report.yearMonth, language)} {t("secretaryReport.asOfSuffix")} · {t("week.sessionNumber")}{" "}
+          {formatYearMonthLabel(report.yearMonth)} {t("secretaryReport.asOfSuffix")} · {t("week.sessionNumber")}{" "}
           {report.sessionRangeStart} ~ {report.sessionRangeEnd}
         </p>
         <p className={styles.councilLine}>
@@ -117,7 +115,7 @@ export function SecretaryReportPrintView({
                 <th>{t("secretaryReport.meetingWeekdayLabel")}</th>
                 {/* >= 0, not truthiness: Sunday is 0 and used to print as "-". */}
                 <td>
-                  {report.meetingWeekday >= 0 ? t(WEEKDAY_LABEL_KEYS[report.meetingWeekday]) : "-"}
+                  {report.meetingWeekday >= 0 ? WEEKDAY_LABELS[report.meetingWeekday] : "-"}
                 </td>
               </tr>
               <tr>
@@ -166,7 +164,7 @@ export function SecretaryReportPrintView({
                 if (!officer) return null;
                 return (
                   <tr key={role}>
-                    <th>{t(`secretaryRoster.roleLabel.${role}`)}</th>
+                    <th>{OFFICER_ROLE_LABEL[role]}</th>
                     <td>{officer.name}</td>
                     <td>{officer.baptismalName}</td>
                     <td>{officer.appointedDate}</td>
@@ -193,9 +191,9 @@ export function SecretaryReportPrintView({
               </tr>
             </thead>
             <tbody>
-              {MEMBER_COUNT_ROWS.map(({ key, labelKey }) => (
+              {MEMBER_COUNT_ROWS.map(({ key, label }) => (
                 <tr key={key}>
-                  <th>{t(labelKey)}</th>
+                  <th>{label}</th>
                   <td>{report.memberCountsPrevMonth[key]}</td>
                   <td>{report.memberCountsThisMonth[key]}</td>
                   <td>{report.memberCountsIncrease[key]}</td>
@@ -204,9 +202,9 @@ export function SecretaryReportPrintView({
               ))}
               {/* The official form carries a 계 column for 행동단원 and 협조단원;
                   derived from 남+여 so nobody has to keep it in sync by hand. */}
-              {SUBTOTAL_ROWS.map(({ labelKey, male, female }) => (
-                <tr key={labelKey} className={styles.subtotalRow}>
-                  <th>{t(labelKey)}</th>
+              {SUBTOTAL_ROWS.map(({ label, male, female }) => (
+                <tr key={label} className={styles.subtotalRow}>
+                  <th>{label}</th>
                   <td>{report.memberCountsPrevMonth[male] + report.memberCountsPrevMonth[female]}</td>
                   <td>{report.memberCountsThisMonth[male] + report.memberCountsThisMonth[female]}</td>
                   <td>{report.memberCountsIncrease[male] + report.memberCountsIncrease[female]}</td>
@@ -313,7 +311,7 @@ export function SecretaryReportPrintView({
         </p>
         <p className={styles.signatureLine}>
           {report.roster.praesidiumName || "-"} {t("secretaryReport.praesidiumSuffix")}{" "}
-          {t("secretaryRoster.roleLabel.president")} {president?.name || "-"}{" "}
+          {OFFICER_ROLE_LABEL.president} {president?.name || "-"}{" "}
           {president?.baptismalName || ""} ({t("secretaryReport.signature")})
         </p>
         {/* The official form number stays off this sheet on purpose: the app's
