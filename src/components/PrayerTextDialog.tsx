@@ -3,7 +3,6 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-// 다국어 지원을 위한 훅을 가져옵니다. 텍스트를 번역할 때 사용됩니다.
 // 기도문 데이터 구조에 대한 타입 정의를 가져옵니다.
 import type { PrayerTextEntry } from "@/lib/prayerTexts";
 // CSS 모듈을 통해 컴포넌트 스코프의 스타일을 가져옵니다.
@@ -47,7 +46,6 @@ export function PrayerTextDialog({
   guide,
   incrementCaption,
 }: PrayerTextDialogProps) {
-  // 다국어 번역 함수 t를 추출합니다.
 
   // HTML <dialog> 엘리먼트에 직접 접근하기 위해 useRef를 사용합니다.
   // 이를 통해 네이티브 dialog API인 showModal()과 close()를 호출할 수 있습니다.
@@ -127,7 +125,7 @@ export function PrayerTextDialog({
                 <details className={styles.fullText}>
                   {/* <summary>는 <details> 태그의 클릭 가능한 제목 부분입니다. */}
                   <summary className={styles.fullTextToggle}>
-                    {"기도문 전문 보기"} {/* "전체 텍스트 보기" 등으로 번역됨 */}
+                    기도문 전문 보기
                   </summary>
                   {/* 클릭하면 이 fullText 영역이 펼쳐집니다. */}
                   {fullText}
@@ -151,7 +149,7 @@ export function PrayerTextDialog({
             >
               {/* 현재 카운트 표시 */}
               <span className={styles.incrementCount}>{count}</span>
-              {/* 버튼 하단의 힌트 텍스트. incrementCaption이 전달되면 그것을 쓰고, 아니면 기본 번역 텍스트를 씁니다. */}
+              {/* 버튼 하단의 힌트 텍스트. incrementCaption 이 오면 그것을, 없으면 기본 문구를 쓴다. */}
               <span className={styles.incrementHint}>
                 {incrementCaption ?? "탭하여 기록"}
               </span>
@@ -159,7 +157,7 @@ export function PrayerTextDialog({
 
             {/* 닫기 버튼 */}
             <button type="button" className={styles.closeButton} onClick={onClose}>
-              {"닫기"} {/* "닫기" 등으로 번역됨 */}
+              닫기
             </button>
           </div>
         </div>
