@@ -227,7 +227,16 @@ export function RosaryGuide({ onRecordSet, progress = 0, onContextChange }: Rosa
           slideDirection === "right" ? styles.slideInRight : styles.slideInLeft
         }`}
       >
-        <RosaryStepView step={step} stepIndex={index} onImageClick={openImage} />
+        {/* 화살표는 스텝 뷰의 기도 이름 양끝에 붙는다. 첫 화면에서는 ◀ 자리를
+            비우고, 확인창이 떠 있는 동안에는 둘 다 치운다(스와이프를 막는 것과
+            같은 이유). */}
+        <RosaryStepView
+          step={step}
+          stepIndex={index}
+          onImageClick={openImage}
+          onPrev={!asking && index > 0 ? handlePrev : undefined}
+          onNext={!asking ? handleNext : undefined}
+        />
 
         {asking ? (
           /* 중첩 <dialog> 대신 그냥 이 자리에 그린다. 이미 열려 있는 창 안에
@@ -251,42 +260,6 @@ export function RosaryGuide({ onRecordSet, progress = 0, onContextChange }: Rosa
           recorded && <p className={styles.recorded}>묵주기도 5단을 기록했습니다.</p>
         )}
       </div>
-
-      {/* 좌우 이동 화살표. 책장 넘기듯 화면 양옆 가운데에 크게 떠 있다.
-          .contentWrapper **바깥**에 두는 이유: 저 안은 key={index} 로 매번 새로
-          만들어지고(화살표까지 같이 깜박이면 안 된다), 슬라이드 애니메이션의
-          transform 이 남아 position: fixed 의 기준을 바꿔 버리며, overflow-x
-          클리핑에 잘려 나가기 때문이다.
-          확인창("기록할까요?")이 떠 있는 동안에는 스와이프처럼 화살표도 치운다. */}
-      {!asking && (
-        <>
-          {/* 첫 화면에서는 돌아갈 곳이 없으므로 ◀ 를 아예 그리지 않는다. */}
-          {index > 0 && (
-            <button
-              type="button"
-              className={`${styles.navArrow} ${styles.navArrowLeft}`}
-              onClick={handlePrev}
-              aria-label="이전"
-              title="이전"
-            >
-              <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">
-                <polygon points="15,4 5,12 15,20"></polygon>
-              </svg>
-            </button>
-          )}
-          <button
-            type="button"
-            className={`${styles.navArrow} ${styles.navArrowRight}`}
-            onClick={handleNext}
-            aria-label="다음"
-            title="다음"
-          >
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true">
-              <polygon points="9,4 19,12 9,20"></polygon>
-            </svg>
-          </button>
-        </>
-      )}
 
       {/* 팝업은 열려 있을 때만 아예 존재한다. 그래서 여는 코드가 따로 필요 없고,
           닫기는 이 값을 null 로 만들어 컴포넌트를 사라지게 하는 것으로 끝난다. */}

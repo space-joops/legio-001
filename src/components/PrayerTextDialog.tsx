@@ -93,8 +93,9 @@ export function PrayerTextDialog({
       {/* entry가 있을 때만 모달 내부 콘텐츠를 렌더링합니다. */}
       {entry && (
         <div className={styles.screen}>
-          {/* 기도 제목. titleSuffix 가 있으면 현재 위치(신비·단)를 같은 줄에 잇는다. */}
-          <h2 className={styles.title}>
+          {/* 기도 제목. titleSuffix 가 있으면 현재 위치(신비·단)를 같은 줄에 잇는다.
+              가이드 화면(묵주기도)은 본문도 가운데 정렬이라 제목도 가운데로 맞춘다. */}
+          <h2 className={guide ? `${styles.title} ${styles.titleCentered}` : styles.title}>
             {title}
             {titleSuffix && (
               <span className={styles.titleSuffix}>{` · ${titleSuffix}`}</span>

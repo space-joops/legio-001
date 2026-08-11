@@ -13,10 +13,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  /* 좌우 여백: 화면 양옆에 고정된 화살표(.navArrow) 밑에 기도문이 깔리지 않도록
-     비워 두는 자리다. 화살표 폭(3.5rem) + 가장자리 여백(--space-1)에서 바깥
-     .screen 의 패딩(--space-4)을 뺀 만큼만 더 물러난다. */
-  padding: 0 calc(var(--min-tap-target) + var(--space-1) * 2 - var(--space-4)) var(--space-4);
+  padding: 0 0 var(--space-4);
   margin-bottom: var(--space-4);
   border-bottom: 3px solid var(--color-border);
   /* 세로 스크롤만 브라우저에 넘기고 가로 제스처는 우리가 가져온다.
@@ -70,68 +67,35 @@
   }
 }
 
-/*
- * 좌우 이동 화살표. 화면(뷰포트) 양옆 세로 가운데에 붙는다.
- *
- * ⚠️ position: fixed 는 조상 어디에도 transform/filter 가 없어야 뷰포트 기준이
- *    된다. .dialog / .screen / .content / .guide 에 transform 을 추가하면
- *    화살표 기준점이 그 요소로 바뀌어 위치가 어긋난다. (.contentWrapper 의
- *    슬라이드 transform 은 괜찮다 — 화살표는 그 바깥에 있다.)
- */
-.navArrow {
-  position: fixed;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2; /* .stickyHead(z-index: 1) 위 */
+/* [◀] 기도 이름 [▶] — 이름은 가운데 칸, 화살표는 양끝 칸.
+   화살표가 없는 화면(첫 화면의 ◀, 확인창 중)은 같은 폭의 빈 칸이 대신 들어가
+   이름이 좌우로 흔들리지 않는다. */
+.headingRow {
+  display: grid;
+  grid-template-columns: var(--min-tap-target) 1fr var(--min-tap-target);
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* 이동 화살표. 일부러 수수하게 — 배경도 테두리도 없는 삼각형만 둔다.
+   기도문이 주인공인 화면이라 화살표가 도드라질 이유가 없다.
+   터치 영역은 --min-tap-target(3.5rem)으로 넉넉히 잡는다. */
+.stepArrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--min-tap-target); /* 3.5rem — 큰 글자 설정과 함께 커진다 */
+  width: var(--min-tap-target);
   height: var(--min-tap-target);
-  border: 2px solid var(--color-border);
+  background: transparent;
+  border: none;
   border-radius: 50%;
-  /* --color-background(#fafaf5) 반투명 — 긴 기도문이 밑을 지나가도 화살표가
-     묻히지 않으면서, 무엇이 깔려 있는지도 짐작할 수 있게. */
-  background: rgba(250, 250, 245, 0.92);
   color: var(--color-text);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.navArrow:hover {
+.stepArrow:hover {
   background: var(--color-surface-alt);
-}
-
-.navArrowLeft {
-  left: var(--space-1);
-}
-
-.navArrowRight {
-  right: var(--space-1);
-}
-
-/* PC: 본문이 720px 컬럼으로 가운데 모이므로 화살표를 컬럼 밖에 세워 두고
-   본문 여백은 되돌린다. */
-@media (min-width: 960px) {
-  .guide {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .navArrowLeft {
-    left: calc(50vw - 360px - var(--min-tap-target) - var(--space-2));
-  }
-  .navArrowRight {
-    right: calc(50vw - 360px - var(--min-tap-target) - var(--space-2));
-  }
-}
-
-/* 가로로 눕힌 폰: 세로 가운데(50%)가 하단 기록 버튼(88px)과 겹치기 쉬워
-   화살표를 조금 위로 올린다. */
-@media (orientation: landscape) and (max-height: 520px) {
-  .navArrow {
-    top: 40%;
-  }
 }
 
 /* 긴 기도문이 밑으로 흘러가는 동안에도 기도 이름은 화면 맨 위에 붙어 있게 한다.
@@ -151,6 +115,7 @@
   font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--color-text-muted);
+  text-align: center; /* 기도 이름·창 제목과 같은 축 */
   /* 문장이 길어 좁은 화면에서 줄이 꺾인다. 어절 단위로 꺾는다. */
   word-break: keep-all;
 }
@@ -158,13 +123,16 @@
 .heading {
   display: flex;
   align-items: baseline;
+  justify-content: center; /* 이름은 화살표 사이 가운데 */
   flex-wrap: wrap;
   gap: var(--space-2);
   margin: 0;
   font-size: var(--font-size-lg);
   font-weight: 800;
   line-height: 1.4;
+  text-align: center;
   color: var(--color-text);
+  word-break: keep-all;
   /* 세 번 깜박이고 멈춘다. 기도가 넘어갔다는 걸 눈으로 알리되, 읽는 데 방해가
      되지 않을 만큼만.
      500ms 주기 = 초당 2회다. 초당 3회를 넘는 깜박임은 광과민성 발작을 유발할 수
