@@ -92,7 +92,12 @@
   text-align: center;
 }
 
-/* 해설이 붙은 구절 한 묶음. 눌러서 풀이 팝업을 연다. */
+/* 해설이 붙은 구절 한 묶음. 눌러서 풀이 팝업을 연다.
+ *
+ * 표시는 오른쪽 ⓘ **하나뿐**이다. 테두리도 왼쪽 띠도 두지 않는다 — 이 화면에는
+ * 구절이 71개라, 어떤 장식이든 붙이는 순간 71번 반복되어 기도문보다 더 눈에 띈다.
+ * 구절 묶음은 여백만으로 갈린다: 줄 사이는 8px(--space-1), 구절 사이는
+ * 12+8+12=32px(양쪽 padding + 부모 gap). 이 차이면 눈으로 충분히 구분된다. */
 .verseButton {
   display: flex;
   align-items: flex-start;
@@ -107,16 +112,12 @@
   color: inherit;
   background: transparent;
   border: none;
-  /* 눌리는 곳이라는 표시를 색만으로 주지 않는다 — 왼쪽 띠 + 아래 '풀이' 딱지. */
-  border-left: 4px solid var(--color-surface-alt);
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
   cursor: pointer;
 }
 
 .verseButton:hover,
 .verseButton:active {
   background: var(--color-surface);
-  border-left-color: var(--color-primary);
 }
 
 .verseLines {
@@ -126,25 +127,24 @@
   min-width: 0;
 }
 
+/* 이 저장소의 표준 '조용한 캡션' 조합(작게 + muted)만 쓴다.
+ *
+ * opacity 로 흐리게 만들지 않는다 — 여기서 opacity 는 전부 비활성(disabled)
+ * 상태에만 쓰이므로(globals.css 의 `button:disabled`), 새로 들이면 '못 누르는 것'
+ * 으로 읽힌다. 어르신 가독성에도 나쁘다. */
 .hint {
   flex-shrink: 0;
-  padding: 2px var(--space-1);
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius-md);
-  color: var(--color-primary-strong);
+  color: var(--color-text-muted);
   font-size: var(--font-size-sm);
-  font-weight: 700;
-  line-height: 1.5;
-  white-space: nowrap;
+  line-height: 1.7;
 }
 
-/* 해설이 없는 줄 묶음 — 버튼과 왼쪽 끝을 맞춰 들쭉날쭉해 보이지 않게 한다. */
+/* 해설이 없는 줄 묶음 — 버튼과 여백을 맞춰 들쭉날쭉해 보이지 않게 한다. */
 .plainLines {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   padding: var(--space-2);
-  border-left: 4px solid transparent;
 }
 
 .srOnly {
@@ -172,14 +172,9 @@
   }
 
   /* 인쇄물은 해설 기능이 없던 때와 똑같이 나와야 한다. */
-  .verseButton {
-    padding: 0;
-    border-left: none;
-    background: none;
-  }
-
+  .verseButton,
   .plainLines {
     padding: 0;
-    border-left: none;
+    background: none;
   }
 }

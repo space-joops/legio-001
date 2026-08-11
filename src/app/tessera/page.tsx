@@ -48,6 +48,7 @@ export default function TesseraPage() {
                       // 그래서 줄은 <span>이고, CSS 에서 block 으로 세운다.
                       // aria-label 을 달지 않는 것은 일부러다 — 달면 버튼의 이름이
                       // 그 문구로 **대체되어** 기도문 본문을 읽어 주지 않는다.
+                      // 보이는 표시는 ⓘ 하나뿐이고, 읽어 줄 말은 .srOnly 가 맡는다.
                       <button
                         key={group.from}
                         type="button"
@@ -65,7 +66,7 @@ export default function TesseraPage() {
                           ))}
                         </span>
                         <span className={styles.hint} aria-hidden="true">
-                          풀이
+                          ⓘ
                         </span>
                         <span className={styles.srOnly}>풀이 보기</span>
                       </button>
