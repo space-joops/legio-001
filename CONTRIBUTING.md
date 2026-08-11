@@ -18,10 +18,20 @@
 
 ## 2. 권장 개발 환경 및 VSCode 플러그인
 코드 편집은 **Visual Studio Code (VSCode)** 를 추천합니다.
+저장소에 `.vscode/extensions.json` 파일이 세팅되어 있어, 프로젝트를 열면 우측 하단에 확장 프로그램 설치 권장 팝업이 나타납니다.
 다음 확장(Extensions) 프로그램들을 설치하면 개발이 훨씬 수월해집니다:
-- **ESLint**: 코드의 스타일을 검사하고 오류를 밑줄로 표시해 줍니다.
-- **Prettier - Code formatter**: 코드를 저장할 때 들여쓰기 등을 깔끔하게 자동 정렬해 줍니다.
-- **ES7+ React/Redux/React-Native snippets**: React 컴포넌트 기본 구조를 빠르게 작성할 수 있는 단축키(Snippet)를 제공합니다.
+
+- **ESLint** (`dbaeumer.vscode-eslint`): 코드의 스타일을 검사하고 오류를 밑줄로 표시해 줍니다.
+- **Prettier** (`esbenp.prettier-vscode`): 코드를 저장할 때 들여쓰기 등을 깔끔하게 자동 정렬해 줍니다.
+- **ES7+ React/Redux/React-Native snippets** (`dsznajder.es7-react-js-snippets`): React 컴포넌트 기본 구조를 빠르게 작성할 수 있는 단축키(Snippet)를 제공합니다.
+- **Vitest** (`vitest.explorer`): VSCode 테스트 패널에서 개별 테스트(`*.test.ts`)를 바로 실행하고 쉽게 디버깅할 수 있게 해줍니다.
+- **Error Lens** (`usernamehw.errorlens`): TypeScript 오류나 ESLint 경고를 마우스 오버 없이 코드 줄 옆에 바로 보여주어 직관적입니다.
+- **Pretty TypeScript Errors** (`yoavbls.pretty-ts-errors`): 복잡하고 읽기 힘든 TypeScript 에러 메시지를 보기 좋게 정리해서 보여줍니다.
+- **CSS Modules** (`clinyong.vscode-css-modules`): `.module.css` 파일의 클래스 이름을 자동 완성해주고 해당 클래스의 정의로 바로 이동할 수 있게 해줍니다.
+- **Auto Rename Tag** (`formulahendry.auto-rename-tag`): 여는 HTML/JSX 태그의 이름을 수정하면 닫는 태그도 자동으로 수정해 주어 생산성을 높입니다.
+- **Console Ninja** (`wallabyjs.console-ninja`): 브라우저 개발자 도구를 열지 않아도 `console.log()`의 결과값이나 에러를 코드 라인 바로 옆에 출력해 줍니다.
+- **Import Cost** (`wix.vscode-import-cost`): `import`로 외부 패키지를 불러올 때, 해당 패키지의 번들 용량을 코드 옆에 즉시 보여줍니다.
+- **Indent Rainbow** (`oderwat.indent-rainbow`): 들여쓰기 깊이마다 색상을 다르게 칠해주어 복잡한 코드 블록 구조를 한눈에 파악하게 도와줍니다.
 
 
 ## 2-1. 권장 개발 환경: WebStorm (JetBrains)
