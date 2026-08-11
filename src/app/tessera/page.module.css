@@ -76,6 +76,9 @@
 .line {
   font-size: var(--font-size-base);
   line-height: 1.7;
+  /* 구절 버튼 안에서는 <span> 이라 block 으로 세워야 한 줄씩 떨어진다.
+     (<button> 은 <p> 를 담을 수 없다 — page.tsx 주석 참고) */
+  display: block;
 }
 
 .note {
@@ -83,14 +86,95 @@
   color: var(--color-text-muted);
 }
 
+.guide {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* 해설이 붙은 구절 한 묶음. 눌러서 풀이 팝업을 연다.
+ *
+ * 표시는 오른쪽 ⓘ **하나뿐**이다. 테두리도 왼쪽 띠도 두지 않는다 — 이 화면에는
+ * 구절이 71개라, 어떤 장식이든 붙이는 순간 71번 반복되어 기도문보다 더 눈에 띈다.
+ * 구절 묶음은 여백만으로 갈린다: 줄 사이는 8px(--space-1), 구절 사이는
+ * 12+8+12=32px(양쪽 padding + 부모 gap). 이 차이면 눈으로 충분히 구분된다. */
+.verseButton {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--min-tap-target);
+  margin: 0;
+  padding: var(--space-2);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.verseButton:hover,
+.verseButton:active {
+  background: var(--color-surface);
+}
+
+.verseLines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+/* 이 저장소의 표준 '조용한 캡션' 조합(작게 + muted)만 쓴다.
+ *
+ * opacity 로 흐리게 만들지 않는다 — 여기서 opacity 는 전부 비활성(disabled)
+ * 상태에만 쓰이므로(globals.css 의 `button:disabled`), 새로 들이면 '못 누르는 것'
+ * 으로 읽힌다. 어르신 가독성에도 나쁘다. */
+.hint {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+}
+
+/* 해설이 없는 줄 묶음 — 버튼과 여백을 맞춰 들쭉날쭉해 보이지 않게 한다. */
+.plainLines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* On paper the page is read top to bottom — jump buttons mean nothing there. */
 @media print {
   .toc,
-  .legend {
+  .legend,
+  .guide,
+  .hint {
     display: none;
   }
 
   .chapter {
     border-top: none;
+  }
+
+  /* 인쇄물은 해설 기능이 없던 때와 똑같이 나와야 한다. */
+  .verseButton,
+  .plainLines {
+    padding: 0;
+    background: none;
   }
 }
