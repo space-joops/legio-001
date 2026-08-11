@@ -100,8 +100,6 @@ npx serve out
 - **`src/components/CounterButton.tsx`**: 탭할 때마다 숫자가 증가하는 큰 버튼 형태로, 기도 횟수 기록에 사용되는 핵심 UI 컴포넌트입니다.
 - **`src/components/CounterGrid.tsx`**: 여러 개의 카운터 버튼을 그리드(격자) 형태로 배치하는 레이아웃 컴포넌트입니다.
 - **`src/components/DisplayPreferencesProvider.tsx`**: 글꼴 크기, 폰트 종류 등 화면 표시 설정 상태를 전역으로 관리하는 Context Provider입니다.
-- **`src/components/FontFamilyToggle.module.css`**: 글꼴 변경 토글 버튼의 스타일 파일입니다.
-- **`src/components/FontFamilyToggle.tsx`**: 고딕/명조 등 앱의 기본 글꼴을 변경하는 토글 버튼 컴포넌트입니다.
 - **`src/components/FontScaleToggle.module.css`**: 글꼴 크기 토글 버튼의 스타일 파일입니다.
 - **`src/components/FontScaleToggle.tsx`**: 텍스트의 크기를 확대/축소할 수 있는 토글 버튼 컴포넌트입니다.
 - **`src/components/Header.module.css`**: 상단 헤더의 스타일 파일입니다.
@@ -110,6 +108,8 @@ npx serve out
 - **`src/components/HistoryList.tsx`**: 과거 주간 보고서 목록을 렌더링하는 컨테이너 컴포넌트입니다.
 - **`src/components/HistoryListItem.module.css`**: 기록 목록 아이템 컴포넌트의 스타일 파일입니다.
 - **`src/components/HistoryListItem.tsx`**: 과거 주간 보고서 목록 중 개별 항목을 표시하는 컴포넌트입니다.
+- **`src/components/ImportDataButton.module.css`**: 데이터 가져오기 버튼의 스타일 파일입니다.
+- **`src/components/ImportDataButton.tsx`**: JSON 파일을 통해 백업 데이터를 가져오는 버튼 및 다이얼로그 컴포넌트입니다.
 - **`src/components/InAppBrowserNotice.module.css`**: 인앱 브라우저 알림 컴포넌트의 스타일 파일입니다.
 - **`src/components/InAppBrowserNotice.tsx`**: 카카오톡 등 인앱 브라우저에서 실행될 때 외부 브라우저 사용을 권장하는 알림 배너입니다.
 - **`src/components/InstallPromptButton.module.css`**: PWA 설치 유도 버튼의 스타일 파일입니다.
@@ -180,6 +180,7 @@ npx serve out
 - **`src/lib/expenseItems.ts`**: 회계 지출 관련 카테고리나 항목들의 기본 정의를 담고 있는 파일입니다.
 - **`src/lib/exportData.ts`**: 사용자의 로컬 스토리지 데이터를 JSON 파일 형태로 내보내는(export) 기능을 담당합니다.
 - **`src/lib/id.ts`**: 고유 식별자(ID) 생성을 위한 유틸리티 함수(UUID 생성 등)가 포함된 파일입니다.
+- **`src/lib/meditations.json`**: 묵주기도 각 신비와 단에 대한 묵상(기도문) 텍스트를 담고 있는 데이터 파일입니다.
 - **`src/lib/monthlyReportUtils.ts`**: 월간 보고서 생성을 위한 데이터 필터링, 그룹화, 통계 계산 유틸리티 함수 모음입니다.
 - **`src/lib/prayerSubmission.ts`**: 외부(또는 타 단원)로부터 기도 기록 데이터를 받아 처리/병합하는 로직을 담고 있습니다.
 - **`src/lib/prayerTexts.ts`**: 앱에서 제공되는 다양한 기도문들의 원문 텍스트 데이터가 하드코딩되어 있는 파일입니다.
