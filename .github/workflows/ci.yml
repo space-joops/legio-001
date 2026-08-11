@@ -9,6 +9,9 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
 
     steps:
     - name: Checkout code
@@ -34,3 +37,17 @@ jobs:
 
     - name: Build
       run: npm run build
+
+    - name: Create Issue on Failure
+      if: failure() && github.ref == 'refs/heads/main'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '🚨 [CI 실패] 자동 생성: 에러 또는 오타가 발견되었습니다',
+            body: `정적 분석(린트/타입) 또는 테스트 과정에서 오류가 발생했습니다.\n\n자세한 에러 로그는 아래 링크에서 확인해 주세요:\n👉 [GitHub Actions 실행 로그 보기](${runUrl})`,
+            labels: ['bug', 'ci']
+          });
