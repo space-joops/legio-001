@@ -6,7 +6,7 @@ import { ROSARY_SET_SIZE } from "@/lib/constants";
 import {
   buildRosarySteps,
   getMysteryIdForDate,
-  getMysterySection,
+  getMysteryShortHeading,
   type MysteryId,
 } from "@/lib/rosaryMysteries";
 import { MysteryImageDialog } from "./MysteryImageDialog";
@@ -47,9 +47,16 @@ interface RosaryGuideProps {
   onRecordSet: () => void;
   /** 현재 묵주 세트에서 이미 채운 구슬 수(0~4). 이어서 바칠 위치를 정하는 데 쓴다. */
   progress?: number;
+  /**
+   * 현재 화면의 신비·단 표시("고통의 신비 (화요일·금요일) · 1단")가 바뀔 때 알린다.
+   * 부모(`CounterGrid`)가 이 값을 창 제목 라인에 잇는다. null = 표시할 것 없음.
+   * ⚠️ 반드시 안정된 함수(setState 자체)를 넘길 것 — 인라인 화살표 함수를 넘기면
+   *    매 렌더마다 아래 effect 가 다시 돈다.
+   */
+  onContextChange?: (context: string | null) => void;
 }
 
-export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
+export function RosaryGuide({ onRecordSet, progress = 0, onContextChange }: RosaryGuideProps) {
 
   /** 오늘의 신비. 처음엔 null — 아래 useEffect 가 브라우저에서 정한다. */
   const [mysteryId, setMysteryId] = useState<MysteryId | null>(null);
@@ -72,6 +79,8 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   const rootRef = useRef<HTMLElement>(null);
   /** 손가락을 따라 움직이는 요소. `useSwipe` 가 이 요소의 style 을 직접 만진다. */
   const contentRef = useRef<HTMLDivElement>(null);
+  /** "기록할까요?" 확인창. 뜰 때 화면 안으로 스크롤해 준다. */
+  const confirmRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // 오늘이 며칠인지는 **브라우저에서만** 알 수 있다. 이 앱은 빌드할 때 화면을
@@ -112,6 +121,29 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
   useEffect(() => {
     rootRef.current?.scrollIntoView({ block: "start" });
   }, [index]);
+
+  // 오늘의 신비("영광의 신비(수·일)")를 부모에게 올려 보낸다. 창 제목 라인
+  // ("묵주기도 · …")에 붙는다. 한 줄에 들어가야 해서 요일은 축약형을 쓴다.
+  // 몇 번째 단인지는 묵상 문장의 "N." 번호가 알려 주므로 제목에는 넣지 않는다.
+  useEffect(() => {
+    if (!onContextChange) return;
+    if (!mysteryId) {
+      // 아직 오늘의 신비를 못 정했다 — 제목은 "묵주기도"만.
+      onContextChange(null);
+      return;
+    }
+    onContextChange(getMysteryShortHeading(mysteryId));
+  }, [mysteryId, onContextChange]);
+
+  // 창이 닫혀 언마운트되면 제목에서 신비 표시를 지운다.
+  useEffect(() => () => onContextChange?.(null), [onContextChange]);
+
+  // 확인창은 마지막 화면의 긴 성모찬송 **아래**에 생긴다. 화살표는 화면 가운데에
+  // 있으니, 그대로 두면 "기록할까요?"가 화면 밖에 뜬 것을 모르고 지나칠 수 있다.
+  // 떠오르는 순간 화면 안으로 데려온다.
+  useEffect(() => {
+    if (asking) confirmRef.current?.scrollIntoView({ block: "nearest" });
+  }, [asking]);
 
   const isLast = index >= steps.length - 1;
 
@@ -160,12 +192,6 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
 
   const step = steps[index];
 
-  // 상단에 작게 뜨는 현재 위치. 예) "환희의 신비 (월요일·토요일) · 3단"
-  // 시작·마침 기도에는 단이 없으므로 신비 이름만 남는다.
-  const mysteryHeading = getMysterySection(mysteryId).heading;
-  const decadeLabel = step.decade ? `${step.decade}단` : null;
-  const context = [mysteryHeading, decadeLabel].filter(Boolean).join(" · ");
-
   // 묵상 문장이 없는 화면(기도문 화면 전부)에서는 성화를 눌러도 팝업이 열리지
   // 않도록 아예 핸들러를 넘기지 않는다.
   const canOpenImage = Boolean(step.image && step.explanation && step.explanation.length > 0);
@@ -197,17 +223,21 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
           slideDirection === "right" ? styles.slideInRight : styles.slideInLeft
         }`}
       >
+        {/* 화살표는 스텝 뷰의 기도 이름 양끝에 붙는다. 첫 화면에서는 ◀ 자리를
+            비우고, 확인창이 떠 있는 동안에는 둘 다 치운다(스와이프를 막는 것과
+            같은 이유). */}
         <RosaryStepView
           step={step}
-          context={context}
           stepIndex={index}
           onImageClick={openImage}
+          onPrev={!asking && index > 0 ? handlePrev : undefined}
+          onNext={!asking ? handleNext : undefined}
         />
 
         {asking ? (
           /* 중첩 <dialog> 대신 그냥 이 자리에 그린다. 이미 열려 있는 창 안에
              모달을 또 띄우는 것보다, 같은 흐름의 한 단계로 보여 주는 편이 안전하다. */
-          <div className={styles.confirm}>
+          <div ref={confirmRef} className={styles.confirm}>
             <p className={styles.confirmText}>묵주기도 {ROSARY_SET_SIZE}단을 기록할까요?</p>
             <div className={styles.actions}>
               <button
@@ -223,40 +253,7 @@ export function RosaryGuide({ onRecordSet, progress = 0 }: RosaryGuideProps) {
             </div>
           </div>
         ) : (
-          <>
-            {recorded && <p className={styles.recorded}>묵주기도 5단을 기록했습니다.</p>}
-            <div className={styles.bottomNav}>
-              <button
-                type="button"
-                className={styles.bottomNavButton}
-                onClick={handlePrev}
-                disabled={index === 0}
-                aria-label="이전"
-                title="이전"
-              >
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                  <polygon points="15,4 5,12 15,20"></polygon>
-                </svg>
-              </button>
-
-              {/* "12 / 77" — 어디쯤 왔는지 알려 주는 유일한 표시다. */}
-              <p className={styles.position}>
-                {index + 1} / {steps.length}
-              </p>
-
-              <button
-                type="button"
-                className={styles.bottomNavButton}
-                onClick={handleNext}
-                aria-label="다음"
-                title="다음"
-              >
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                  <polygon points="9,4 19,12 9,20"></polygon>
-                </svg>
-              </button>
-            </div>
-          </>
+          recorded && <p className={styles.recorded}>묵주기도 5단을 기록했습니다.</p>
         )}
       </div>
 
