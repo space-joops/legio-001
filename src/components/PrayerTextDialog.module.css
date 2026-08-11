@@ -39,10 +39,9 @@
   text-align: center;
 }
 
-/* 제목 뒤에 붙는 현재 위치. 예) "묵주기도 · 고통의 신비 (화요일·금요일) · 1단" */
+/* 제목 뒤에 붙는 오늘의 신비. 예) "묵주기도 · 영광의 신비(수·일)"
+   글자 크기·굵기는 제목과 같게 두고 색으로만 살짝 구분한다. */
 .titleSuffix {
-  font-size: var(--font-size-base);
-  font-weight: 700;
   color: var(--color-text-muted);
 }
 

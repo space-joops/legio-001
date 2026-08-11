@@ -98,6 +98,17 @@ export function getMysterySection(id: MysteryId): PrayerTextSection {
 }
 
 /**
+ * 창 제목 한 줄에 들어가는 축약형 — "영광의 신비 (수요일·일요일)" → "영광의 신비(수·일)".
+ * 원본 데이터는 그대로 두고 보여 줄 때만 줄인다(전문 화면·lab 페이지는 원문 사용).
+ */
+export function getMysteryShortHeading(id: MysteryId): string {
+  // heading 은 PrayerTextSection 에서 선택 필드지만 신비 섹션 4개에는 항상 있다.
+  return (getMysterySection(id).heading ?? "")
+    .replace(/\s*\(/, "(")
+    .replace(/([월화수목금토일])요일/g, "$1");
+}
+
+/**
  * 안내 화면 **한 장**의 내용.
  *
  * 이 객체 하나가 화면 하나다. 77개가 모이면 묵주기도 한 바퀴가 된다.
@@ -112,8 +123,9 @@ export interface RosaryStep {
   /** 단 안에 있을 때만 1~5. 시작·마침 기도에는 없다. */
   decade?: number;
   /**
-   * 그 단 내내 화면 위에 함께 떠 있는 묵상 문장. "N단: " 접두어는 뗀다 —
-   * 단 번호는 창 제목 라인("묵주기도 · 고통의 신비 … · 1단")이 이미 보여 준다.
+   * 그 단 내내 화면 위에 함께 떠 있는 묵상 문장. "N단: " 접두어 대신
+   * "N. " 번호를 붙인다 — 예) "1. 예수님께서 부활하심을 묵상합시다".
+   * 몇 번째 단인지는 이 번호가 알려 주므로 창 제목에는 단 표시가 없다.
    * 신비 선포 화면에는 없다: 그 화면은 제목 자체가 이 문장이라 두 번 보일 필요가 없다.
    * 시작·마침 기도에도 없다.
    */
@@ -169,8 +181,9 @@ export function buildRosarySteps(id: MysteryId): RosaryStep[] {
       meditation,
     }));
 
-  // "1단: 예수님께서 …" → "예수님께서 …". 단 번호는 창 제목 라인이 따로 보여 준다.
-  const stripDecadePrefix = (line: string) => line.replace(/^\d+단:\s*/, "");
+  // "1단: 예수님께서 …" → "1. 예수님께서 …". 단 번호를 문장 번호로 바꾼다.
+  const numberMeditation = (line: string, decade: number) =>
+    `${decade}. ${line.replace(/^\d+단:\s*/, "")}`;
 
   return [
     // ── 시작 기도 6장 ────────────────────────────────────────────
@@ -186,7 +199,7 @@ export function buildRosarySteps(id: MysteryId): RosaryStep[] {
     //      뒤의 `.flat()` 이 그걸 70장짜리 한 줄로 편다. `.flat()` 은 한 겹만
     //      펴기 때문에, 안쪽의 `hailMarys(...)` 는 `...` 로 미리 풀어 둬야 한다.
     ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => {
-      const meditation = stripDecadePrefix(mystery.lines[d]);
+      const meditation = numberMeditation(mystery.lines[d], d + 1);
       return [
         // 신비 선포 화면. 제목이 곧 본문이라 `lines` 가 빈 배열이고, 대신 성화와
         // 묵상이 붙는다. meditation 필드는 일부러 안 준다 — 제목과 같은 문장이

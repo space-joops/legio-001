@@ -3,6 +3,8 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
+// 제목이 길어질 때(묵주기도 · 신비 표시) 두 줄로 꺾는 대신 폰트를 줄여 주는 훅.
+import { useFitLine } from "@/hooks/useFitLine";
 // 기도문 데이터 구조에 대한 타입 정의를 가져옵니다.
 import type { PrayerTextEntry } from "@/lib/prayerTexts";
 // CSS 모듈을 통해 컴포넌트 스코프의 스타일을 가져옵니다.
@@ -60,6 +62,9 @@ export function PrayerTextDialog({
   // entry 객체가 존재하면(truthy) 모달을 열어야 하는 상태(true)로 판단합니다.
   const open = Boolean(entry);
 
+  // 제목("묵주기도 · 영광의 신비(수·일)")이 칸을 넘치면 폰트를 줄여 한 줄을 지킨다.
+  const titleRef = useFitLine<HTMLHeadingElement>(`${title}|${titleSuffix ?? ""}`);
+
   // 모달의 열림/닫힘 상태를 동기화하기 위한 useEffect 훅
   // open 상태가 바뀔 때마다 실행됩니다.
   useEffect(() => {
@@ -93,9 +98,12 @@ export function PrayerTextDialog({
       {/* entry가 있을 때만 모달 내부 콘텐츠를 렌더링합니다. */}
       {entry && (
         <div className={styles.screen}>
-          {/* 기도 제목. titleSuffix 가 있으면 현재 위치(신비·단)를 같은 줄에 잇는다.
+          {/* 기도 제목. titleSuffix 가 있으면 오늘의 신비를 같은 줄·같은 크기로 잇는다.
               가이드 화면(묵주기도)은 본문도 가운데 정렬이라 제목도 가운데로 맞춘다. */}
-          <h2 className={guide ? `${styles.title} ${styles.titleCentered}` : styles.title}>
+          <h2
+            ref={titleRef}
+            className={guide ? `${styles.title} ${styles.titleCentered}` : styles.title}
+          >
             {title}
             {titleSuffix && (
               <span className={styles.titleSuffix}>{` · ${titleSuffix}`}</span>

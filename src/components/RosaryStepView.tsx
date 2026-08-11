@@ -1,5 +1,6 @@
 "use client";
 
+import { useFitLine } from "@/hooks/useFitLine";
 import type { RosaryStep } from "@/lib/rosaryMysteries";
 import styles from "./RosaryGuide.module.css";
 
@@ -44,6 +45,19 @@ export function RosaryStepView({
 }: RosaryStepViewProps) {
   const canOpenImage = Boolean(onImageClick);
 
+  // 기도 이름이 칸을 넘치면(글자 크기 설정을 키웠을 때 등) 두 줄로 꺾는 대신
+  // 폰트를 줄여 한 줄에 맞춘다. stepIndex 를 섞는 이유: key 로 요소가 새로
+  // 만들어져도 글자가 같으면(연속 성모송) 훅이 다시 안 돌기 때문이다.
+  // 최소 0.8rem — 좁은 화면 + 큰 글자 설정에서도 "시작 기도 · 사도신경"이
+  // 한 줄에 들어가는 하한선이다.
+  const headingRef = useFitLine<HTMLParagraphElement>(
+    `${stepIndex}|${step.title}|${step.ordinal ?? ""}`,
+    0.8
+  );
+  // 신비 선포 화면(lines 가 빈 화면)의 제목은 짧은 기도 이름이 아니라 긴 문장이다.
+  // 한 줄에 욱여넣으면 깨알글씨가 되므로 줄여 넣지 않고 원래 크기로 줄바꿈한다.
+  const isSentenceTitle = step.lines.length === 0;
+
   return (
     <>
       <div className={styles.stickyHead}>
@@ -75,7 +89,7 @@ export function RosaryStepView({
               그래야 CSS 깜박임 애니메이션이 처음부터 다시 재생된다. 기도가 넘어갔다는
               걸 눈으로 알리는 게 목적이라 매 단계마다 다시 깜박여야 하는데, 성모송처럼
               제목 글자가 같으면 React 가 노드를 그대로 재사용해 애니메이션이 안 뛴다. */}
-          <p key={stepIndex} className={styles.heading}>
+          <p key={stepIndex} ref={isSentenceTitle ? undefined : headingRef} className={styles.heading}>
             {step.title}
             {/* [TS] `{값 && <JSX/>}` — 값이 있을 때만 그린다. ordinal 은 반복되는
                 기도("3 / 10")에만 있다. → docs/typescript-for-python.md#8-jsx-읽는-법 */}

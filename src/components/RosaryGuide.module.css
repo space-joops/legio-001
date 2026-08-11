@@ -127,6 +127,9 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   margin: 0;
+  /* 그리드 1fr 칸이 글자의 min-content 폭까지 늘어나 화살표를 밀어내지 않게.
+     이게 없으면 useFitLine 도 "넘침 없음"으로 착각해 글자를 못 줄인다. */
+  min-width: 0;
   font-size: var(--font-size-lg);
   font-weight: 800;
   line-height: 1.4;

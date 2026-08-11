@@ -6,7 +6,7 @@ import { ROSARY_SET_SIZE } from "@/lib/constants";
 import {
   buildRosarySteps,
   getMysteryIdForDate,
-  getMysterySection,
+  getMysteryShortHeading,
   type MysteryId,
 } from "@/lib/rosaryMysteries";
 import { MysteryImageDialog } from "./MysteryImageDialog";
@@ -122,22 +122,18 @@ export function RosaryGuide({ onRecordSet, progress = 0, onContextChange }: Rosa
     rootRef.current?.scrollIntoView({ block: "start" });
   }, [index]);
 
-  // 현재 위치("환희의 신비 (월요일·토요일) · 3단")를 부모에게 올려 보낸다.
-  // 창 제목 라인("묵주기도 · …")에 붙는다. 시작·마침 기도에는 단이 없으므로
-  // 신비 이름만 남는다.
+  // 오늘의 신비("영광의 신비(수·일)")를 부모에게 올려 보낸다. 창 제목 라인
+  // ("묵주기도 · …")에 붙는다. 한 줄에 들어가야 해서 요일은 축약형을 쓴다.
+  // 몇 번째 단인지는 묵상 문장의 "N." 번호가 알려 주므로 제목에는 넣지 않는다.
   useEffect(() => {
     if (!onContextChange) return;
-    if (!mysteryId || steps.length === 0) {
+    if (!mysteryId) {
       // 아직 오늘의 신비를 못 정했다 — 제목은 "묵주기도"만.
       onContextChange(null);
       return;
     }
-    const step = steps[index];
-    const decadeLabel = step.decade ? `${step.decade}단` : null;
-    onContextChange(
-      [getMysterySection(mysteryId).heading, decadeLabel].filter(Boolean).join(" · ")
-    );
-  }, [mysteryId, steps, index, onContextChange]);
+    onContextChange(getMysteryShortHeading(mysteryId));
+  }, [mysteryId, onContextChange]);
 
   // 창이 닫혀 언마운트되면 제목에서 신비 표시를 지운다.
   useEffect(() => () => onContextChange?.(null), [onContextChange]);
