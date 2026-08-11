@@ -1,6 +1,6 @@
 # 레지오 마리애 주간 활동 보고
 
-레지오 마리애 단원이 한 주간(주회~주회) 동안의 개인 기도 활동(평일미사참례, 사제를 위한 기도, 주모경, 묵주기도, 화살기도)을 큰 버튼으로 기록하고, 회차 단위로 주간 활동 보고를 만들어 공유할 수 있는 PWA입니다. 한국어/영어를 지원하며, 데이터는 기기의 로컬 스토리지에만 저장됩니다.
+레지오 마리애 단원이 한 주간(주회~주회) 동안의 개인 기도 활동(평일미사참례, 사제를 위한 기도, 주모경, 묵주기도, 화살기도)을 큰 버튼으로 기록하고, 회차 단위로 주간 활동 보고를 만들어 공유할 수 있는 PWA입니다. 한국어 전용이며, 데이터는 기기의 로컬 스토리지에만 저장됩니다.
 
 ## 시작하기
 
@@ -29,7 +29,6 @@ npx serve out
 
 - 회차/주회 일시 기반 주간 활동 기록, 탭 카운터 + 직접 숫자 입력
 - 지난 주간 보고 기록 열람 및 공유(Web Share API, 미지원 브라우저는 클립보드 복사)
-- 한국어/영어 전환
 - PWA 설치(홈 화면 추가) 및 오프라인 앱 셸 지원
 - 설정에서 데이터 내보내기(JSON) / 초기화
 
@@ -115,8 +114,6 @@ npx serve out
 - **`src/components/InAppBrowserNotice.tsx`**: 카카오톡 등 인앱 브라우저에서 실행될 때 외부 브라우저 사용을 권장하는 알림 배너입니다.
 - **`src/components/InstallPromptButton.module.css`**: PWA 설치 유도 버튼의 스타일 파일입니다.
 - **`src/components/InstallPromptButton.tsx`**: 사용자가 PWA 앱을 기기의 홈 화면에 추가하도록 유도하는 버튼 컴포넌트입니다.
-- **`src/components/LanguageToggle.module.css`**: 언어 변경 토글 버튼의 스타일 파일입니다.
-- **`src/components/LanguageToggle.tsx`**: 지원되는 언어(한국어/영어) 간을 전환하는 토글 버튼 컴포넌트입니다.
 - **`src/components/OnboardingGate.module.css`**: 초기 온보딩 화면의 스타일 파일입니다.
 - **`src/components/OnboardingGate.tsx`**: 앱을 처음 실행하는 사용자에게 초기 설정(프로필 등)을 안내하는 게이트 컴포넌트입니다.
 - **`src/components/PageShell.module.css`**: 기본 페이지 레이아웃 셸의 스타일 파일입니다.
@@ -174,14 +171,6 @@ npx serve out
 - **`src/hooks/useRoster.ts`**: 서기가 관리하는 쁘레시디움 단원 명부(로스터) 데이터를 관리하는 커스텀 훅입니다.
 - **`src/hooks/useSchedule.ts`**: 주회 일정 데이터를 로컬 스토리지에서 읽어오고 설정하는 커스텀 훅입니다.
 - **`src/hooks/useSwipe.ts`**: 좌우 스와이프(손가락으로 쓸어 넘기기)를 감지하는 커스텀 훅입니다. 묵주기도 안내 화면에서 다음/이전으로 넘어가는 데 씁니다.
-
-### `src/i18n/`
-
-- **`src/i18n/LanguageContext.tsx`**: 앱 전역에 걸쳐 현재 선택된 언어 상태와 번역 함수를 제공하는 React Context입니다.
-- **`src/i18n/dictionaries/en.ts`**: 앱 내 텍스트의 영어 번역 데이터를 담고 있는 사전 파일입니다.
-- **`src/i18n/dictionaries/index.ts`**: 한국어와 영어 등 모든 번역 사전 모듈을 취합하여 내보내는 인덱스 파일입니다.
-- **`src/i18n/dictionaries/ko.ts`**: 앱 내 텍스트의 한국어 번역 데이터를 담고 있는 사전 파일입니다.
-- **`src/i18n/useTranslation.ts`**: 현재 언어 설정에 맞는 번역 텍스트를 컴포넌트에서 쉽게 가져오게 해주는 훅(t 함수 반환)입니다.
 
 ### `src/lib/`
 

@@ -3,9 +3,7 @@
 /**
  * Last-resort boundary. The app is a static export with no server, so an
  * uncaught render error would otherwise leave a blank white page with no way
- * back — worse than useless for the audience this app is built for. Text is
- * hardcoded Korean rather than going through useTranslation: the i18n provider
- * lives below this boundary and may be exactly what failed.
+ * back — worse than useless for the audience this app is built for.
  */
 /**
  * 앱 어디서든 처리하지 못한 오류가 났을 때 대신 보여 주는 마지막 화면.

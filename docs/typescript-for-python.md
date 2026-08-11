@@ -42,7 +42,7 @@ count = 1;
 ```
 
 **이 저장소는 거의 전부 `const` 입니다.** `let` 은 값을 갈아 끼워야 할 때만 씁니다
-(예: `src/i18n/useTranslation.ts` 의 경로 탐색, `src/hooks/useCurrentReport.ts` 의 `removeRosaryBead`).
+(예: `src/hooks/useCurrentReport.ts` 의 `removeRosaryBead`, `src/lib/treasury.ts` 의 잔액 누적).
 
 ### ⚠️ `const` 는 "내용이 안 바뀐다"가 아닙니다
 
@@ -385,13 +385,14 @@ const x = value satisfies Profile; // "Profile 과 맞는지 검사해라" — �
 
 `as` 는 위험하고 `satisfies` 는 안전합니다. `src/lib/storage.ts` 의 `EMPTY_MONTHLY_REPORT_DEFAULTS` 가 `satisfies` 를 쓰는 이유가 이것입니다 — 필드 이름을 잘못 적으면 바로 잡히면서도, 각 값의 구체적 타입은 남습니다.
 
-`src/i18n/dictionaries/en.ts` 의 마지막 줄도 같은 장치입니다.
+`src/app/secretary/report/page.tsx` 의 `MEMBER_COUNT_BUCKETS` 도 같은 장치를 씁니다.
 
 ```ts
-} satisfies typeof ko;   // 한국어 사전에 있는 키가 영어에 빠지면 컴파일 에러
+] as const satisfies readonly { key: keyof MonthlyReport; label: string }[];
 ```
 
-**번역 문구를 추가할 때 `ko.ts` 와 `en.ts` 를 둘 다 고쳐야 하는 이유가 바로 이 한 줄입니다.**
+`as const` 로 각 `key` 의 구체적 문자열 타입을 남기면서, 동시에 그 값이 정말
+`MonthlyReport` 의 필드 이름인지 검사받습니다. 오타를 내면 바로 잡힙니다.
 
 ---
 
@@ -573,7 +574,7 @@ Next.js 는 기본적으로 빌드할 때(서버에서) 컴포넌트를 실행�
 | 5 | `src/hooks/useCurrentReport.ts` | 200 | 불변 갱신, `useCallback`, 묵주 구슬 로직 |
 | 6 | `src/app/page.tsx` | 240 | 화면 조립, 조기 반환, JSX |
 | 7 | `src/components/CounterButton.tsx` | 240 | 조건부 렌더, `Array.from`, 하위 컴포넌트 분리 |
-| 8 | `src/i18n/LanguageContext.tsx` | 75 | Context 4단 구조 |
+| 8 | `src/components/ToastProvider.tsx` | 80 | Context 4단 구조 |
 | 9 | `src/lib/monthlyReportUtils.ts` | 800 | JSX 없이 TypeScript 만. 서기 도메인 로직 |
 | 10 | `src/app/secretary/report/page.tsx` | 1,230 | 위의 전부가 한꺼번에 나오는 종합편 |
 
@@ -586,7 +587,7 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
-- `src/i18n/dictionaries/ko.ts` 에서 문구 하나를 바꿔 보세요 → 저장하면 화면이 즉시 바뀝니다.
+- `src/components/BottomNav.tsx` 에서 탭 이름을 바꿔 보세요 → 저장하면 화면이 즉시 바뀝니다. (화면 문구는 전부 이렇게 코드에 직접 적혀 있습니다.)
 - `src/lib/constants.ts` 의 `PRAYER_ITEMS` 순서를 바꿔 보세요 → 홈 화면 카운터 순서가 따라 바뀝니다.
 - 크롬 개발자 도구(F12) → **Application → Local Storage** 에서 `legioMariae.*` 값을 직접 들여다보세요. 이 앱의 데이터베이스가 통째로 거기 있습니다.
 - `console.log()` 를 아무 데나 넣고 Console 탭에서 확인해 보세요.

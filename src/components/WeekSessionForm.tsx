@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslation } from "@/i18n/useTranslation";
 import { selectOnFocus } from "@/lib/selectOnFocus";
 import styles from "./WeekSessionForm.module.css";
 
@@ -28,7 +27,6 @@ export function WeekSessionForm({
   onSubmit,
   submitLabel,
 }: WeekSessionFormProps) {
-  const { t } = useTranslation();
 
   return (
     <form
@@ -39,7 +37,7 @@ export function WeekSessionForm({
       }}
     >
       <label className={styles.field}>
-        <span className={styles.label}>{t("week.sessionNumber")}</span>
+        <span className={styles.label}>회차</span>
         <input
           type="number"
           inputMode="numeric"
@@ -48,12 +46,12 @@ export function WeekSessionForm({
           value={sessionNumber}
           onChange={(e) => onSessionNumberChange(e.target.value)}
           onFocus={selectOnFocus}
-          placeholder={t("week.sessionNumberPlaceholder")}
+          placeholder="예: 3"
           className={styles.input}
         />
       </label>
       <label className={styles.field}>
-        <span className={styles.label}>{t("week.meetingDateTime")}</span>
+        <span className={styles.label}>주회 일시</span>
         <input
           type="datetime-local"
           required

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { useTranslation } from "@/i18n/useTranslation";
 import { selectOnFocus } from "@/lib/selectOnFocus";
 import styles from "./CounterButton.module.css";
 
@@ -37,7 +36,6 @@ interface CounterButtonProps {
 
 /** 묵주 구슬 표시줄. 채운 알과 빈 알을 그리고, 같은 내용을 글자로도 적는다. */
 function BeadRow({ setSize, setProgress }: { setSize: number; setProgress: number }) {
-  const { t } = useTranslation();
 
   return (
     // 구슬 개수를 그림과 글자 양쪽으로 알린다. 채운 알과 빈 알은 색으로만
@@ -53,11 +51,7 @@ function BeadRow({ setSize, setProgress }: { setSize: number; setProgress: numbe
         ))}
       </span>
       <span className={styles.beadCaption}>
-        {/* 번역 문구에는 값 끼워 넣기 기능이 없어서, "{done}/{total}" 자리를
-            직접 바꿔치기한다. */}
-        {t("counters.setProgress")
-          .replace("{done}", String(setProgress))
-          .replace("{total}", String(setSize))}
+        {setProgress} / {setSize}단
       </span>
     </p>
   );
@@ -83,7 +77,6 @@ function TapFace({
   onDecrement,
   onOpenNumericMode,
 }: TapFaceProps) {
-  const { t } = useTranslation();
 
   // [TS] `<>...</>` 는 Fragment 다. JSX 는 한 덩어리만 돌려줄 수 있는데,
   //      쓸데없는 <div> 를 하나 더 만들고 싶지 않을 때 이걸로 묶는다.
@@ -93,7 +86,7 @@ function TapFace({
         type="button"
         className={styles.tapArea}
         onClick={onIncrement}
-        aria-label={`${label} ${t("counters.tapToRecord")}`}
+        aria-label={`${label} ${"탭하여 기록"}`}
       >
         <span className={styles.count}>{count}</span>
       </button>
@@ -105,12 +98,12 @@ function TapFace({
           onClick={onDecrement}
           // 0에서 더 내려갈 곳이 없으면 버튼을 잠근다.
           disabled={count <= 0 && setProgress <= 0}
-          aria-label={`${label} ${t("counters.minus")}`}
+          aria-label={`${label} ${"빼기"}`}
         >
           −
         </button>
         <button type="button" className={styles.linkButton} onClick={onOpenNumericMode}>
-          {t("counters.directInput")}
+          직접 숫자 입력
         </button>
       </div>
     </>
@@ -135,7 +128,6 @@ function NumericEntry({
   onBlur,
   onBackToTapMode,
 }: NumericEntryProps) {
-  const { t } = useTranslation();
 
   return (
     <>
@@ -154,11 +146,11 @@ function NumericEntry({
           className={styles.numberInput}
         />
         <button type="button" className={styles.applyButton} onClick={onApply}>
-          {t("counters.apply")}
+          확인
         </button>
       </div>
       <button type="button" className={styles.linkButton} onClick={onBackToTapMode}>
-        {t("counters.counterView")}
+        카운터로 보기
       </button>
     </>
   );
@@ -178,7 +170,6 @@ export function CounterButton({
   //      파이썬의 `def f(setProgress=0)` 과 같다.
   setProgress = 0,
 }: CounterButtonProps) {
-  const { t } = useTranslation();
   const [numericMode, setNumericMode] = useState(false);
   // 타이핑 중인 값은 문자열로 들고 있는다. 지우는 도중의 빈 칸("")도 담아야 하고,
   // 숫자로 바꾸는 건 확정할 때 한 번만 하면 되기 때문이다.
@@ -215,7 +206,7 @@ export function CounterButton({
         {unitLabel && <span className={styles.unit}>({unitLabel})</span>}
         {onShowText && (
           <button type="button" className={styles.textLink} onClick={onShowText}>
-            {t("counters.viewPrayerText")}
+            기도문 보기
           </button>
         )}
       </div>

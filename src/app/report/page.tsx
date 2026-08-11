@@ -10,7 +10,6 @@ import { ShareButton } from "@/components/ShareButton";
 import { useToast } from "@/components/ToastProvider";
 import { useCurrentReport } from "@/hooks/useCurrentReport";
 import { useHistory } from "@/hooks/useHistory";
-import { useTranslation } from "@/i18n/useTranslation";
 import { formatShareText } from "@/lib/reportUtils";
 import type { PrayerCounts, PrayerItemKey } from "@/lib/types";
 import styles from "./page.module.css";
@@ -30,15 +29,14 @@ import styles from "./page.module.css";
 
 /** 수정 중일 때의 버튼 줄 — 취소 / 저장. */
 function EditActions({ onCancel, onSave }: { onCancel: () => void; onSave: () => void }) {
-  const { t } = useTranslation();
 
   return (
     <div className={styles.editActions}>
       <button type="button" className={styles.cancelButton} onClick={onCancel}>
-        {t("common.cancel")}
+        취소
       </button>
       <button type="button" className={styles.saveButton} onClick={onSave}>
-        {t("common.save")}
+        저장
       </button>
     </div>
   );
@@ -59,22 +57,21 @@ function ViewActions({
   onStartEditing,
   onRequestDelete,
 }: ViewActionsProps) {
-  const { t } = useTranslation();
 
   return (
     <>
       {canModify && (
         <button type="button" className={styles.editButton} onClick={onStartEditing}>
-          {t("common.edit")}
+          수정
         </button>
       )}
-      <ShareButton title={t("app.shortName")} text={shareText} />
+      <ShareButton title="레지오 활동보고" text={shareText} />
       <Link href="/history" className={styles.backLink}>
-        {t("report.backToHistory")}
+        기록으로 돌아가기
       </Link>
       {canModify && (
         <button type="button" className={styles.deleteButton} onClick={onRequestDelete}>
-          {t("report.delete")}
+          이 보고 삭제
         </button>
       )}
     </>
@@ -82,7 +79,6 @@ function ViewActions({
 }
 
 function ReportPageContent() {
-  const { t, language } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -106,9 +102,9 @@ function ReportPageContent() {
   if (!report) {
     return (
       <>
-        <p>{t("report.notFound")}</p>
+        <p>해당 보고를 찾을 수 없습니다.</p>
         <Link href="/history" className={styles.backLink}>
-          {t("report.backToHistory")}
+          기록으로 돌아가기
         </Link>
       </>
     );
@@ -129,13 +125,13 @@ function ReportPageContent() {
     if (draftCounts) updateReportEntry(report.id, draftCounts, draftNote);
     setDraftCounts(null);
     setIsEditing(false);
-    showToast(t("report.saved"));
+    showToast("저장되었습니다.");
   };
 
   const handleDelete = () => {
     removeReport(report.id);
     setConfirmingDelete(false);
-    showToast(t("report.deleted"));
+    showToast("삭제되었습니다.");
     router.push("/history");
   };
 
@@ -159,17 +155,17 @@ function ReportPageContent() {
       ) : (
         <ViewActions
           canModify={fromHistory !== null}
-          shareText={formatShareText(report, language)}
+          shareText={formatShareText(report)}
           onStartEditing={startEditing}
           onRequestDelete={() => setConfirmingDelete(true)}
         />
       )}
       <ConfirmDialog
         open={confirmingDelete}
-        title={t("report.deleteConfirmTitle")}
-        body={t("report.deleteConfirmBody")}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
+        title="이 주간 보고를 삭제할까요?"
+        body="삭제하면 되돌릴 수 없습니다."
+        confirmLabel="삭제"
+        cancelLabel="취소"
         onConfirm={handleDelete}
         onCancel={() => setConfirmingDelete(false)}
         danger
@@ -179,10 +175,9 @@ function ReportPageContent() {
 }
 
 export default function ReportPage() {
-  const { t } = useTranslation();
 
   return (
-    <PageShell title={t("report.title")}>
+    <PageShell title="주간 활동 보고">
       {/* useSearchParams() 를 쓰는 컴포넌트는 반드시 Suspense 안에 있어야 한다.
           정적 export 에서는 빌드 시점에 주소를 알 수 없기 때문이다. */}
       <Suspense fallback={null}>

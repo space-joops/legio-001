@@ -5,7 +5,6 @@ import { migrateLegacyTreasury } from "./treasury";
 import type {
   ActivityItem,
   ExpenseItem,
-  Language,
   MemberCounts,
   MonthlyReport,
   PraesidiumRoster,
@@ -131,9 +130,7 @@ export const DEFAULT_PROFILE: Profile = {
   parishName: "",
 };
 export const DEFAULT_SETTINGS: Settings = {
-  language: "ko",
   fontScale: "medium",
-  fontFamily: "system",
   splashEnabled: true,
 };
 const EMPTY_MEMBER_COUNTS_DEFAULT: MemberCounts = {
@@ -254,17 +251,6 @@ export const storage = {
   },
   setSettings(settings: Settings): void {
     writeJson(KEYS.settings, settings);
-  },
-  // 언어는 자기 키가 없다. Settings 안의 한 필드를 읽고 쓰는 지름길일 뿐이다.
-  //
-  // [TS] 객체 안에서 `this` 는 그 객체 자신(`storage`)을 가리킨다. 파이썬의
-  //      `self` 와 비슷해 보이지만 JS 의 `this` 는 "어떻게 호출됐는지"에 따라
-  //      달라진다. `storage.getLanguage()` 처럼 점을 찍어 부르는 한 안전하다.
-  getLanguage(): Language {
-    return this.getSettings().language;
-  },
-  setLanguage(language: Language): void {
-    this.setSettings({ ...this.getSettings(), language });
   },
 
   getCurrentReport(): WeeklyReport | null {

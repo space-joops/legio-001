@@ -1,8 +1,7 @@
-import { dictionaries } from "@/i18n/dictionaries";
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
 import { formatSubmissionBlock } from "./prayerSubmission";
-import type { Language, Profile, WeeklyReport } from "./types";
+import type { Profile, WeeklyReport } from "./types";
 
 /**
  * 주간 보고를 만들고, 정렬하고, 사람이 읽을 글자로 바꾸는 순수 함수 모음.
@@ -63,13 +62,13 @@ export function toDateTimeLocalValue(date: Date): string {
 }
 
 /** 저장된 ISO 문자열을 화면에 보여 줄 날짜·시각 문구로 바꾼다. */
-export function formatMeetingDateTime(iso: string, language: Language): string {
+export function formatMeetingDateTime(iso: string): string {
   if (!iso) return "";
   const date = new Date(iso);
   // 잘못된 날짜 문자열은 NaN 이 된다. "Invalid Date" 가 화면에 뜨지 않게 막는다.
   if (Number.isNaN(date.getTime())) return "";
   // Intl 은 브라우저가 기본 제공하는 국제화 도구다. 별도 라이브러리가 필요 없다.
-  return new Intl.DateTimeFormat(language === "ko" ? "ko-KR" : "en-US", {
+  return new Intl.DateTimeFormat("ko-KR", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -78,43 +77,29 @@ export function formatMeetingDateTime(iso: string, language: Language): string {
   }).format(date);
 }
 
-/** 12 → "12회차" (영어면 "Session 12"). */
-export function formatSessionLabel(sessionNumber: number, language: Language): string {
-  return language === "ko" ? `${sessionNumber}회차` : `Session ${sessionNumber}`;
+/** 12 → "12회차". */
+export function formatSessionLabel(sessionNumber: number): string {
+  return `${sessionNumber}회차`;
 }
 
-/**
- * 카카오톡 등으로 공유할 때 쓰는 텍스트를 만든다.
- *
- * 여기서는 `useTranslation()` 훅을 쓸 수 없다. 훅은 컴포넌트 안에서만 부를 수
- * 있는데 이 함수는 그냥 함수이기 때문이다. 그래서 번역 사전을 직접 import 하고
- * `language` 를 인자로 받아 고른다.
- */
-export function formatShareText(report: WeeklyReport, language: Language): string {
-  const dict = dictionaries[language];
-  const title = `${dict.app.shortName} (${formatSessionLabel(
-    report.sessionNumber,
-    language
-  )})`;
-  const dateLine = `${dict.report.meetingLabel}: ${formatMeetingDateTime(
-    report.meetingDateTime,
-    language
-  )}`;
+/** 카카오톡 등으로 공유할 때 쓰는 텍스트를 만든다. */
+export function formatShareText(report: WeeklyReport): string {
+  const title = `레지오 활동보고 (${formatSessionLabel(report.sessionNumber)})`;
+  const dateLine = `주회 일시: ${formatMeetingDateTime(report.meetingDateTime)}`;
   // [TS] `||` 는 왼쪽이 "거짓 같은 값"(빈 문자열·0·null…)이면 오른쪽을 쓴다.
   //      이름이 비었을 때 "-" 를 보이려는 것이라 여기서는 `||` 가 맞다.
   //      (`??` 였다면 빈 문자열은 통과해서 아무것도 안 보였을 것이다.)
-  const nameLine = `${dict.report.memberLabel}: ${report.memberName || "-"}`;
-  const lines = PRAYER_ITEMS.map((item) => {
-    const unit = item.key === "rosaryDecades" ? dict.counters.unitDecade : "";
-    return `${dict.counters[item.key]}: ${report.counts[item.key]}${unit}`;
-  });
+  const nameLine = `단원: ${report.memberName || "-"}`;
+  const lines = PRAYER_ITEMS.map(
+    (item) => `${item.label}: ${report.counts[item.key]}${item.unitLabel ?? ""}`
+  );
   // 메모가 비어 있으면 줄 자체를 넣지 않는다(빈 배열이면 아래 펼치기에서 사라진다).
   const noteLines = report.activityNote?.trim()
-    ? ["", `${dict.report.activityNoteLabel}: ${report.activityNote.trim()}`]
+    ? ["", `활동 사항: ${report.activityNote.trim()}`]
     : [];
   // 서기가 숫자를 손으로 옮겨 적지 않고 월례 보고서에 그대로 붙여 넣을 수 있도록,
   // 기계가 읽는 한 줄(LEGIO1|...)을 맨 뒤에 덧붙인다.
-  const submissionBlock = formatSubmissionBlock(report, dict.report.shareBlockLabel);
+  const submissionBlock = formatSubmissionBlock(report);
   // [TS] 배열 안의 `...lines` 는 그 배열을 그 자리에 펼쳐 넣는다.
   //      파이썬의 `[title, dateLine, *lines]` 와 같다.
   return [title, dateLine, nameLine, "", ...lines, ...noteLines].join("\n") + submissionBlock;

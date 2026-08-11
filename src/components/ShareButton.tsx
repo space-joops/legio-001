@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslation } from "@/i18n/useTranslation";
 import { useToast } from "./ToastProvider";
 import styles from "./ShareButton.module.css";
 
@@ -18,7 +17,6 @@ interface ShareButtonProps {
 }
 
 export function ShareButton({ title, text, url }: ShareButtonProps) {
-  const { t } = useTranslation();
   const { showToast } = useToast();
 
   const handleShare = async () => {
@@ -32,7 +30,7 @@ export function ShareButton({ title, text, url }: ShareButtonProps) {
     }
     try {
       await navigator.clipboard.writeText(url ? `${text}\n${url}` : text);
-      showToast(t("report.shareCopied"));
+      showToast("보고 내용이 복사되었습니다.");
     } catch {
       // clipboard unavailable; nothing more we can do here
     }
@@ -40,7 +38,7 @@ export function ShareButton({ title, text, url }: ShareButtonProps) {
 
   return (
     <button type="button" className={styles.button} onClick={handleShare}>
-      {t("report.share")}
+      공유하기
     </button>
   );
 }
