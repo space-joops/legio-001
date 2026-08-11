@@ -6,7 +6,9 @@ import styles from "./RosaryGuide.module.css";
 /**
  * 묵주기도 안내의 **화면 한 장**을 그린다.
  *
- * 위에서부터: 지금 위치("환희의 신비 · 3단") → 기도 이름 → 성화 → 기도문 본문.
+ * 위에서부터: 묵상 문장(단 안에서만) → 기도 이름 → 성화 → 기도문 본문.
+ * "환희의 신비 · 3단" 같은 현재 위치는 여기가 아니라 창 제목 라인이 보여 준다
+ * (`RosaryGuide` 가 `onContextChange` 로 올려 보낸다).
  *
  * 자기 상태가 하나도 없다. 어느 단계를 보여 줄지, 성화를 눌렀을 때 무엇을 할지는
  * 전부 부모(`RosaryGuide`)가 정한다. 그래서 이 파일은 "어떻게 생겼는가"만 담고,
@@ -18,8 +20,6 @@ import styles from "./RosaryGuide.module.css";
 
 interface RosaryStepViewProps {
   step: RosaryStep;
-  /** 상단에 작게 뜨는 현재 위치. 예) `"환희의 신비 (월요일·토요일) · 3단"` */
-  context: string;
   /**
    * 몇 번째 화면인지. 값을 쓰지는 않고 `key` 로만 쓴다 — 아래 설명 참고.
    */
@@ -28,13 +28,16 @@ interface RosaryStepViewProps {
   onImageClick?: () => void;
 }
 
-export function RosaryStepView({ step, context, stepIndex, onImageClick }: RosaryStepViewProps) {
+export function RosaryStepView({ step, stepIndex, onImageClick }: RosaryStepViewProps) {
   const canOpenImage = Boolean(onImageClick);
 
   return (
     <>
       <div className={styles.stickyHead}>
-        <p className={styles.context}>{context}</p>
+        {/* 단이 진행되는 동안 계속 떠 있는 묵상 문장. 예) "예수님께서 우리를
+            위하여 피땀 흘리심을 묵상합시다" — 성모송을 세는 중에도 무엇을
+            묵상하는지 잊지 않게 한다. 시작·마침·선포 화면에는 없다. */}
+        {step.meditation && <p className={styles.meditation}>{step.meditation}</p>}
         {/* key 가 바뀌면 React 는 이 <p> 를 고치는 게 아니라 **버리고 새로 만든다.**
             그래야 CSS 깜박임 애니메이션이 처음부터 다시 재생된다. 기도가 넘어갔다는
             걸 눈으로 알리는 게 목적이라 매 단계마다 다시 깜박여야 하는데, 성모송처럼

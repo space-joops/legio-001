@@ -111,6 +111,13 @@ export interface RosaryStep {
   lines: string[];
   /** 단 안에 있을 때만 1~5. 시작·마침 기도에는 없다. */
   decade?: number;
+  /**
+   * 그 단 내내 화면 위에 함께 떠 있는 묵상 문장. "N단: " 접두어는 뗀다 —
+   * 단 번호는 창 제목 라인("묵주기도 · 고통의 신비 … · 1단")이 이미 보여 준다.
+   * 신비 선포 화면에는 없다: 그 화면은 제목 자체가 이 문장이라 두 번 보일 필요가 없다.
+   * 시작·마침 기도에도 없다.
+   */
+  meditation?: string;
   /** 성화 이미지 경로. 신비 선포 화면 5장에만 붙는다. */
   image?: string;
   /** 성화를 눌렀을 때 뜨는 묵상 문장들. 묵상문이 없는 단은 빈 배열. */
@@ -152,14 +159,18 @@ export function buildRosarySteps(id: MysteryId): RosaryStep[] {
    *      `_` 는 안 쓰는 값이라는 관례적 이름(파이썬과 같다).
    *      → docs/typescript-for-python.md#4-배열
    */
-  const hailMarys = (count: number, decade?: number): RosaryStep[] =>
+  const hailMarys = (count: number, decade?: number, meditation?: string): RosaryStep[] =>
     Array.from({ length: count }, (_, i) => ({
       title: PRAYER_TITLE.hailMary,
       // [TS] 백틱 문자열 안의 `${...}` 는 파이썬 f-string 과 같다. → "3 / 10"
       ordinal: `${i + 1} / ${count}`,
       lines: HAIL_MARY,
       decade,
+      meditation,
     }));
+
+  // "1단: 예수님께서 …" → "예수님께서 …". 단 번호는 창 제목 라인이 따로 보여 준다.
+  const stripDecadePrefix = (line: string) => line.replace(/^\d+단:\s*/, "");
 
   return [
     // ── 시작 기도 6장 ────────────────────────────────────────────
@@ -174,23 +185,27 @@ export function buildRosarySteps(id: MysteryId): RosaryStep[] {
     // [TS] 여기 `Array.from(...)` 은 "배열 5개가 든 배열"(5 × 14장)을 만들고,
     //      뒤의 `.flat()` 이 그걸 70장짜리 한 줄로 편다. `.flat()` 은 한 겹만
     //      펴기 때문에, 안쪽의 `hailMarys(...)` 는 `...` 로 미리 풀어 둬야 한다.
-    ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => [
-      // 신비 선포 화면. 제목이 곧 본문이라 `lines` 가 빈 배열이고, 대신 성화와
-      // 묵상이 붙는다.
-      {
-        title: mystery.lines[d],
-        lines: [],
-        decade: d + 1,
-        // 경로를 문자열로 조립한다. 그래서 파일이 없어도 빌드는 통과하고,
-        // 대신 화면에서 404 가 난다(`RosaryStepView` 가 조용히 숨긴다).
-        image: `/images/rosary/${id}-${d + 1}.jpeg`,
-        explanation: MYSTERY_MEDITATIONS[id]?.[d + 1] ?? [],
-      },
-      { title: PRAYER_TITLE.ourFather, lines: OUR_FATHER, decade: d + 1 },
-      ...hailMarys(HAIL_MARYS_PER_DECADE, d + 1),
-      { title: PRAYER_TITLE.gloryBe, lines: GLORY_BE, decade: d + 1 },
-      { title: PRAYER_TITLE.salvation, lines: SALVATION_PRAYER, decade: d + 1 },
-    ]).flat(),
+    ...Array.from({ length: DECADES_PER_ROSARY }, (_, d) => {
+      const meditation = stripDecadePrefix(mystery.lines[d]);
+      return [
+        // 신비 선포 화면. 제목이 곧 본문이라 `lines` 가 빈 배열이고, 대신 성화와
+        // 묵상이 붙는다. meditation 필드는 일부러 안 준다 — 제목과 같은 문장이
+        // 두 번 보이기 때문이다.
+        {
+          title: meditation,
+          lines: [],
+          decade: d + 1,
+          // 경로를 문자열로 조립한다. 그래서 파일이 없어도 빌드는 통과하고,
+          // 대신 화면에서 404 가 난다(`RosaryStepView` 가 조용히 숨긴다).
+          image: `/images/rosary/${id}-${d + 1}.jpeg`,
+          explanation: MYSTERY_MEDITATIONS[id]?.[d + 1] ?? [],
+        },
+        { title: PRAYER_TITLE.ourFather, lines: OUR_FATHER, decade: d + 1, meditation },
+        ...hailMarys(HAIL_MARYS_PER_DECADE, d + 1, meditation),
+        { title: PRAYER_TITLE.gloryBe, lines: GLORY_BE, decade: d + 1, meditation },
+        { title: PRAYER_TITLE.salvation, lines: SALVATION_PRAYER, decade: d + 1, meditation },
+      ];
+    }).flat(),
 
     // ── 마침 기도 1장 ────────────────────────────────────────────
     { title: PRAYER_TITLE.closing, lines: SALVE_REGINA },

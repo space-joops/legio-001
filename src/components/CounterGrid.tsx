@@ -58,6 +58,9 @@ export function CounterGrid({
 }: CounterGridProps) {
   // 지금 기도문 창이 열려 있는 카운터. null 이면 창이 닫힌 상태다.
   const [viewingKey, setViewingKey] = useState<PrayerItemKey | null>(null);
+  // 묵주기도 안내가 올려 보내는 현재 위치("고통의 신비 (화요일·금요일) · 1단").
+  // 창 제목 라인에 잇는다. 가이드가 언마운트될 때 스스로 null 로 되돌린다.
+  const [rosaryContext, setRosaryContext] = useState<string | null>(null);
 
   const viewingItem = viewingKey ? PRAYER_ITEMS.find((item) => item.key === viewingKey) : null;
   // [TS] `PRAYER_TEXTS[viewingKey] ?? null` — 그 카운터에 기도문이 없으면
@@ -69,7 +72,13 @@ export function CounterGrid({
   // 넣으면 괄호가 겹치므로, 값으로 먼저 계산해 두고 아래에서는 넘기기만 한다.
   const isRosary = viewingKey === "rosaryDecades";
   const rosaryGuide = isRosary ? (
-    <RosaryGuide onRecordSet={onRosaryRecordSet} progress={rosarySetProgress} />
+    <RosaryGuide
+      onRecordSet={onRosaryRecordSet}
+      progress={rosarySetProgress}
+      // setState 함수를 그대로 넘긴다 — 항상 같은 함수라 가이드 쪽 effect 가
+      // 매 렌더마다 다시 돌지 않는다.
+      onContextChange={setRosaryContext}
+    />
   ) : undefined;
   const rosaryCaption = isRosary ? `${rosarySetProgress} / ${ROSARY_SET_SIZE}단` : undefined;
 
@@ -107,6 +116,7 @@ export function CounterGrid({
         onIncrement={() => viewingKey && onIncrement(viewingKey)}
         onClose={() => setViewingKey(null)}
         guide={rosaryGuide}
+        titleSuffix={isRosary ? rosaryContext : null}
         incrementCaption={rosaryCaption}
       />
     </div>

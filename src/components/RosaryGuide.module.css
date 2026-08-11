@@ -13,7 +13,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: 0 0 var(--space-4);
+  /* 좌우 여백: 화면 양옆에 고정된 화살표(.navArrow) 밑에 기도문이 깔리지 않도록
+     비워 두는 자리다. 화살표 폭(3.5rem) + 가장자리 여백(--space-1)에서 바깥
+     .screen 의 패딩(--space-4)을 뺀 만큼만 더 물러난다. */
+  padding: 0 calc(var(--min-tap-target) + var(--space-1) * 2 - var(--space-4)) var(--space-4);
   margin-bottom: var(--space-4);
   border-bottom: 3px solid var(--color-border);
   /* 세로 스크롤만 브라우저에 넘기고 가로 제스처는 우리가 가져온다.
@@ -67,47 +70,67 @@
   }
 }
 
-.bottomNav {
-  display: grid;
-  grid-template-columns: 48px 1fr 48px;
-  align-items: center;
-  margin-top: var(--space-2);
-}
-
-.bottomNavButton {
+/*
+ * 좌우 이동 화살표. 화면(뷰포트) 양옆 세로 가운데에 붙는다.
+ *
+ * ⚠️ position: fixed 는 조상 어디에도 transform/filter 가 없어야 뷰포트 기준이
+ *    된다. .dialog / .screen / .content / .guide 에 transform 을 추가하면
+ *    화살표 기준점이 그 요소로 바뀌어 위치가 어긋난다. (.contentWrapper 의
+ *    슬라이드 transform 은 괜찮다 — 화살표는 그 바깥에 있다.)
+ */
+.navArrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2; /* .stickyHead(z-index: 1) 위 */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: transparent;
-  border: none;
+  width: var(--min-tap-target); /* 3.5rem — 큰 글자 설정과 함께 커진다 */
+  height: var(--min-tap-target);
+  border: 2px solid var(--color-border);
   border-radius: 50%;
+  /* --color-background(#fafaf5) 반투명 — 긴 기도문이 밑을 지나가도 화살표가
+     묻히지 않으면서, 무엇이 깔려 있는지도 짐작할 수 있게. */
+  background: rgba(250, 250, 245, 0.92);
   color: var(--color-text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
-.bottomNavButton:hover:not(:disabled) {
-  background: var(--color-surface);
+.navArrow:hover {
+  background: var(--color-surface-alt);
 }
 
-.bottomNavButton:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+.navArrowLeft {
+  left: var(--space-1);
 }
 
-@media (max-width: 768px) {
-  .bottomNav {
-    grid-template-columns: 36px 1fr 36px;
+.navArrowRight {
+  right: var(--space-1);
+}
+
+/* PC: 본문이 720px 컬럼으로 가운데 모이므로 화살표를 컬럼 밖에 세워 두고
+   본문 여백은 되돌린다. */
+@media (min-width: 960px) {
+  .guide {
+    padding-left: 0;
+    padding-right: 0;
   }
-  .bottomNavButton {
-    width: 36px;
-    height: 36px;
+  .navArrowLeft {
+    left: calc(50vw - 360px - var(--min-tap-target) - var(--space-2));
   }
-  .bottomNavButton svg {
-    width: 18px;
-    height: 18px;
+  .navArrowRight {
+    right: calc(50vw - 360px - var(--min-tap-target) - var(--space-2));
+  }
+}
+
+/* 가로로 눕힌 폰: 세로 가운데(50%)가 하단 기록 버튼(88px)과 겹치기 쉬워
+   화살표를 조금 위로 올린다. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .navArrow {
+    top: 40%;
   }
 }
 
@@ -121,11 +144,15 @@
   background: var(--color-surface);
 }
 
-.context {
+/* 단이 진행되는 동안 계속 떠 있는 묵상 문장. 예) "예수님께서 우리를 위하여
+   피땀 흘리심을 묵상합시다" */
+.meditation {
   margin: 0 0 var(--space-2);
   font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--color-text-muted);
+  /* 문장이 길어 좁은 화면에서 줄이 꺾인다. 어절 단위로 꺾는다. */
+  word-break: keep-all;
 }
 
 .heading {
@@ -181,13 +208,6 @@
   font-size: var(--font-size-base);
   line-height: 1.7;
   color: var(--color-text);
-}
-
-.position {
-  margin: 0;
-  text-align: center;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
 }
 
 .recorded {

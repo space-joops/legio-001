@@ -29,6 +29,16 @@
   font-weight: 800;
   margin-bottom: var(--space-3);
   flex-shrink: 0;
+  line-height: 1.35;
+  /* 뒤에 신비·단 표시가 붙으면 좁은 화면에서 두 줄이 된다. 어절 단위로 꺾는다. */
+  word-break: keep-all;
+}
+
+/* 제목 뒤에 붙는 현재 위치. 예) "묵주기도 · 고통의 신비 (화요일·금요일) · 1단" */
+.titleSuffix {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 
 .content {
@@ -43,25 +53,6 @@
   width: 100%;
   max-width: 720px;
   margin: 0 auto;
-}
-
-.fullText {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.fullTextToggle {
-  min-height: var(--min-tap-target);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--color-accent-secondary);
-  cursor: pointer;
 }
 
 .section {

@@ -22,10 +22,15 @@ interface PrayerTextDialogProps {
   onClose: () => void;
   /**
    * 기도문 위에 표시될 선택적 가이드(도우미 뷰) 컴포넌트입니다.
-   * 이 가이드가 존재할 경우, 전체 기도문은 '<details>' 태그를 통해 접을 수 있는 형태(disclosure) 뒤로 숨겨집니다.
-   * 즉, 가이드가 메인 화면이 되고 전체 기도문은 참고 자료 역할을 하게 됩니다.
+   * 이 가이드가 존재할 경우 전체 기도문(entry.sections)은 렌더링하지 않습니다 —
+   * 가이드가 화면 전체를 담당하고, 기도문 전문은 가이드가 한 장씩 보여 줍니다.
    */
   guide?: ReactNode;
+  /**
+   * 제목 옆에 덧붙는 현재 위치(묵주기도 전용).
+   * 예) "고통의 신비 (화요일·금요일) · 1단" → 제목 라인은 "묵주기도 · 고통의 신비 (화요일·금요일) · 1단"
+   */
+  titleSuffix?: string | null;
   /**
    * "기록하려면 탭하세요(tap to record)"라는 기본 캡션을 대체하는 문자열입니다.
    * 예를 들어 '묵주기도'의 경우, 한 번 탭할 때마다 숫자가 올라가는 것이 아니라
@@ -44,6 +49,7 @@ export function PrayerTextDialog({
   onIncrement,
   onClose,
   guide,
+  titleSuffix,
   incrementCaption,
 }: PrayerTextDialogProps) {
 
@@ -87,54 +93,41 @@ export function PrayerTextDialog({
       {/* entry가 있을 때만 모달 내부 콘텐츠를 렌더링합니다. */}
       {entry && (
         <div className={styles.screen}>
-          {/* 기도 제목 */}
-          <h2 className={styles.title}>{title}</h2>
+          {/* 기도 제목. titleSuffix 가 있으면 현재 위치(신비·단)를 같은 줄에 잇는다. */}
+          <h2 className={styles.title}>
+            {title}
+            {titleSuffix && (
+              <span className={styles.titleSuffix}>{` · ${titleSuffix}`}</span>
+            )}
+          </h2>
 
           <div className={styles.content}>
             {/* 가이드가 전달되었다면 최상단에 렌더링합니다. */}
             {guide}
 
-            {/* 즉시 실행 함수(IIFE)를 사용하여 기도문 본문을 어떻게 렌더링할지 결정합니다. */}
-            {(() => {
-              // 기도문의 전체 텍스트를 구성하는 React 노드(요소)입니다.
-              const fullText = (
-                <>
-                  {/* 기도문을 여러 섹션으로 나누어 렌더링합니다. */}
-                  {entry.sections.map((section, i) => (
-                    <div key={i} className={styles.section}>
-                      {/* 섹션의 소제목이 있다면 표시합니다. */}
-                      {section.heading && (
-                        <span className={styles.sectionHeading}>{section.heading}</span>
-                      )}
-                      {/* 섹션 내의 각 줄(line)을 순회하며 단락(<p>)으로 렌더링합니다. */}
-                      {section.lines.map((line, j) => (
-                        <p key={j} className={styles.line}>
-                          {line}
-                        </p>
-                      ))}
-                    </div>
-                  ))}
-                  {/* 기도문에 추가적인 참고 사항(note)이 있다면 하단에 렌더링합니다. */}
-                  {entry.note && <p className={styles.note}>{entry.note}</p>}
-                </>
-              );
-
-              // 만약 가이드(guide)가 존재한다면,
-              // 전체 기도문은 너무 길 수 있으므로 접고 펼칠 수 있는 <details> 태그 안에 넣습니다.
-              return guide ? (
-                <details className={styles.fullText}>
-                  {/* <summary>는 <details> 태그의 클릭 가능한 제목 부분입니다. */}
-                  <summary className={styles.fullTextToggle}>
-                    기도문 전문 보기
-                  </summary>
-                  {/* 클릭하면 이 fullText 영역이 펼쳐집니다. */}
-                  {fullText}
-                </details>
-              ) : (
-                // 가이드가 없다면 전체 기도문을 바로 화면에 노출합니다.
-                fullText
-              );
-            })()}
+            {/* 가이드가 없을 때만 기도문 전문을 렌더링합니다.
+                가이드(묵주기도)는 한 화면에 한 장씩 전문을 보여 주므로 여기서 또 보여 줄 필요가 없습니다. */}
+            {!guide && (
+              <>
+                {/* 기도문을 여러 섹션으로 나누어 렌더링합니다. */}
+                {entry.sections.map((section, i) => (
+                  <div key={i} className={styles.section}>
+                    {/* 섹션의 소제목이 있다면 표시합니다. */}
+                    {section.heading && (
+                      <span className={styles.sectionHeading}>{section.heading}</span>
+                    )}
+                    {/* 섹션 내의 각 줄(line)을 순회하며 단락(<p>)으로 렌더링합니다. */}
+                    {section.lines.map((line, j) => (
+                      <p key={j} className={styles.line}>
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+                {/* 기도문에 추가적인 참고 사항(note)이 있다면 하단에 렌더링합니다. */}
+                {entry.note && <p className={styles.note}>{entry.note}</p>}
+              </>
+            )}
           </div>
 
           {/* 하단 고정 버튼 영역 */}
