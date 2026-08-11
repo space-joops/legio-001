@@ -67,19 +67,25 @@
   }
 }
 
-.bottomNav {
+/* [◀] 기도 이름 [▶] — 이름은 가운데 칸, 화살표는 양끝 칸.
+   화살표가 없는 화면(첫 화면의 ◀, 확인창 중)은 같은 폭의 빈 칸이 대신 들어가
+   이름이 좌우로 흔들리지 않는다. */
+.headingRow {
   display: grid;
-  grid-template-columns: 48px 1fr 48px;
+  grid-template-columns: var(--min-tap-target) 1fr var(--min-tap-target);
   align-items: center;
-  margin-top: var(--space-2);
+  gap: var(--space-1);
 }
 
-.bottomNavButton {
+/* 이동 화살표. 일부러 수수하게 — 배경도 테두리도 없는 삼각형만 둔다.
+   기도문이 주인공인 화면이라 화살표가 도드라질 이유가 없다.
+   터치 영역은 --min-tap-target(3.5rem)으로 넉넉히 잡는다. */
+.stepArrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: var(--min-tap-target);
+  height: var(--min-tap-target);
   background: transparent;
   border: none;
   border-radius: 50%;
@@ -88,27 +94,8 @@
   transition: background-color 0.2s ease;
 }
 
-.bottomNavButton:hover:not(:disabled) {
-  background: var(--color-surface);
-}
-
-.bottomNavButton:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-@media (max-width: 768px) {
-  .bottomNav {
-    grid-template-columns: 36px 1fr 36px;
-  }
-  .bottomNavButton {
-    width: 36px;
-    height: 36px;
-  }
-  .bottomNavButton svg {
-    width: 18px;
-    height: 18px;
-  }
+.stepArrow:hover {
+  background: var(--color-surface-alt);
 }
 
 /* 긴 기도문이 밑으로 흘러가는 동안에도 기도 이름은 화면 맨 위에 붙어 있게 한다.
@@ -121,23 +108,34 @@
   background: var(--color-surface);
 }
 
-.context {
+/* 단이 진행되는 동안 계속 떠 있는 묵상 문장. 예) "예수님께서 우리를 위하여
+   피땀 흘리심을 묵상합시다" */
+.meditation {
   margin: 0 0 var(--space-2);
   font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--color-text-muted);
+  text-align: center; /* 기도 이름·창 제목과 같은 축 */
+  /* 문장이 길어 좁은 화면에서 줄이 꺾인다. 어절 단위로 꺾는다. */
+  word-break: keep-all;
 }
 
 .heading {
   display: flex;
   align-items: baseline;
+  justify-content: center; /* 이름은 화살표 사이 가운데 */
   flex-wrap: wrap;
   gap: var(--space-2);
   margin: 0;
+  /* 그리드 1fr 칸이 글자의 min-content 폭까지 늘어나 화살표를 밀어내지 않게.
+     이게 없으면 useFitLine 도 "넘침 없음"으로 착각해 글자를 못 줄인다. */
+  min-width: 0;
   font-size: var(--font-size-lg);
   font-weight: 800;
   line-height: 1.4;
+  text-align: center;
   color: var(--color-text);
+  word-break: keep-all;
   /* 세 번 깜박이고 멈춘다. 기도가 넘어갔다는 걸 눈으로 알리되, 읽는 데 방해가
      되지 않을 만큼만.
      500ms 주기 = 초당 2회다. 초당 3회를 넘는 깜박임은 광과민성 발작을 유발할 수
@@ -181,13 +179,6 @@
   font-size: var(--font-size-base);
   line-height: 1.7;
   color: var(--color-text);
-}
-
-.position {
-  margin: 0;
-  text-align: center;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
 }
 
 .recorded {

@@ -151,6 +151,9 @@ export const PRAYER_TEXTS: PrayerTextMap = {
     ],
   },
 
+  // ⚠️ 이 항목의 sections 는 화면에 그려지지 않는다 — 묵주기도 창은 가이드(RosaryGuide)만
+  //    보여 준다. 그래도 항목 자체는 지우면 안 된다: CounterGrid 가 이 항목의 존재로
+  //    [기도문 보기] 링크를 만들지 말지, 창을 열지 말지를 판단한다.
   rosaryDecades: {
     sections: [
       { heading: "시작 기도 · 사도신경", lines: APOSTLES_CREED },
