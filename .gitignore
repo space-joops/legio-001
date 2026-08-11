@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 성경 원본 PDF (주교회의 「성경」) — 해설 작성용 참고 자료라 저장소에 넣지 않는다
+/b-*.pdf

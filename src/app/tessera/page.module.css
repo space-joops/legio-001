@@ -76,6 +76,9 @@
 .line {
   font-size: var(--font-size-base);
   line-height: 1.7;
+  /* 구절 버튼 안에서는 <span> 이라 block 으로 세워야 한 줄씩 떨어진다.
+     (<button> 은 <p> 를 담을 수 없다 — page.tsx 주석 참고) */
+  display: block;
 }
 
 .note {
@@ -83,14 +86,100 @@
   color: var(--color-text-muted);
 }
 
+.guide {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* 해설이 붙은 구절 한 묶음. 눌러서 풀이 팝업을 연다. */
+.verseButton {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: var(--min-tap-target);
+  margin: 0;
+  padding: var(--space-2);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  /* 눌리는 곳이라는 표시를 색만으로 주지 않는다 — 왼쪽 띠 + 아래 '풀이' 딱지. */
+  border-left: 4px solid var(--color-surface-alt);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  cursor: pointer;
+}
+
+.verseButton:hover,
+.verseButton:active {
+  background: var(--color-surface);
+  border-left-color: var(--color-primary);
+}
+
+.verseLines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.hint {
+  flex-shrink: 0;
+  padding: 2px var(--space-1);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-primary-strong);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* 해설이 없는 줄 묶음 — 버튼과 왼쪽 끝을 맞춰 들쭉날쭉해 보이지 않게 한다. */
+.plainLines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-left: 4px solid transparent;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* On paper the page is read top to bottom — jump buttons mean nothing there. */
 @media print {
   .toc,
-  .legend {
+  .legend,
+  .guide,
+  .hint {
     display: none;
   }
 
   .chapter {
     border-top: none;
+  }
+
+  /* 인쇄물은 해설 기능이 없던 때와 똑같이 나와야 한다. */
+  .verseButton {
+    padding: 0;
+    border-left: none;
+    background: none;
+  }
+
+  .plainLines {
+    padding: 0;
+    border-left: none;
   }
 }
