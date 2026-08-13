@@ -83,7 +83,15 @@ export function VerseCommentaryDialog({
               <h3 className={styles.blockTitle}>관련 성경</h3>
               {commentary.quotes.map((quote) => (
                 <figure key={quote.ref} className={styles.quote}>
-                  <figcaption className={styles.quoteRef}>{quote.ref}</figcaption>
+                  <figcaption className={styles.quoteRef}>
+                    {quote.link ? (
+                      <a href={quote.link} target="_blank" rel="noopener noreferrer" className={styles.quoteLink}>
+                        {quote.ref}
+                      </a>
+                    ) : (
+                      quote.ref
+                    )}
+                  </figcaption>
                   <blockquote className={styles.quoteText}>{quote.text}</blockquote>
                 </figure>
               ))}

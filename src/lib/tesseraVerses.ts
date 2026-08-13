@@ -34,6 +34,8 @@ export interface BibleQuote {
    * 표기가 흔들리지 않도록 테스트가 형식을 검사한다.
    */
   ref: string;
+  /** 웹에서 해당 성경 장으로 바로 이동할 수 있는 공식 성경 링크 (선택사항) */
+  link?: string;
   /** 「성경」(새번역) 본문. 인용한 절을 그대로 옮긴다. */
   text: string;
 }
