@@ -18,10 +18,20 @@
 
 ## 2. 권장 개발 환경 및 VSCode 플러그인
 코드 편집은 **Visual Studio Code (VSCode)** 를 추천합니다.
+저장소에 `.vscode/extensions.json` 파일이 세팅되어 있어, 프로젝트를 열면 우측 하단에 확장 프로그램 설치 권장 팝업이 나타납니다.
 다음 확장(Extensions) 프로그램들을 설치하면 개발이 훨씬 수월해집니다:
-- **ESLint**: 코드의 스타일을 검사하고 오류를 밑줄로 표시해 줍니다.
-- **Prettier - Code formatter**: 코드를 저장할 때 들여쓰기 등을 깔끔하게 자동 정렬해 줍니다.
-- **ES7+ React/Redux/React-Native snippets**: React 컴포넌트 기본 구조를 빠르게 작성할 수 있는 단축키(Snippet)를 제공합니다.
+
+- **ESLint** (`dbaeumer.vscode-eslint`): 코드의 스타일을 검사하고 오류를 밑줄로 표시해 줍니다.
+- **Prettier** (`esbenp.prettier-vscode`): 코드를 저장할 때 들여쓰기 등을 깔끔하게 자동 정렬해 줍니다.
+- **ES7+ React/Redux/React-Native snippets** (`dsznajder.es7-react-js-snippets`): React 컴포넌트 기본 구조를 빠르게 작성할 수 있는 단축키(Snippet)를 제공합니다.
+- **Vitest** (`vitest.explorer`): VSCode 테스트 패널에서 개별 테스트(`*.test.ts`)를 바로 실행하고 쉽게 디버깅할 수 있게 해줍니다.
+- **Error Lens** (`usernamehw.errorlens`): TypeScript 오류나 ESLint 경고를 마우스 오버 없이 코드 줄 옆에 바로 보여주어 직관적입니다.
+- **Pretty TypeScript Errors** (`yoavbls.pretty-ts-errors`): 복잡하고 읽기 힘든 TypeScript 에러 메시지를 보기 좋게 정리해서 보여줍니다.
+- **CSS Modules** (`clinyong.vscode-css-modules`): `.module.css` 파일의 클래스 이름을 자동 완성해주고 해당 클래스의 정의로 바로 이동할 수 있게 해줍니다.
+- **Auto Rename Tag** (`formulahendry.auto-rename-tag`): 여는 HTML/JSX 태그의 이름을 수정하면 닫는 태그도 자동으로 수정해 주어 생산성을 높입니다.
+- **Console Ninja** (`wallabyjs.console-ninja`): 브라우저 개발자 도구를 열지 않아도 `console.log()`의 결과값이나 에러를 코드 라인 바로 옆에 출력해 줍니다.
+- **Import Cost** (`wix.vscode-import-cost`): `import`로 외부 패키지를 불러올 때, 해당 패키지의 번들 용량을 코드 옆에 즉시 보여줍니다.
+- **Indent Rainbow** (`oderwat.indent-rainbow`): 들여쓰기 깊이마다 색상을 다르게 칠해주어 복잡한 코드 블록 구조를 한눈에 파악하게 도와줍니다.
 
 
 ## 2-1. 권장 개발 환경: WebStorm (JetBrains)
@@ -113,12 +123,24 @@ test("computeSundayMassBasis (높은 난이도)", async (t) => {
 **UI (Playwright) 테스트 주의점**
 차후 UI 테스트를 작성할 경우: 앱이 처음 로드될 때 스플래시 화면(로고 화면)이 나타나며 클릭(포인터 이벤트)을 가로챕니다. 자동화 테스트를 작성할 때는, 이 스플래시 화면이 사라질 때까지 기다리거나 닫은 뒤에 실제 화면 요소와 상호작용해야 합니다.
 
-## 6. 알아두면 좋은 기타 개발 팁
+## 6. 깃허브 푸시(Push) 전 로컬 정적 분석(Lint & Type Check)하기
+이 프로젝트는 GitHub Actions를 통해 코드가 올라갈 때 자동으로 코드 스타일과 타입을 엄격하게 검사합니다. CI 파이프라인에서 에러가 발생해 다시 커밋해야 하는 번거로움을 피하려면, 코드를 푸시하기 전에 내 컴퓨터(로컬)에서 먼저 아래 명령어들을 실행해 보는 것을 권장합니다.
+
+```bash
+# 1. 코드 스타일 및 오타 검사 (파이썬의 flake8/pylint 역할)
+npm run lint
+
+# 2. 엄격한 타입 검사 (파이썬의 mypy 역할)
+npx tsc --noEmit
+```
+위 두 명령어가 아무런 에러 메시지 없이 종료된다면, CI의 정적 분석 단계도 무사히 통과하게 됩니다!
+
+## 7. 알아두면 좋은 기타 개발 팁
 - **이미지 태그 린트 에러 무시**: Next.js는 기본적으로 최적화를 위해 `<Image>` 컴포넌트 사용을 강제합니다. 하지만 이 프로젝트는 정적 내보내기(Static Export) 환경이므로 일반 `<img>` 태그를 사용해야 할 때가 있습니다. 이 경우 `<img>` 태그 바로 윗줄에 `/* eslint-disable-next-line @next/next/no-img-element */` 주석을 추가하면 `npm run lint` 시 발생하는 경고를 통과시킬 수 있습니다.
-- **친절한 한국어 주석**: React나 TypeScript에 익숙하지 않은 다른 유지보수 개발자(예: 본인 포함)를 위해, 복잡한 로직이나 새로운 개념을 구현할 때는 그 개념과 동작 원리를 설명하는 상세한 한국어 주석을 남겨주시면 큰 도움이 됩니다. 구체적인 규칙은 아래 **7. 주석 작성 규칙**을 참고하세요.
+- **친절한 한국어 주석**: React나 TypeScript에 익숙하지 않은 다른 유지보수 개발자(예: 본인 포함)를 위해, 복잡한 로직이나 새로운 개념을 구현할 때는 그 개념과 동작 원리를 설명하는 상세한 한국어 주석을 남겨주시면 큰 도움이 됩니다. 구체적인 규칙은 아래 **8. 주석 작성 규칙**을 참고하세요.
 - **화면 문구는 코드에 직접 적습니다**: 이 앱은 한국어 전용입니다. 예전에는 `src/i18n/dictionaries/`에 키-값으로 두고 `t("a.b.c")`로 꺼내 썼지만, 문구 하나를 고치려고 두 파일(`ko.ts`/`en.ts`)을 오가야 하고 화면 코드만 봐서는 무슨 글자가 나오는지 알 수 없어서 없앴습니다. JSX 안에 한국어를 그대로 적으면 됩니다. 값을 끼워 넣을 때는 백틱 템플릿을 쓰세요: `` `묵주기도 ${n}단` ``. 여러 화면이 함께 쓰는 라벨만 `src/lib/`의 상수(`PRAYER_ITEMS`, `OFFICER_ROLE_LABEL`, `WEEKDAY_LABELS` 등)에 두고 가져다 씁니다.
 
-## 7. 주석 작성 규칙
+## 8. 주석 작성 규칙
 
 이 저장소의 주석은 **세 종류**이고, 성격이 서로 다릅니다. 새로 주석을 쓸 때는 어느 쪽인지 먼저 정하세요.
 

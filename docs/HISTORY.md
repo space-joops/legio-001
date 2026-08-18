@@ -1,0 +1,146 @@
+# 프로젝트 업데이트 히스토리 (Changelog)
+
+이 문서는 프로젝트의 모든 Git 커밋 히스토리를 시간 역순으로 기록한 파일입니다.
+
+- **2026-08-12** [`a43821c`](https://github.com/space-joops/legio-001/commit/a43821c5253e6c9eb94077149fc35a6512f1b9a6): docs: move python scripts into docs/py/ directory
+- **2026-08-12** [`3442eda`](https://github.com/space-joops/legio-001/commit/3442eda254156c0c777a1ba1f4448e3d3a2b1e11): docs: add explanations for python automation scripts
+- **2026-08-12** [`5590a46`](https://github.com/space-joops/legio-001/commit/5590a4644e3a2a061b00e532fd490ddf224ceff3): docs: add guide for running local static analysis before push
+- **2026-08-12** [`1e11b81`](https://github.com/space-joops/legio-001/commit/1e11b81a74be8916fdb6482f46f972fd9817e681): docs: extract Code Map and move python/study files to docs directory
+- **2026-08-12** [`5a5ef1a`](https://github.com/space-joops/legio-001/commit/5a5ef1a2d1f323a008a6c48760d9d7b9bc7c23e2): ci: automate issue creation on pipeline failure
+- **2026-08-12** [`de3e92f`](https://github.com/space-joops/legio-001/commit/de3e92f7a0ab9b67e149bcfedf50f3cdb26ec22e): ci: add GitHub Actions workflow for linting, testing, and building
+- **2026-08-12** [`a298556`](https://github.com/space-joops/legio-001/commit/a29855686556c1a95ba433f29bb77d9f57e7e3eb): JS 학습용 노트북 추가
+- **2026-08-12** [`3ca0599`](https://github.com/space-joops/legio-001/commit/3ca05992af755ac80f8503858f25e1510e7b4768): chore: ignore jupyter notebook checkpoints
+- **2026-08-12** [`72bfa3a`](https://github.com/space-joops/legio-001/commit/72bfa3a173e318111ddf592b82d2b267c8730a64): docs: update Code Map in README to reflect current src structure
+- **2026-08-12** [`3db135c`](https://github.com/space-joops/legio-001/commit/3db135c2cee3e8b9c11b37c1ecdac9f656be7dbc): chore: add VSCode recommended extensions and update contributing guide
+- **2026-08-12** [`940bb79`](https://github.com/space-joops/legio-001/commit/940bb79e60767d233b614f034ad9982d61b450f0): fix: 월례 보고서 날짜 연산의 타임존 버그 수정 및 가독성 리팩토링 (Resolves #89)
+- **2026-08-11** [`f2e502c`](https://github.com/space-joops/legio-001/commit/f2e502ccde442d020b460d9ce8bc7bcf75d0f091): Merge pull request #88 from space-joops/vitest-migration-10267338625140208596
+- **2026-08-11** [`eb6026c`](https://github.com/space-joops/legio-001/commit/eb6026ccf99d39fc080821feec9a66df19eb3548): test: migrate to vitest and add constants tests
+- **2026-08-11** [`46ebb8e`](https://github.com/space-joops/legio-001/commit/46ebb8ec2e56ae82f124a22f541addd7486f695c): Merge pull request #85 from space-joops/260810/font
+- **2026-08-11** [`f047632`](https://github.com/space-joops/legio-001/commit/f047632af53fde2aaf184063c74983112bc3c692): Merge pull request #86 from space-joops/260810/i18n-remove
+- **2026-08-11** [`5e4c576`](https://github.com/space-joops/legio-001/commit/5e4c576b84c8b37195a0a6ed6226cd4676624af2): docs: i18n 제거 반영 + 재발 방지 린트 규칙 (0.7.5)
+- **2026-08-11** [`d378f74`](https://github.com/space-joops/legio-001/commit/d378f7462ed13694f7b325b7f718f7ea251d4612): refactor: 화면 문구 541건을 코드에 인라인하고 i18n 계층 삭제
+- **2026-08-11** [`8a9ab99`](https://github.com/space-joops/legio-001/commit/8a9ab994360aded0a8ae5d28074e463b10db0f08): refactor: 영어 콘텐츠 제거 + 동적 번역 키를 값으로 대체
+- **2026-08-10** [`1b9fe13`](https://github.com/space-joops/legio-001/commit/1b9fe13a86285c8926d0417224c04eb8f959e8e9): 나눔글꼴 제거
+- **2026-08-10** [`07adafb`](https://github.com/space-joops/legio-001/commit/07adafb53cba2642efc4b5b145ec22131a3226a9): Merge pull request #25 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-08-09** [`27ae783`](https://github.com/space-joops/legio-001/commit/27ae783e3ee795351c5aef82c159cfb47adfd69c): feat: 디지털 묵주를 실제 묵주 구조로 전면 개편 (0.7.4)
+- **2026-08-09** [`1cdf508`](https://github.com/space-joops/legio-001/commit/1cdf50881ee60e15ec9be536905fc7e4fc895326): Merge pull request #83 from space-joops/docs/rosary-deep-dive
+- **2026-08-08** [`6210cd9`](https://github.com/space-joops/legio-001/commit/6210cd9376ec33ee7f7f5aaa05c12c1311bc81c9): docs: 묵주기도 심화 문서 7장 + 연습문제 16개 (0.7.3)
+- **2026-08-08** [`5a90ce7`](https://github.com/space-joops/legio-001/commit/5a90ce78505170941c7dbbf98a24bd8d66c52a98): docs: 묵주기도 관련 주석 보강 + 잘못 단 주석 정정
+- **2026-08-08** [`ba2856c`](https://github.com/space-joops/legio-001/commit/ba2856c917fa98442acfca676c566175f5e5df14): refactor: 묵주기도 코드를 고치기 쉬운 단위로 분리
+- **2026-08-08** [`be608c7`](https://github.com/space-joops/legio-001/commit/be608c74090ccf0a4fb3b6d1eebddcb40d69602c): Merge pull request #76 from space-joops/docs/readable-code-korean-comments
+- **2026-08-08** [`6ad1d22`](https://github.com/space-joops/legio-001/commit/6ad1d22b430549d995521f35c54dac577109ffc2): Merge branch 'main' into docs/readable-code-korean-comments
+- **2026-08-08** [`458a5c8`](https://github.com/space-joops/legio-001/commit/458a5c873f46b0294e162587eb2b7ed48fce3184): Merge pull request #75 from space-joops/claude/scoped-export-import
+- **2026-08-08** [`694ac38`](https://github.com/space-joops/legio-001/commit/694ac38463d9287e923f99a4524bda578797eaed): docs: 파이썬 개발자를 위한 TypeScript 안내서 추가 (0.7.1)
+- **2026-08-08** [`f040a2e`](https://github.com/space-joops/legio-001/commit/f040a2ebcf18a906bae4afcc6a1026c051ca77c9): docs: 나머지 소스 파일에 한국어 모듈 주석 추가
+- **2026-08-08** [`5b295a0`](https://github.com/space-joops/legio-001/commit/5b295a08b51255b420301f96c5dd05c6722dc527): refactor: 핵심 학습 경로 파일 한국어 주석 + 괄호 중첩 정리
+- **2026-08-08** [`8d23c5d`](https://github.com/space-joops/legio-001/commit/8d23c5da78862088b1cbf17129fc7d85efcadc77): feat: 데이터 내보내기/가져오기 범위 세분화 (활동 기록·서기·월례 보고서)
+- **2026-08-06** [`ff6a425`](https://github.com/space-joops/legio-001/commit/ff6a425abc775e9cf07b2b70d5a1d38dbe1b62e5): Merge pull request #71 from space-joops/docs/add-contributing-guide-5527706571932820169
+- **2026-08-06** [`3214dbf`](https://github.com/space-joops/legio-001/commit/3214dbfeda0bfa608d49d31745548073fbd2811e): Merge pull request #70 from space-joops/jules-8070491146226512905-9c926594
+- **2026-08-06** [`fde4e32`](https://github.com/space-joops/legio-001/commit/fde4e32c7cd7e25366b3656e1235ecf76cdccd8c): docs: WebStorm 환경 셋업 및 디버깅 가이드 추가
+- **2026-08-06** [`6e81bad`](https://github.com/space-joops/legio-001/commit/6e81badfcb0cd20d4a73f381734ee699a4040c48): test: 유틸리티 함수 테스트 코드 추가 및 가이드 보완
+- **2026-08-06** [`6a8b7be`](https://github.com/space-joops/legio-001/commit/6a8b7be80391289913673f9220f4251e74643748): docs: 컨트리뷰션 가이드 추가 및 리드미 연결
+- **2026-08-05** [`96c087c`](https://github.com/space-joops/legio-001/commit/96c087cf2c0aee7549634b546c16330160cc7eec): 묵주기도 성모송 화면에서 성화 설명(묵상) 텍스트 제거 및 주석 추가
+- **2026-08-05** [`edddc17`](https://github.com/space-joops/legio-001/commit/edddc17980e25d805328ce1b74119b3c7eb8987b): Merge pull request #66 from space-joops/feature/rosary-meditations-2006855931011390526
+- **2026-08-05** [`f7027b9`](https://github.com/space-joops/legio-001/commit/f7027b9ef3e36df1ae9a01815d1f3ec7004516cd): feat: 묵주기도 각 단별 묵상 설명과 전체화면 성화 팝업 추가
+- **2026-08-05** [`c79e731`](https://github.com/space-joops/legio-001/commit/c79e731a47864171731a750a7cc5ad8961374eed): Merge pull request #65 from space-joops/jules-11803181915448649811-05583999
+- **2026-08-05** [`9465ccd`](https://github.com/space-joops/legio-001/commit/9465ccd9abd9e4a5bcb4de414a5dc97cb663e8a3): feat: 묵주기도 각 단마다 이미지 보여주는 기능 추가
+- **2026-08-05** [`33d3e16`](https://github.com/space-joops/legio-001/commit/33d3e163c23f67be820df670cfef45d24c9d61e3): Merge pull request #63 from space-joops/jules-8104624745588920120-aa60b32f
+- **2026-08-05** [`37b2594`](https://github.com/space-joops/legio-001/commit/37b25940836648290b324812a9931bfe58a0b605): Merge pull request #62 from space-joops/docs/add-code-map-korean-5154865036378599009
+- **2026-08-05** [`51e0db0`](https://github.com/space-joops/legio-001/commit/51e0db01d666178fc799b2c9e6be195f6d75219c): docs(PrayerTextDialog): add detailed Korean comments to explain logic and hooks
+- **2026-08-05** [`e1bb268`](https://github.com/space-joops/legio-001/commit/e1bb2683a382d0090209e871cc6c7ba528dc3ca4): docs: README.md에 상세 한글 코드 지도 추가
+- **2026-08-05** [`326e306`](https://github.com/space-joops/legio-001/commit/326e306e292afbc51e2ec63411f177047cf75272): docs: README.md에 한글 코드 지도 추가
+- **2026-08-05** [`1504354`](https://github.com/space-joops/legio-001/commit/150435453f25a3d64ecb9618699ffec535dd50db): Merge pull request #60 from space-joops/jules-17345293905009887181-82762553
+- **2026-08-05** [`099c880`](https://github.com/space-joops/legio-001/commit/099c8800cbd74d878e26c4a5463cc4c4208a9492): feat: 묵주기도 기도문 보기 시 현재 진행중인 단수로 자동 이동
+- **2026-08-05** [`2fb0bbd`](https://github.com/space-joops/legio-001/commit/2fb0bbdd5d4aca2dc6845c07b0b6993e76330260): Merge pull request #58 from space-joops/jules-6290825553611436061-6d68a567
+- **2026-08-05** [`1183568`](https://github.com/space-joops/legio-001/commit/1183568144ab9d278d7d54a075c012ac9ba8a7dd): Merge pull request #56 from space-joops/jules-12110474595001997714-b81aad3b
+- **2026-08-05** [`7ca034f`](https://github.com/space-joops/legio-001/commit/7ca034f85eceae89ed4a6960bcbd2ad65ffd40f7): Merge pull request #55 from space-joops/add-study3-korean-guide-7616093517246072948
+- **2026-08-05** [`754dc99`](https://github.com/space-joops/legio-001/commit/754dc994d02e14e1adb75e16e535f675f5ea3d7b): Merge pull request #57 from space-joops/jules-26540075441984832-cc83bcc1
+- **2026-08-04** [`8e15f03`](https://github.com/space-joops/legio-001/commit/8e15f030218fe107092fad1c5c107c07d36e953d): Add beginner web dev tutorials based on codebase
+- **2026-08-04** [`7152ac8`](https://github.com/space-joops/legio-001/commit/7152ac83cded576a3e7bdfa36bd2019c6a573472): fix(onboarding): show install prompt before onboarding, add app icon, update text
+- **2026-08-04** [`dac7709`](https://github.com/space-joops/legio-001/commit/dac770935a4ae1836b86b64cb608c6d5ac195996): docs: 초급 개발자를 위한 프로젝트 학습 가이드 추가
+- **2026-08-04** [`5e9489e`](https://github.com/space-joops/legio-001/commit/5e9489e77db8019bf52d1abedffd0c8d53524cec): docs: study3 폴더 및 초보자용 한국어 개발 가이드 문서 추가\n\n- React, Next.js, HTML, CSS, 로컬스토리지 기초 개념 및 실습 가이드 추가\n- 여백 조정, 아래로 붙이기, 애니메이션, 로컬스토리지 관련 실제 코드 예제 포함\n- 마크다운 문서 생성용 파이썬 스크립트 포함
+- **2026-08-04** [`1b1627d`](https://github.com/space-joops/legio-001/commit/1b1627ddb5c659f8def2dac461b049491519f0fb): Merge pull request #54 from space-joops/jules-2805935193594997970-fbbe195b
+- **2026-08-04** [`74dce81`](https://github.com/space-joops/legio-001/commit/74dce81d43775d041a790e36aa8c1801698decef): feat: 주간 활동 마감 텍스트 수정 및 실험실 디지털 묵주 추가
+- **2026-08-04** [`49ae925`](https://github.com/space-joops/legio-001/commit/49ae9257c64d8071016e5bf09db91894101e80f4): Merge pull request #51 from space-joops/feature/rosary-guide-swipe-3557016762758275258
+- **2026-08-04** [`a825b55`](https://github.com/space-joops/legio-001/commit/a825b55c5bdba14af9f783e3ad780c06f28e7e16): feat(rosary): 네비게이션 버튼을 하단 진행률(5/77) 영역 양옆으로 이동 배치
+- **2026-08-04** [`e92e105`](https://github.com/space-joops/legio-001/commit/e92e10511a348ee49797aee87e171574aa19db23): feat(rosary): 모바일 양옆 네비게이션 버튼(삼각형 아이콘) 추가
+- **2026-08-04** [`2224108`](https://github.com/space-joops/legio-001/commit/22241087a865243614375a0723477035a1c62da1): Merge pull request #52 from space-joops/update-tessera-prayers-11440459690567811472
+- **2026-08-04** [`c95a41b`](https://github.com/space-joops/legio-001/commit/c95a41b43af5b65fd8aae30ef569dc1d64a9df5c): 뗏세라 기도문 수정
+- **2026-08-04** [`7c733df`](https://github.com/space-joops/legio-001/commit/7c733df7907786fb0bc8eb79d233f16551f3b379): fix(rosary): 스와이프 제스처 관련 CSS 버그 및 충돌 픽스 적용
+- **2026-08-04** [`30de547`](https://github.com/space-joops/legio-001/commit/30de547290f1f834e5ef4b3ed7b26b691dda2a1c): feat(rosary): 스와이프 제스처 시각적 피드백 및 화면 전환 슬라이드 애니메이션 적용
+- **2026-08-04** [`e654b3d`](https://github.com/space-joops/legio-001/commit/e654b3dc28839e30980b2f6f50d4b70ef4732d67): feat(rosary): PC용 좌우 탐색 화살표 버튼 추가
+- **2026-08-04** [`8d96a38`](https://github.com/space-joops/legio-001/commit/8d96a38168b63a489e802dfd2d477cd6d2d98629): Merge pull request #48 from space-joops/update-priest-prayer-9297470568330418131
+- **2026-08-04** [`95bda87`](https://github.com/space-joops/legio-001/commit/95bda878866d142894d8ca9f5c2207f6d4787ca0): Merge pull request #49 from space-joops/update-korean-catena-5548218201233034999
+- **2026-08-04** [`9928634`](https://github.com/space-joops/legio-001/commit/992863438a28cf95d1f8453f0d537a0400289259): Update Korean Catena text
+- **2026-08-04** [`f817ea7`](https://github.com/space-joops/legio-001/commit/f817ea7aa323ec896644d45f227cfa24e01383a6): Update the Korean priest prayer text\n\n- Replaced the Korean priest prayer text with the user's provided text.\n- Removed the translation disclaimer note.\n- Ensures the spacing and symbols match exactly.
+- **2026-08-04** [`1bae685`](https://github.com/space-joops/legio-001/commit/1bae685bb66b74bc134a6fe4c7132a5220d29d37): Update the Korean priest prayer text\n\n- Replaced the Korean priest prayer text with the user's provided text.\n- Removed the translation disclaimer note.\n- Ensures the spacing and symbols match exactly.
+- **2026-08-02** [`c76446b`](https://github.com/space-joops/legio-001/commit/c76446b7e5b47110843881c8b8a7fd8a21f65c45): Merge pull request #47 from space-joops/feat/rosary-decade-set
+- **2026-08-02** [`59763f4`](https://github.com/space-joops/legio-001/commit/59763f47ddb88cb9196bcd8b612d1a4d998f7550): feat: 묵주기도를 기도문 한 개씩 따라가는 방식으로 바꿈
+- **2026-08-02** [`fa9c91b`](https://github.com/space-joops/legio-001/commit/fa9c91bd2a47d8da812a6d76951fa0f9d67d92da): feat: 묵주기도를 5단 세트로 세고 오늘의 신비를 단계별로 안내
+- **2026-08-02** [`141997e`](https://github.com/space-joops/legio-001/commit/141997ea6b6a5b4ffcb858ae91709a432ce0b3f0): Merge pull request #46 from space-joops/feat/platform-choice-popup
+- **2026-08-02** [`b27dcbe`](https://github.com/space-joops/legio-001/commit/b27dcbe1b26fe8f8ff043361e65709950c680da0): fix: 설치 안내 팝업의 "PWA" 문구 교체 + 표시 결함 수정
+- **2026-08-02** [`43838d1`](https://github.com/space-joops/legio-001/commit/43838d1113ce129835272597b85e3828c1fb1d1d): Merge branch 'feat/device-install' into feat/platform-choice-popup
+- **2026-08-02** [`6eb1f61`](https://github.com/space-joops/legio-001/commit/6eb1f61aef54ace57a5fd0e6c2aae23b6a3ce9b8): fix: add hidePlatformChoicePopup to Settings type
+- **2026-08-02** [`6e5aaff`](https://github.com/space-joops/legio-001/commit/6e5aaff95cebe07c1590533c06ba382ba69c09e4): feat: add platform choice popup with don't show again option
+- **2026-08-02** [`e017b23`](https://github.com/space-joops/legio-001/commit/e017b23105f0d8723cb85e5f00ba667bdd795d65): feat: show device-specific install instructions instead of generic unavailable message
+- **2026-08-02** [`bc42a17`](https://github.com/space-joops/legio-001/commit/bc42a1732fc4e93104509f7055f2c99cdbc0f0cf): Merge pull request #40 from space-joops/feature/report-export-buttons
+- **2026-08-02** [`a76baea`](https://github.com/space-joops/legio-001/commit/a76baeaa8ba7a2ae79f1c86dee1175e283dace4e): 양식 제6호 표기를 참고용 문서 안내로 교체
+- **2026-08-02** [`fd72dc6`](https://github.com/space-joops/legio-001/commit/fd72dc69ffe7344647ea38b0e42c8fddd2a09135): 보고서 내보내기를 PDF·이미지·인쇄로 분리하고 한 페이지 양식으로 통일
+- **2026-08-02** [`b609815`](https://github.com/space-joops/legio-001/commit/b609815e7f4d1fd62f083f1f5c4353f30d482839): Merge pull request #39 from space-joops/feature/tessera-page
+- **2026-08-02** [`e9a5e34`](https://github.com/space-joops/legio-001/commit/e9a5e348422d4ff7525d48c145983f5f4ee6ca2f): 하단 탭에 뗏세라 추가하고 주회합 기도문 전문 페이지 신설
+- **2026-08-02** [`e042462`](https://github.com/space-joops/legio-001/commit/e04246256b100571cd50a6ebf5fca20b86562594): Merge pull request #36 from space-joops/feature/report-usability
+- **2026-08-02** [`f6c5106`](https://github.com/space-joops/legio-001/commit/f6c5106c231c6512bcc06ac22d714c93518c05a1): 월례 보고서 사용성 6건 수정
+- **2026-08-02** [`0e82646`](https://github.com/space-joops/legio-001/commit/0e826464b072bed11c3a378c4913f5fa46b13347): Merge pull request #33 from space-joops/feature/session-treasury
+- **2026-08-02** [`3316401`](https://github.com/space-joops/legio-001/commit/331640142b2ced233d5d3e3e0b09eb1b3cad1258): 회계를 회차별 장부로 전환하고 월 합계를 자동 산출
+- **2026-08-02** [`3306226`](https://github.com/space-joops/legio-001/commit/33062260e740efdf3e7637430a0396c59c0bcb57): Merge pull request #31 from space-joops/feature/settings-activity-report
+- **2026-08-01** [`a706594`](https://github.com/space-joops/legio-001/commit/a706594a618977162bc8c8f13eb3f5476e69fc66): 설정 정리 + 활동보고 통합 + Pr.활동사항 자동 집계
+- **2026-08-01** [`2ccc943`](https://github.com/space-joops/legio-001/commit/2ccc943dbd1841277a4dfa16969c2dfb922b0c78): Merge pull request #24 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-08-01** [`507ff5c`](https://github.com/space-joops/legio-001/commit/507ff5c2499692ca101f53c1038c6335b871d6e5): CLAUDE.md에 스플래시 복귀 동작과 헤드리스 검증 주의사항 기록
+- **2026-08-01** [`89b3cff`](https://github.com/space-joops/legio-001/commit/89b3cff5d36e97b90fda37cf2594e827f96df5b1): 앱으로 돌아올 때마다 스플래시 표시
+- **2026-08-01** [`8cef9d7`](https://github.com/space-joops/legio-001/commit/8cef9d76dc6d6c117d4112cde5004beaaf86894d): CLAUDE.md에 공식 양식 분석 결과와 PR #24 핸드오프 기록
+- **2026-08-01** [`c7842a1`](https://github.com/space-joops/legio-001/commit/c7842a15c96a511b43b72db4163deac05d4b1b74): 보고서 단원명 수정 + 공식 양식(제6호) 정합성 + 한글 문서 내보내기
+- **2026-08-01** [`fb20fa1`](https://github.com/space-joops/legio-001/commit/fb20fa1489eb979dccc448c9c6a3178c8598ae99): Merge pull request #23 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-08-01** [`e97f1f5`](https://github.com/space-joops/legio-001/commit/e97f1f5d5ee798141c5e7cadd9cc17fa5cbda00a): CLAUDE.md 핸드오프를 PR #23 기준으로 갱신
+- **2026-08-01** [`9db06fc`](https://github.com/space-joops/legio-001/commit/9db06fc5da37f7df027aa5c22bce79e4e01dcdfd): 성능·데이터 안전망 개선 + 서기 월례보고서 자동 집계
+- **2026-08-01** [`c9c2348`](https://github.com/space-joops/legio-001/commit/c9c2348aa8d15048f3983bfe47f7b65b8206b0df): Merge pull request #22 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-08-01** [`4f086bb`](https://github.com/space-joops/legio-001/commit/4f086bbe54d1085517826c1a7f1864313c76d94c): 스플래시 전체 화면(흐림 배경) 전환 + 기도문 공식 문구 교체
+- **2026-07-31** [`f781e70`](https://github.com/space-joops/legio-001/commit/f781e70173e9313136c2b30386b0382d4c57b8a5): Merge pull request #21 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`37afb23`](https://github.com/space-joops/legio-001/commit/37afb23bdc255cabd42cdb9f4521bd5a188b087e): 사용성 전면 개선: 스플래시 오버레이·내비게이션·저장 피드백·데이터 보호
+- **2026-07-31** [`c1995ea`](https://github.com/space-joops/legio-001/commit/c1995ea2b394162def9a334dc1ad75f4d770d38c): Merge pull request #20 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`671bf62`](https://github.com/space-joops/legio-001/commit/671bf62988cca9d16c168ab49d794821265c47f7): CLAUDE.md 핸드오프를 PR #20 기준으로 갱신
+- **2026-07-31** [`ccfd105`](https://github.com/space-joops/legio-001/commit/ccfd105b4cde6ff958bd4cd84e2c7c25c871cb62): 접힘 섹션 heading 시맨틱 + 배너 터치 타깃·입력 라벨 접근성 보완
+- **2026-07-31** [`96e53e5`](https://github.com/space-joops/legio-001/commit/96e53e53a10237bee8b86671ce339502fd81791e): Merge pull request #19 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`429429a`](https://github.com/space-joops/legio-001/commit/429429af79d5af0ae64ad013aefd388748a9b698): CLAUDE.md에 프로젝트 가이드와 핸드오프 내용 작성
+- **2026-07-31** [`8550785`](https://github.com/space-joops/legio-001/commit/8550785cf483524cd86950ed255e4fda03fd98c7): 서기 화면 가로 모드 대응 + 앱 복귀 시 스플래시 재표시
+- **2026-07-31** [`603495a`](https://github.com/space-joops/legio-001/commit/603495ab1fa286bea23ff268101968e1ba7dcb3e): Merge pull request #18 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`0928fba`](https://github.com/space-joops/legio-001/commit/0928fba2222e04daa8738c5be1854261c156efc4): 레지오 성화 스플래시 추가 + 어르신 대상 UI 전반 개선
+- **2026-07-31** [`e08597b`](https://github.com/space-joops/legio-001/commit/e08597b3eb5f6bf15abdcfd8ff1fd1d098c6bbe3): Merge pull request #17 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`51938f7`](https://github.com/space-joops/legio-001/commit/51938f7960af76324a0d292e3e0da55517b89dfc): 서기용 보고서 화면 모바일 표 가로 스크롤 지원
+- **2026-07-31** [`c26ae46`](https://github.com/space-joops/legio-001/commit/c26ae465b879ae55a54c19396cab865daf491b22): Merge pull request #16 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`138fc89`](https://github.com/space-joops/legio-001/commit/138fc897159f8ed1fff27dde3307fd0bb025e0c3): 테마 명도 대비 강화 (어르신 가독성 2차 보완)
+- **2026-07-31** [`6ba50e5`](https://github.com/space-joops/legio-001/commit/6ba50e58ad53f611de78bdd9dacd65ad3292f2b0): 사이트 URL을 Vercel 환경 변수에서 불러오도록 변경
+- **2026-07-31** [`30998b0`](https://github.com/space-joops/legio-001/commit/30998b010465af13c7642934595a88be8ffe6bcd): Merge pull request #15 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`53a09d8`](https://github.com/space-joops/legio-001/commit/53a09d872ff64559f084e4a9db1443d56db83fdf): 전통 한옥 성당 테마로 전체 색상 리디자인, 라이트모드 강제
+- **2026-07-31** [`4866ae6`](https://github.com/space-joops/legio-001/commit/4866ae64a1727a6651d8ceaf3b180158ea1a368e): Merge pull request #13 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`6d73601`](https://github.com/space-joops/legio-001/commit/6d73601842793655891dc303ada48be630f5bcd5): 서기/설정 화면 4차 개선: 상단 버튼 재배치, 이전값 이어받기, 내보내기·가져오기 UX, 앱 버전
+- **2026-07-31** [`a8cdb38`](https://github.com/space-joops/legio-001/commit/a8cdb38453bfbaf81cbc45eafd92cf40f7b2a35a): Merge pull request #12 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`9311187`](https://github.com/space-joops/legio-001/commit/9311187805d0eab9da9b8c4604cb132f87f91ad2): 서기 화면 3차 개선: 입력 UX, 회차/요일 자동화, 탭형 출석·기도표
+- **2026-07-31** [`84661ee`](https://github.com/space-joops/legio-001/commit/84661eedc54f65bf1aeb508f37b4bc7af3a62d77): Merge pull request #9 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`b68a4e9`](https://github.com/space-joops/legio-001/commit/b68a4e92f607f44166aecdf83cd853ac6ca4df58): 모바일 하단 네비가 화면 바닥에 붙지 않는 문제 수정
+- **2026-07-31** [`d3ed7be`](https://github.com/space-joops/legio-001/commit/d3ed7be4fb8e6b157e7e152fd4ffe1480cd8357e): 서기 화면 다듬기: 네비/레이아웃 정리, 회차 자동계산, 출석·기도 표 개선
+- **2026-07-31** [`9adddf1`](https://github.com/space-joops/legio-001/commit/9adddf1d17b1faebe8bbfcc736b15b02bb6b91e2): Merge pull request #8 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-31** [`f406ee7`](https://github.com/space-joops/legio-001/commit/f406ee7d152edae0474d71248877bf152859f519): 서기 화면 PC 최적화 및 출석/기도 자동집계, 단원 명단, 데이터 가져오기 추가
+- **2026-07-31** [`4d62702`](https://github.com/space-joops/legio-001/commit/4d62702f33d009f8f656f4209d7298c9d2ddca43): Merge pull request #6 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-30** [`736e7ab`](https://github.com/space-joops/legio-001/commit/736e7ab569f24a7ef53881545fdec653f380457b): 서기 전용 쁘레시디움 월례 보고서 기능 추가
+- **2026-07-30** [`f3f195e`](https://github.com/space-joops/legio-001/commit/f3f195ec2119e436f682b5b667caafa3e98deafc): Merge pull request #5 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-30** [`b988424`](https://github.com/space-joops/legio-001/commit/b9884249a518dbabafac4080b13b7fc1823cc6d5): Add update-available banner and schedule reminders
+- **2026-07-30** [`26e4c16`](https://github.com/space-joops/legio-001/commit/26e4c168be5f1e4425cad2fc9a590eb6c26d3dca): Fix numeric input overflow, full offline PWA, app share, in-app browser notice
+- **2026-07-30** [`4b6b61e`](https://github.com/space-joops/legio-001/commit/4b6b61e11c018145d0abadb170a8f1e9ada880f6): Merge pull request #4 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-30** [`f9c6a8b`](https://github.com/space-joops/legio-001/commit/f9c6a8b91ea0e01e28e01cd6062401c40e648f98): Full-screen prayer text dialog, full rosary text, and text/font settings
+- **2026-07-30** [`3cde965`](https://github.com/space-joops/legio-001/commit/3cde9659ed2e3eb3d42b9134a99f38fb27fde72f): Merge pull request #3 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-30** [`ee31f38`](https://github.com/space-joops/legio-001/commit/ee31f382df1dc61360e3d221930c3cbaac4c4753): Add prayer text viewer and activity note field
+- **2026-07-30** [`83c17c7`](https://github.com/space-joops/legio-001/commit/83c17c7f719eb16cf3b1b5c3e9d9d0e68176d9aa): Merge pull request #2 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-30** [`6505d70`](https://github.com/space-joops/legio-001/commit/6505d7029c1592b35394c184ecc22c75629c0bfa): Add member onboarding, auto-advancing meeting date, and report editing
+- **2026-07-30** [`52d5760`](https://github.com/space-joops/legio-001/commit/52d57608222286204d335393081361ce94da8f69): Merge pull request #1 from space-joops/claude/korean-legionella-activity-app-78ztzd
+- **2026-07-30** [`a397548`](https://github.com/space-joops/legio-001/commit/a397548c3db0c4fa16c3c45615424514cd11dd16): Add Legion of Mary weekly activity report PWA
+- **2026-07-30** [`18f0104`](https://github.com/space-joops/legio-001/commit/18f01047b202c62a648274cb8286ad075eac59a0): Initial commit

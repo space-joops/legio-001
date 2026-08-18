@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "dsznajder.es7-react-js-snippets",
+    "vitest.explorer",
+    "usernamehw.errorlens",
+    "yoavbls.pretty-ts-errors",
+    "clinyong.vscode-css-modules",
+    "formulahendry.auto-rename-tag",
+    "wallabyjs.console-ninja",
+    "wix.vscode-import-cost",
+    "oderwat.indent-rainbow"
+  ]
+}

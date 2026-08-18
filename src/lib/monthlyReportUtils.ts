@@ -616,13 +616,19 @@ export function applySubmissionsToPrayerRoll(
 }
 
 /** Last date in the month that falls on `weekday` (0 = Sunday). */
-function lastWeekdayOfMonth(year: number, month: number, weekday: number): Date | null {
-  const daysInMonth = new Date(year, month, 0).getDate();
-  for (let day = daysInMonth; day >= 1; day--) {
-    const date = new Date(year, month - 1, day);
-    if (date.getDay() === weekday) return date;
-  }
-  return null;
+function lastWeekdayOfMonth(year: number, month: number, targetWeekday: number): Date {
+  // 타임존 문제(로컬 시간대와 UTC의 차이)를 방지하기 위해 UTC 기준으로 날짜를 계산합니다.
+  // JS에서 month 인덱스는 0부터 시작하지만, 0일(day)은 이전 달의 마지막 날을 반환하므로
+  // 1-based month를 그대로 넘겨주면 해당 월의 마지막 날짜를 얻을 수 있습니다.
+  const lastDay = new Date(Date.UTC(year, month, 0));
+  const lastDayWeekday = lastDay.getUTCDay();
+  
+  // 마지막 날의 요일과 목표 요일의 차이를 계산하여 며칠을 빼야 하는지 구합니다.
+  const daysToSubtract = (lastDayWeekday - targetWeekday + 7) % 7;
+  
+  const targetDate = new Date(lastDay);
+  targetDate.setUTCDate(lastDay.getUTCDate() - daysToSubtract);
+  return targetDate;
 }
 
 export interface SundayMassBasis {
@@ -659,15 +665,22 @@ export function computeSundayMassBasis(
   const prevMonth = month === 1 ? 12 : month - 1;
   const prevYear = month === 1 ? year - 1 : year;
   const prevMeeting = lastWeekdayOfMonth(prevYear, prevMonth, meetingWeekday);
-  if (!to || !prevMeeting) return null;
 
   const from = new Date(prevMeeting);
-  from.setDate(from.getDate() + 1);
+  from.setUTCDate(from.getUTCDate() + 1);
 
   let sundayCount = 0;
-  for (const d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
-    if (d.getDay() === 0) sundayCount += 1;
+  const currentDate = new Date(from);
+  
+  // for 문의 조건식 내부에서 날짜를 변경하는(side effect) 헷갈리는 방식 대신,
+  // 명확한 while 루프와 명시적 상태 변경을 사용하여 가독성을 높입니다.
+  while (currentDate <= to) {
+    if (currentDate.getUTCDay() === 0) { // 0: 일요일
+      sundayCount += 1;
+    }
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1);
   }
+  
   return { from, to, sundayCount, peopleCount, total: sundayCount * peopleCount };
 }
 
