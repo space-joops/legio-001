@@ -57,6 +57,7 @@ const ANTIPHON_COMMENTARY: Omit<VerseCommentary, "section"> = {
   quotes: [
     {
       ref: "아가 6,10",
+      link: "https://bible.cbck.or.kr/Knb/Sng/6",
       text: "새벽빛처럼 솟아오르고 달처럼 아름다우며 해처럼 빛나고 기를 든 군대처럼 두려움을 자아내는 저 여인은 누구인가?",
     },
     {
