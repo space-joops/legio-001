@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@latest?dev",
+          "react-dom/client": "https://esm.sh/react-dom@latest/client?dev",
+          "react/jsx-runtime": "https://esm.sh/react@latest/jsx-runtime?dev"
+        }
+      }
+    </script>
+    <!-- Babel Standalone -->
+    <script src="https://unpkg.com/@babel/standalone@latest/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/babel" data-type="module" data-presets="react">
+      	import React from 'react';
+      	import { createRoot } from 'react-dom/client'; 
+      	const domNode = document.getElementById('app');
+	function Hello() {
+		return <h1>Hello</h1>;
+	}
+      	const root = createRoot(domNode);
+	root.render(<Hello />);
+    </script>
+  </body>
+</html>
