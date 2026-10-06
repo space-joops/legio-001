@@ -53,6 +53,18 @@
   margin: 0 auto;
 }
 
+/* The picker scrolls its own result list under a fixed search box, so its
+   area must not scroll as a whole. */
+.pickerArea {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
 .empty,
 .hint {
   font-size: var(--font-size-base);
@@ -60,111 +72,148 @@
   line-height: 1.5;
 }
 
-.tableScroll {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.table {
-  min-width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  border: 1px solid var(--color-border);
-  padding: var(--space-2);
+.notice {
   font-size: var(--font-size-base);
-  text-align: left;
-  vertical-align: top;
+  font-weight: 700;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  padding: var(--space-2) var(--space-3);
 }
 
-.countColumn {
-  width: 6rem;
+.error {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-danger);
 }
 
-/* Below the tablet breakpoint four columns leave about one character each, so
-   each row becomes a stacked card with its own labels instead. */
-@media (max-width: 699px) {
-  .table thead {
-    display: none;
+.rowList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.rowCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* Just added or pointed at: thicker primary border, not colour alone. */
+.rowCardFocus {
+  border: 3px solid var(--color-primary);
+}
+
+.rowHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.rowTitle {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rowLabel {
+  font-size: var(--font-size-base);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.rowGroup {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* Stepper and note share a line from the tablet breakpoint; stacked on phones. */
+.rowFields {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.rowFields .stepper {
+  grid-column: 1 / -1;
+}
+
+.rowFields .note {
+  grid-column: 1;
+}
+
+@media (min-width: 700px) {
+  .rowFields {
+    grid-template-columns: auto 1fr auto;
   }
 
-  .table,
-  .table tbody,
-  .table tr,
-  .table td {
-    display: block;
-    width: 100%;
-  }
-
-  .table tr {
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-2);
-    margin-bottom: var(--space-2);
-  }
-
-  .table td {
-    border: none;
-    padding: var(--space-1) 0;
-  }
-
-  .table td::before {
-    content: attr(data-label);
-    display: block;
-    font-size: var(--font-size-sm);
-    font-weight: 700;
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-1);
-  }
-
-  .removeCell {
-    text-align: right;
-  }
-
-  .removeCell::before {
-    content: none;
+  .rowFields .stepper,
+  .rowFields .note {
+    grid-column: auto;
   }
 }
 
-.select,
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.stepButton {
+  min-height: var(--min-tap-target);
+  min-width: var(--min-tap-target);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  line-height: 1;
+}
+
 .customLabel,
 .count,
 .note {
   min-height: var(--min-tap-target);
-  width: 100%;
   min-width: 0;
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: var(--color-background);
+  background: var(--color-surface);
   color: var(--color-text);
   font-size: var(--font-size-base);
   padding: 0 var(--space-2);
 }
 
-/* Appears under the select once "직접 입력…" is chosen. */
-.customLabel {
-  margin-top: var(--space-2);
+.customLabel,
+.note {
+  width: 100%;
 }
 
 .count {
-  text-align: right;
+  width: 4.5rem;
+  text-align: center;
 }
 
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+/* Unnamed "기타" row on save: thicker dashed border plus the message below,
+   so the problem isn't signalled by colour alone. */
+.customLabelMissing {
+  border: 3px dashed var(--color-danger);
 }
 
 .addButton,
 .primaryButton,
 .secondaryButton,
-.removeButton {
+.removeButton,
+.changeButton {
   min-height: var(--min-tap-target);
   border-radius: var(--radius-md);
   font-size: var(--font-size-base);
@@ -172,11 +221,26 @@
   padding: 0 var(--space-3);
 }
 
+/* At the top of the list, so it never drifts below the fold as rows pile up. */
 .addButton {
-  align-self: flex-start;
+  flex-shrink: 0;
+  width: 100%;
   border: 2px dashed var(--color-primary);
   background: transparent;
   color: var(--color-primary);
+}
+
+.changeButton {
+  flex-shrink: 0;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.removeButton {
+  border: 1px solid var(--color-danger);
+  background: transparent;
+  color: var(--color-danger);
 }
 
 .actions {
@@ -204,23 +268,4 @@
   border: none;
   background: var(--color-primary);
   color: var(--color-primary-contrast);
-}
-
-.removeButton {
-  border: 2px solid var(--color-danger);
-  background: transparent;
-  color: var(--color-danger);
-  white-space: nowrap;
-}
-
-/* Unnamed "기타" row on save: thicker dashed border plus the message below,
-   so the problem isn't signalled by colour alone. */
-.customLabelMissing {
-  border: 3px dashed var(--color-danger);
-}
-
-.error {
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--color-danger);
 }
