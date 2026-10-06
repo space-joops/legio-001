@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "@/app/secretary/report/page.module.css";
-import { buildForm2026Tallies } from "@/lib/activityReport";
+import { buildForm2026Tallies, formatOtherActivitiesLine } from "@/lib/activityReport";
 import {
   SENATUS_HALF_LABEL,
   SENATUS_ITEMS,
@@ -160,6 +160,15 @@ export function Form2026ActivitySection({ report, items, patch, onRemap }: Props
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>9. 기타 (질의 및 건의)</h2>
+        {tallies.others.length > 0 && (
+          <>
+            <p className={styles.hint}>
+              활동 입력에서 &quot;기타 (직접 입력)&quot;으로 적은 활동입니다. 보고서 9번 줄 맨 앞에 자동으로
+              인쇄됩니다.
+            </p>
+            <output className={styles.autoLine}>{formatOtherActivitiesLine(tallies.others)}</output>
+          </>
+        )}
         <label className={styles.field}>
           <span className={styles.label}>기타</span>
           <textarea

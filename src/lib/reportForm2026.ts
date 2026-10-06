@@ -185,6 +185,17 @@ export const PR_CATEGORIES: PrCategory[] = [
   },
 ];
 
+/**
+ * 양식에 고정 칸이 없는 활동이 모이는 칸(본당협조/소공동체활성화 열의 "기타").
+ * 이 칸의 기록은 `ActivityEntry.customLabel` 에 활동 이름을 함께 갖는다.
+ */
+export const PR_OTHER_KEY = `${PR}other`;
+
+/** 기타 활동 이름은 이 형태로 맞춰 저장·비교한다(iOS 의 NFD 입력, 겹친 공백 대응). */
+export function normalizeActivityLabel(label: string): string {
+  return label.normalize("NFC").trim().replace(/\s+/g, " ");
+}
+
 /** 격자 한 분류가 차지하는 줄 수(양식 기준). */
 export const PR_GRID_ROWS = 8;
 

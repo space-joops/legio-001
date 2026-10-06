@@ -1,4 +1,10 @@
-import { createEmptySenatusCounts, FORM_2026, isForm2026Key } from "./reportForm2026";
+import {
+  createEmptySenatusCounts,
+  FORM_2026,
+  PR_OTHER_KEY,
+  isForm2026Key,
+  normalizeActivityLabel,
+} from "./reportForm2026";
 import type { ActivityItem, MonthlyReport } from "./types";
 
 /**
@@ -113,10 +119,14 @@ export function carriedOverNotes(report: MonthlyReport): string[] {
 /**
  * 새 양식 보고서를 만든다. 원본 객체는 건드리지 않는다.
  * 매핑이 하나라도 비어 있으면 던진다 — 화면이 그 전에 버튼을 막아야 한다.
+ *
+ * "기타" 칸으로 보낸 항목은 이전 항목 이름(`labels`)을 기타 활동 이름으로 붙여
+ * 옮긴다. 그래야 인쇄물의 "9. 기타" 줄과 연간 통계에 이름이 남는다.
  */
 export function convertReportTo2026(
   report: MonthlyReport,
-  mapping: Record<string, string>
+  mapping: Record<string, string>,
+  labels: Record<string, string> = {}
 ): MonthlyReport {
   const activityEntries = [];
   for (const entry of report.activityEntries ?? []) {
@@ -127,7 +137,12 @@ export function convertReportTo2026(
     const target = mapping[entry.itemKey];
     if (!target) throw new Error(`unmapped activity item: ${entry.itemKey}`);
     if (target === EXCLUDE) continue;
-    activityEntries.push({ ...entry, itemKey: target });
+    if (target === PR_OTHER_KEY) {
+      const customLabel = normalizeActivityLabel(labels[entry.itemKey] ?? entry.itemKey);
+      activityEntries.push({ ...entry, itemKey: target, customLabel });
+    } else {
+      activityEntries.push({ ...entry, itemKey: target });
+    }
   }
 
   const notes = carriedOverNotes(report);

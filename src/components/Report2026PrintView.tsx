@@ -1,4 +1,8 @@
-import { buildForm2026Tallies, type CellTally } from "@/lib/activityReport";
+import {
+  buildForm2026Tallies,
+  formatOtherActivitiesLine,
+  type CellTally,
+} from "@/lib/activityReport";
 import {
   OFFICER_ROLE_LABEL,
   OFFICER_ROLES,
@@ -314,7 +318,12 @@ export function Report2026PrintView({
 
       <section className={styles.section}>
         <h2 className={styles.formHeading}>9. 기타(질의 및 건의) :</h2>
-        <p className={styles.textValue}>{report.otherNotes || "-"}</p>
+        {/* 격자의 "기타" 칸은 숫자뿐이라, 무슨 활동이었는지는 여기 이름으로 남긴다. */}
+        <p className={styles.textValue}>
+          {[formatOtherActivitiesLine(tallies.others), report.otherNotes.trim()]
+            .filter(Boolean)
+            .join("\n") || "-"}
+        </p>
       </section>
 
       <footer className={styles.signature}>

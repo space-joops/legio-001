@@ -79,6 +79,10 @@ export default function SecretaryPage() {
             지출 항목 관리
           </Link>
           <p className={styles.description}>회계에서 고르는 지출 항목을 추가하거나 이름을 고칩니다.</p>
+          <Link href="/secretary/stats" className={styles.secondaryButton}>
+            연간 통계
+          </Link>
+          <p className={styles.description}>한 해 월례 보고서를 합친 기도·활동·회계 통계를 보고 CSV로 저장합니다.</p>
         </section>
 
         <section className={styles.section}>

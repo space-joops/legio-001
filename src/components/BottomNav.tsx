@@ -62,7 +62,9 @@ export function BottomNav() {
       href: "/secretary",
       label: "보고서",
       Icon: ReportListIcon,
-      isActive: pathname === "/secretary" || pathname.startsWith("/secretary/report"),
+      isActive: pathname === "/secretary" ||
+        pathname.startsWith("/secretary/report") ||
+        pathname.startsWith("/secretary/stats"),
     },
     {
       href: "/secretary/roster",

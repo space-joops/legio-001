@@ -1,7 +1,14 @@
 import { sortActivityItems } from "./activityItems";
 import { PRAYER_ITEMS } from "./constants";
 import { computeMassCommunion } from "./monthlyReportUtils";
-import { PARISH_CELLS, PR_CATEGORIES, isForm2026Key, type FormCell } from "./reportForm2026";
+import {
+  PARISH_CELLS,
+  PR_CATEGORIES,
+  PR_OTHER_KEY,
+  isForm2026Key,
+  normalizeActivityLabel,
+  type FormCell,
+} from "./reportForm2026";
 import type { ActivityItem, ActivityLine, MonthlyReport } from "./types";
 
 /**
@@ -100,6 +107,28 @@ export interface Form2026Tallies {
    * 인쇄물에는 나가지 않으므로 편집 화면이 경고해야 한다.
    */
   unmapped: ActivityTally[];
+  /** "기타" 칸에 들어간 활동을 이름별로. 합계는 Pr. 격자의 기타 칸 숫자와 같다. */
+  others: ActivityTally[];
+}
+
+/** 이름 없이 "기타" 칸에 들어간 기록(예전 기록 등)을 묶는 이름. */
+export const UNNAMED_OTHER_LABEL = "기타(이름 없음)";
+
+/** "기타 활동: 바자회 봉사(2), 성지순례 안내(1)" — 보고서 "9. 기타" 줄 머리에 붙는다. 없으면 "". */
+export function formatOtherActivitiesLine(others: ActivityTally[]): string {
+  const text = formatTallies(others);
+  return text ? `기타 활동: ${text}` : "";
+}
+
+/** "기타" 칸 기록을 활동 이름별로 합산한다(처음 나온 순서). */
+export function tallyOtherActivities(report: MonthlyReport): ActivityTally[] {
+  const totals = new Map<string, number>();
+  for (const entry of report.activityEntries ?? []) {
+    if (entry.itemKey !== PR_OTHER_KEY || entry.count === 0) continue;
+    const label = normalizeActivityLabel(entry.customLabel ?? "") || UNNAMED_OTHER_LABEL;
+    totals.set(label, (totals.get(label) ?? 0) + entry.count);
+  }
+  return [...totals].map(([label, count]) => ({ label, count }));
 }
 
 function totalsByKey(report: MonthlyReport): Map<string, number> {
@@ -145,5 +174,19 @@ export function buildForm2026Tallies(
       cells: category.cells.map(tallyCell),
     })),
     unmapped,
+    others: tallyOtherActivities(report),
   };
+}
+
+/** 모든 보고서에서 쓴 기타 활동 이름(가나다순, 중복 없음). 활동 입력의 자동완성용. */
+export function collectOtherActivityLabels(reports: MonthlyReport[]): string[] {
+  const labels = new Set<string>();
+  for (const report of reports) {
+    for (const entry of report.activityEntries ?? []) {
+      if (entry.itemKey !== PR_OTHER_KEY) continue;
+      const label = normalizeActivityLabel(entry.customLabel ?? "");
+      if (label) labels.add(label);
+    }
+  }
+  return [...labels].sort((a, b) => a.localeCompare(b, "ko"));
 }

@@ -82,7 +82,9 @@ export function ReportFormMigrationDialog({
 
   const complete = isMappingComplete(usage, mapping);
   const notes = carriedOverNotes(report);
-  const converted = open && complete && step === "preview" ? convertReportTo2026(report, mapping) : null;
+  const labels = Object.fromEntries(usage.map((entry) => [entry.key, entry.label]));
+  const converted =
+    open && complete && step === "preview" ? convertReportTo2026(report, mapping, labels) : null;
 
   const handleApply = () => {
     if (!converted) return;
@@ -113,6 +115,10 @@ export function ReportFormMigrationDialog({
               <p className={styles.hint}>
                 이 보고서에 기록된 활동을 새 양식의 어느 칸으로 옮길지 정해 주세요. 미리 골라
                 둔 칸도 맞는지 하나씩 확인해 주세요.
+              </p>
+              <p className={styles.hint}>
+                맞는 칸이 없으면 &quot;본당협조/소공동체활성화 › 기타&quot;를 고르세요. 항목 이름이
+                기타 활동 이름으로 그대로 남아 보고서와 연간 통계에 나옵니다.
               </p>
               {usage.length === 0 ? (
                 <p className={styles.hint}>옮길 활동 기록이 없습니다. 바로 다음 단계로 넘어가세요.</p>

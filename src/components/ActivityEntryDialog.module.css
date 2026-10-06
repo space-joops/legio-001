@@ -212,3 +212,15 @@
   color: var(--color-danger);
   white-space: nowrap;
 }
+
+/* Unnamed "기타" row on save: thicker dashed border plus the message below,
+   so the problem isn't signalled by colour alone. */
+.customLabelMissing {
+  border: 3px dashed var(--color-danger);
+}
+
+.error {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-danger);
+}

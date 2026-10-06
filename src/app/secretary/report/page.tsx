@@ -15,7 +15,11 @@ import { useToast } from "@/components/ToastProvider";
 import { TreasuryExpenseDialog } from "@/components/TreasuryExpenseDialog";
 import { useHistory } from "@/hooks/useHistory";
 import { useMonthlyReports } from "@/hooks/useMonthlyReports";
-import { buildActivityLines, personActivityCount } from "@/lib/activityReport";
+import {
+  buildActivityLines,
+  collectOtherActivityLabels,
+  personActivityCount,
+} from "@/lib/activityReport";
 import { PRAYER_ITEMS } from "@/lib/constants";
 import { shareOrDownloadFile, shareOrDownloadMonthExport } from "@/lib/exportData";
 import { generateId } from "@/lib/id";
@@ -198,7 +202,7 @@ function SessionTabBar({
 function ReportPageContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const { ready: reportsReady, findById, updateReport } = useMonthlyReports();
+  const { ready: reportsReady, reports, findById, updateReport } = useMonthlyReports();
   const { ready: historyReady } = useHistory();
   const [mode, setMode] = useState<"edit" | "preview">(
     searchParams.get("mode") === "preview" ? "preview" : "edit"
@@ -1196,6 +1200,7 @@ function ReportPageContent() {
         onClose={() => setActivityTarget(null)}
         onSave={(entries) => activityTarget && saveActivityEntries(activityTarget, entries)}
         onItemsChange={setActivityItems}
+        otherLabelSuggestions={collectOtherActivityLabels(reports)}
       />
 
       <TreasuryExpenseDialog

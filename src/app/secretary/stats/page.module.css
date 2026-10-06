@@ -1,0 +1,220 @@
+.topActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.topActions > a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: var(--min-tap-target);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  padding: 0 var(--space-3);
+}
+
+.primaryButton {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.yearRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.label {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+}
+
+.input {
+  min-height: var(--min-tap-target);
+  min-width: 8rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+/* Only on paper — on screen the year picker already says which year. */
+.printTitle {
+  display: none;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-top: var(--space-4);
+  min-width: 0;
+}
+
+.sectionTitle {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.hint,
+.notice {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.notice {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.summaryGrid > div {
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  padding: var(--space-2) var(--space-3);
+}
+
+.summaryGrid dt {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.summaryGrid dd {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-base);
+}
+
+.table th,
+.table td {
+  border: 2px solid var(--color-border);
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table thead th,
+.table tbody th {
+  background: var(--color-surface-alt);
+  font-weight: 700;
+}
+
+.table thead th {
+  white-space: nowrap;
+}
+
+.table td {
+  background: var(--color-background);
+}
+
+.number {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.caption {
+  text-align: left;
+  font-size: var(--font-size-base);
+  font-weight: 800;
+  padding-bottom: var(--space-1);
+}
+
+.subtle,
+.tag {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* Five Pr. categories: one column on phones, two on landscape phones and
+   tablets, three on PC — the same breakpoints the rest of the app uses. */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+@media (min-width: 700px) {
+  .categoryGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .categoryGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media print {
+  .yearRow .field {
+    display: none;
+  }
+
+  .printTitle {
+    display: block;
+  }
+
+  .section {
+    break-inside: avoid;
+    background: #ffffff;
+    border: none;
+    padding: 0;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid #000000;
+    background: #ffffff;
+  }
+}
