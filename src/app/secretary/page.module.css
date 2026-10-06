@@ -140,3 +140,9 @@
   font-size: var(--font-size-sm);
   padding: 0 var(--space-3);
 }
+
+/* Text, not just colour, marks a report still on the 2024-12 form. */
+.legacyTag {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}

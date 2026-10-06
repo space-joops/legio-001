@@ -1,5 +1,6 @@
 import { generateId } from "./id";
-import type { ActivityItem, ActivityLine } from "./types";
+import { createForm2026ActivityItems } from "./reportForm2026";
+import type { ActivityItem, ActivityLine, ReportFormVersion } from "./types";
 
 /**
  * 단원이 활동을 기록할 때 고르는 항목 목록(카탈로그). 서기가 편집할 수 있다.
@@ -39,8 +40,9 @@ const SEED_ITEMS: SeedItem[] = [
   { key: "smallGroupJoin", label: "소공동체 참여", line: "parish" },
 ];
 
+/** 이전 양식(2024-12)용 기본 항목 + 2026 양식의 고정 칸 항목. */
 export function createDefaultActivityItems(): ActivityItem[] {
-  return SEED_ITEMS.map((item, index) => ({
+  const legacy: ActivityItem[] = SEED_ITEMS.map((item, index) => ({
     id: item.key,
     key: item.key,
     label: item.label,
@@ -48,6 +50,7 @@ export function createDefaultActivityItems(): ActivityItem[] {
     order: index,
     hidden: false,
   }));
+  return [...legacy, ...createForm2026ActivityItems()];
 }
 
 export function createActivityItem(label: string, line: ActivityLine, order: number): ActivityItem {
@@ -71,6 +74,20 @@ export function sortActivityItemsByName(items: ActivityItem[]): ActivityItem[] {
 /** Hidden items stay out of the picker but keep totalling in old reports. */
 export function selectableActivityItems(items: ActivityItem[]): ActivityItem[] {
   return sortActivityItemsByName(items).filter((item) => !item.hidden);
+}
+
+/**
+ * 보고서 양식에 맞는 항목만. 2026 양식 보고서는 고정 칸 항목만(양식 순서),
+ * 이전 양식 보고서는 그 밖의 항목만(가나다순) 고를 수 있다.
+ */
+export function selectableItemsForForm(
+  items: ActivityItem[],
+  formVersion: ReportFormVersion | undefined
+): ActivityItem[] {
+  if (formVersion === "2026-cu") {
+    return sortActivityItems(items).filter((item) => item.form === "2026-cu" && !item.hidden);
+  }
+  return selectableActivityItems(items).filter((item) => item.form !== "2026-cu");
 }
 
 export function findActivityItem(items: ActivityItem[], key: string): ActivityItem | null {

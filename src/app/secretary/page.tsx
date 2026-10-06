@@ -108,6 +108,9 @@ export default function SecretaryPage() {
               <li key={report.id} className={styles.item}>
                 <Link href={`/secretary/report?id=${report.id}`} className={styles.itemLink}>
                   {formatYearMonthLabel(report.yearMonth)}
+                  {report.formVersion !== "2026-cu" && (
+                    <span className={styles.legacyTag}> · 이전 양식</span>
+                  )}
                 </Link>
                 <button
                   type="button"

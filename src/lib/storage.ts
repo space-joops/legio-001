@@ -1,6 +1,7 @@
 import { createDefaultActivityItems } from "./activityItems";
 import { DATA_SCHEMA_VERSION } from "./constants";
 import { createDefaultExpenseItems } from "./expenseItems";
+import { createEmptySenatusCounts, mergeForm2026ActivityItems } from "./reportForm2026";
 import { migrateLegacyTreasury } from "./treasury";
 import type {
   ActivityItem,
@@ -53,6 +54,7 @@ const KEYS = {
   // resetAll() 이 깨끗이 지워 주도록 목록에는 남겨 둔다.
   lastSplashShownAt: "legioMariae.lastSplashShownAt",
   lastExportedAt: "legioMariae.lastExportedAt",
+  formMigrationMap: "legioMariae.formMigrationMap",
 } as const;
 
 /**
@@ -167,6 +169,8 @@ const EMPTY_MONTHLY_REPORT_DEFAULTS = {
   treasuryLedger: [],
   sundayMassTotal: 0,
   evangelization: EMPTY_EVANGELIZATION,
+  // formVersion 은 일부러 여기 없다 — "없음 = 이전 양식" 판별이 깨진다(types.ts 참고).
+  senatusCounts: createEmptySenatusCounts(),
   memberCountsPrevMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
   memberCountsThisMonth: EMPTY_MEMBER_COUNTS_DEFAULT,
   memberCountsIncrease: EMPTY_MEMBER_COUNTS_DEFAULT,
@@ -291,11 +295,16 @@ export const storage = {
     writeJson(KEYS.monthlyReports, reports);
   },
 
-  /** 서기가 직접 목록을 손보기 전까지는 내장 카탈로그를 쓴다. */
+  /**
+   * 서기가 직접 목록을 손보기 전까지는 내장 카탈로그를 쓴다.
+   *
+   * 2026 양식 항목은 그 양식이 생기기 전에 저장된 목록에는 없으므로, 읽을 때마다
+   * 빠진 것만 덧붙인다. 서기가 고친 이전 양식 항목은 그대로 둔다.
+   */
   getActivityItems(): ActivityItem[] {
     const stored = readJson<ActivityItem[]>(KEYS.activityItems, []);
     if (!Array.isArray(stored) || stored.length === 0) return createDefaultActivityItems();
-    return stored;
+    return mergeForm2026ActivityItems(stored);
   },
   setActivityItems(items: ActivityItem[]): void {
     writeJson(KEYS.activityItems, items);
@@ -308,6 +317,18 @@ export const storage = {
   },
   setExpenseItems(items: ExpenseItem[]): void {
     writeJson(KEYS.expenseItems, items);
+  },
+
+  /**
+   * 이전 양식 → 2026 양식 변환 때 서기가 고른 매핑(이전 항목 키 → 새 항목 키,
+   * 또는 "제외"). 다음 달 보고서를 변환할 때 같은 선택을 미리 채워 준다.
+   */
+  getFormMigrationMap(): Record<string, string> {
+    const stored = readJson<Record<string, string>>(KEYS.formMigrationMap, {});
+    return stored && typeof stored === "object" && !Array.isArray(stored) ? stored : {};
+  },
+  setFormMigrationMap(map: Record<string, string>): void {
+    writeJson(KEYS.formMigrationMap, map);
   },
 
   /** 마지막으로 내보내기에 성공한 시각(epoch ms). 0 이면 한 번도 백업한 적 없다는 뜻. */

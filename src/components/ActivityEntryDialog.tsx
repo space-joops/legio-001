@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createActivityItem, selectableActivityItems } from "@/lib/activityItems";
+import { createActivityItem, selectableItemsForForm } from "@/lib/activityItems";
 import { generateId } from "@/lib/id";
+import { form2026GroupLabel } from "@/lib/reportForm2026";
 import { selectOnFocus } from "@/lib/selectOnFocus";
 import { storage } from "@/lib/storage";
-import type { ActivityEntry, ActivityItem } from "@/lib/types";
+import type { ActivityEntry, ActivityItem, ReportFormVersion } from "@/lib/types";
 import styles from "./ActivityEntryDialog.module.css";
 
 /**
  * 단원 한 명이 한 회차에 한 활동들을 여러 줄로 입력하는 창(서기용).
  *
- * 목록에 없는 활동은 직접 적을 수 있고, 그 자리에서 활동 목록에 새 항목을
- * 추가할 수도 있다(월례 보고 도중 목록 관리 화면까지 다녀오지 않아도 되도록).
+ * 이전 양식 보고서에서는 목록에 없는 활동을 직접 적을 수 있고, 그 자리에서 활동
+ * 목록에 새 항목을 추가할 수도 있다(월례 보고 도중 목록 관리 화면까지 다녀오지
+ * 않아도 되도록).
+ *
+ * 2026 양식 보고서는 양식의 고정 칸만 고를 수 있다. 칸이 없는 이름을 새로 만들면
+ * 인쇄물 어디에도 찍히지 않기 때문이다. 양식 묶음별로 <optgroup> 을 나눠 보여 준다.
  */
 
 /** Sentinel for the "type it myself" option, which no catalogue key can use. */
@@ -23,6 +28,8 @@ interface Props {
   personLabel: string;
   sessionNumber: number;
   items: ActivityItem[];
+  /** 보고서의 양식. 고를 수 있는 항목이 달라진다. */
+  formVersion: ReportFormVersion | undefined;
   /** Entries already recorded for this person and session. */
   entries: ActivityEntry[];
   onClose: () => void;
@@ -55,6 +62,7 @@ export function ActivityEntryDialog({
   personLabel,
   sessionNumber,
   items,
+  formVersion,
   entries,
   onClose,
   onSave,
@@ -85,14 +93,32 @@ export function ActivityEntryDialog({
     );
   }, [open, entries]);
 
-  const options = selectableActivityItems(items);
+  const isForm2026 = formVersion === "2026-cu";
+  const options = selectableItemsForForm(items, formVersion);
+
+  /** "본당 사목자 지시사항" 같은 묶음 제목별로 나눈다(2026 양식만). */
+  const groupedOptions: { label: string; items: ActivityItem[] }[] = [];
+  if (isForm2026) {
+    for (const item of options) {
+      const label = form2026GroupLabel(item.key) ?? "";
+      const group = groupedOptions.find((g) => g.label === label);
+      if (group) group.items.push(item);
+      else groupedOptions.push({ label, items: [item] });
+    }
+  }
+
+  /** 이미 기록된 항목이 지금 목록에 없을 때(숨김·다른 양식) 선택값이 엉뚱하게 보이지 않도록. */
+  const missingOption = (key: string) =>
+    key === CUSTOM || options.some((item) => item.key === key)
+      ? null
+      : items.find((item) => item.key === key) ?? { key, label: key };
 
   const addRow = () => {
     setRows((prev) => [
       ...prev,
       {
         id: generateId(),
-        itemKey: options[0]?.key ?? CUSTOM,
+        itemKey: options[0]?.key ?? (isForm2026 ? "" : CUSTOM),
         customLabel: "",
         count: 1,
         note: "",
@@ -185,14 +211,28 @@ export function ActivityEntryDialog({
                           aria-label="활동 항목"
                           onChange={(e) => patchRow(row.id, { itemKey: e.target.value })}
                         >
-                          {options.map((item) => (
-                            <option key={item.key} value={item.key}>
-                              {item.label}
-                            </option>
-                          ))}
-                          <option value={CUSTOM}>
-                            직접 입력…
-                          </option>
+                          {(() => {
+                            const missing = missingOption(row.itemKey);
+                            return missing ? (
+                              <option value={missing.key}>{missing.label}</option>
+                            ) : null;
+                          })()}
+                          {isForm2026
+                            ? groupedOptions.map((group) => (
+                                <optgroup key={group.label} label={group.label}>
+                                  {group.items.map((item) => (
+                                    <option key={item.key} value={item.key}>
+                                      {item.label}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              ))
+                            : options.map((item) => (
+                                <option key={item.key} value={item.key}>
+                                  {item.label}
+                                </option>
+                              ))}
+                          {!isForm2026 && <option value={CUSTOM}>직접 입력…</option>}
                         </select>
                         {row.itemKey === CUSTOM && (
                           <input

@@ -200,6 +200,24 @@ export interface EvangelizationTallies {
 /** 이 활동이 공식 양식의 어느 줄로 집계되는지. */
 export type ActivityLine = "praesidium" | "parish";
 
+/**
+ * 월례 보고서가 따르는 양식.
+ *   2024-12 — 서울 무염시태 세나뚜스 양식 제6호(2024년 12월 개정) 원형
+ *   2026-cu — 하늘의 문 Cu. 2026년 양식(세나뚜스 지시사항 + Pr. 활동 격자)
+ * `docs/forms/` 에 실물이 있다.
+ */
+export type ReportFormVersion = "2024-12" | "2026-cu";
+
+/** 2026 양식의 세나뚜스 지시사항 칸. ❹는 짝 칸이라 키가 둘이다. */
+export type SenatusKey =
+  | "rosaryBillion"
+  | "volunteerTraining"
+  | "homestay"
+  | "wydAttend"
+  | "wydVolunteerInvite"
+  | "promotion"
+  | "wydChainPrayer";
+
 /** 활동 항목 카탈로그의 한 줄. 서기가 목록을 직접 편집할 수 있다. */
 export interface ActivityItem {
   id: string;
@@ -210,6 +228,11 @@ export interface ActivityItem {
   order: number;
   /** 선택 목록에서 감추되, 이미 이 항목을 쓴 보고서에서는 계속 집계된다. */
   hidden: boolean;
+  /**
+   * 2026 양식의 고정 칸에 대응하는 내장 항목이면 "2026-cu". 없으면 이전 양식용
+   * 항목이고, 이전 양식 보고서에서만 선택 목록에 나온다.
+   */
+  form?: ReportFormVersion;
 }
 
 /** 단원 한 명이 한 회차에 기록한 활동 하나. */
@@ -275,6 +298,12 @@ export interface TreasurySessionEntry {
  */
 export interface MonthlyReport {
   id: string;
+  /**
+   * 이 보고서가 따르는 양식. **없으면 이전 양식(2024-12)이다** — 이 필드가 생기기
+   * 전에 만든 보고서는 전부 그 양식으로 작성됐기 때문. 그래서 저장소의 기본값
+   * 병합에도 넣지 않는다(넣으면 옛 보고서가 새 양식으로 둔갑한다).
+   */
+  formVersion?: ReportFormVersion;
   yearMonth: string; // "2026-06"
   sessionRangeStart: number;
   sessionRangeEnd: number;
@@ -327,6 +356,8 @@ export interface MonthlyReport {
   sundayMassTotal: number;
   /** 공식 양식대로, 연초 누계 선교 실적을 목표 대비로 적는다. */
   evangelization: EvangelizationTallies;
+  /** 2026 양식의 세나뚜스 지시사항. 서기가 그달 합계를 직접 입력한다. */
+  senatusCounts: Record<SenatusKey, number>;
   dioceseInstructions: string;
   parishInstructions: string;
   councilInstructions: string;

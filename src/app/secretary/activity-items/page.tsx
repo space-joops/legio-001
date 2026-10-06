@@ -9,8 +9,10 @@ import { useLocalStorageReady } from "@/hooks/useLocalStorageReady";
 import {
   createActivityItem,
   createDefaultActivityItems,
+  sortActivityItems,
   sortActivityItemsByName,
 } from "@/lib/activityItems";
+import { form2026GroupLabel } from "@/lib/reportForm2026";
 import { storage } from "@/lib/storage";
 import type { ActivityItem, ActivityLine } from "@/lib/types";
 import styles from "./page.module.css";
@@ -20,6 +22,9 @@ import styles from "./page.module.css";
  *
  * 쁘레시디움마다 활동을 부르는 말이 조금씩 달라서, 내장 목록을 그대로 쓰지 않고
  * 고칠 수 있게 열어 두었다. 항목마다 공식 양식의 어느 줄로 집계될지도 정한다.
+ *
+ * 단, 2026 양식 항목은 종이 양식의 고정 칸이라 이름·위치를 바꿀 수 없고 감추기만
+ * 된다. 고칠 수 있는 건 이전 양식(2024-12) 보고서에서 쓰는 항목들이다.
  */
 const LINES: { value: ActivityLine; label: string }[] = [
   { value: "praesidium", label: "Pr.활동사항" },
@@ -54,6 +59,9 @@ export default function ActivityItemsPage() {
     persist(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   };
 
+  const form2026Items = sortActivityItems(items.filter((item) => item.form === "2026-cu"));
+  const legacyItems = items.filter((item) => item.form !== "2026-cu");
+
   const handleAdd = () => {
     const label = draftLabel.trim();
     if (!label) return;
@@ -75,7 +83,41 @@ export default function ActivityItemsPage() {
       <p className={styles.autoSaveNotice}>모든 변경 사항은 자동으로 저장됩니다.</p>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>항목 추가</h2>
+        <h2 className={styles.sectionTitle}>새 양식(2026) 항목</h2>
+        <p className={styles.hint}>종이 양식의 칸 그대로라 이름은 바꿀 수 없습니다. 쓰지 않는 칸은 사용을 꺼서 입력 목록에서 감출 수 있습니다.</p>
+        <div className={styles.tableScroll}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>항목 이름</th>
+                <th>양식 위치</th>
+                <th>사용</th>
+              </tr>
+            </thead>
+            <tbody>
+              {form2026Items.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.label}</td>
+                  <td>{form2026GroupLabel(item.key)}</td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      className={styles.checkbox}
+                      checked={!item.hidden}
+                      aria-label={`${item.label} ${"사용"}`}
+                      onChange={(e) => patchItem(item.id, { hidden: !e.target.checked })}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>이전 양식 항목 추가</h2>
+        <p className={styles.hint}>아래 항목들은 이전 양식(2024년 12월 개정)으로 작성된 보고서에서만 쓰입니다.</p>
         <div className={styles.row}>
           <input
             type="text"
@@ -104,7 +146,7 @@ export default function ActivityItemsPage() {
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>항목 목록</h2>
+        <h2 className={styles.sectionTitle}>이전 양식 항목 목록</h2>
         <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
@@ -115,7 +157,7 @@ export default function ActivityItemsPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {legacyItems.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <input
