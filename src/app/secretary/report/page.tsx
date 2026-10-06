@@ -7,6 +7,8 @@ import { ActivityEntryDialog } from "@/components/ActivityEntryDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { PageShell } from "@/components/PageShell";
 import { PrayerSubmissionImportDialog } from "@/components/PrayerSubmissionImportDialog";
+import { ReportFormMigrationDialog } from "@/components/ReportFormMigrationDialog";
+import { Form2026ActivitySection } from "@/components/report/Form2026ActivitySection";
 import { SecretaryReportPrintView } from "@/components/SecretaryReportPrintView";
 import { ShareButton } from "@/components/ShareButton";
 import { useToast } from "@/components/ToastProvider";
@@ -215,6 +217,7 @@ function ReportPageContent() {
   const [pendingRange, setPendingRange] = useState<{ start: number; end: number } | null>(null);
   const [removingAgendaId, setRemovingAgendaId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [migrationOpen, setMigrationOpen] = useState(false);
   const captureRef = useRef<HTMLDivElement>(null);
   const { showToast } = useToast();
 
@@ -380,6 +383,7 @@ function ReportPageContent() {
       .catch(() => void fallbackToFile());
   };
 
+  const isForm2026 = report.formVersion === "2026-cu";
   const activityLines = buildActivityLines(report, activityItems);
   const sundayBasis = computeSundayMassBasis(
     report.yearMonth,
@@ -607,6 +611,22 @@ function ReportPageContent() {
         </button>
       </div>
       <p className={styles.autoSaveNotice}>모든 변경 사항은 자동으로 저장됩니다.</p>
+      {!isForm2026 && (
+        <div className={styles.formBanner}>
+          <p>
+            <b>이전 양식(2024년 12월 개정)으로 작성된 보고서입니다.</b> 새 양식(2026 하늘의 문
+            Cu.)으로 바꾸려면 변환해 주세요. 변환 전까지는 이전 양식 그대로 보고 인쇄할 수
+            있습니다.
+          </p>
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={() => setMigrationOpen(true)}
+          >
+            새 양식으로 변환
+          </button>
+        </div>
+      )}
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>회합 정보</h2>
@@ -1056,108 +1076,120 @@ function ReportPageContent() {
 
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>주요 활동 내역</h2>
-        <p className={styles.hint}>아래 회색 줄은 입력한 값으로 보고서에 실제 인쇄될 내용입니다. 직접 고칠 수 없고, 위 칸과 활동 입력을 바꾸면 따라서 바뀝니다.</p>
-        <label className={styles.field}>
-          <span className={styles.label}>교구 지시사항</span>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            value={report.dioceseInstructions}
-            onChange={(e) => patch({ dioceseInstructions: e.target.value })}
-          />
-        </label>
-        <output className={styles.autoLine}>{activityLines.diocese}</output>
-        <label className={styles.field}>
-          <span className={styles.label}>본당 지시사항</span>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            value={report.parishInstructions}
-            onChange={(e) => patch({ parishInstructions: e.target.value })}
-          />
-        </label>
-        <output className={styles.autoLine}>{activityLines.parish}</output>
-        <label className={styles.field}>
-          <span className={styles.label}>평의회 지시사항</span>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            value={report.councilInstructions}
-            onChange={(e) => patch({ councilInstructions: e.target.value })}
-          />
-        </label>
-      </section>
+      {isForm2026 ? (
+        <Form2026ActivitySection
+          report={report}
+          items={activityItems}
+          patch={patch}
+          onRemap={() => setMigrationOpen(true)}
+        />
+      ) : (
+        <>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>주요 활동 내역</h2>
+          <p className={styles.hint}>아래 회색 줄은 입력한 값으로 보고서에 실제 인쇄될 내용입니다. 직접 고칠 수 없고, 위 칸과 활동 입력을 바꾸면 따라서 바뀝니다.</p>
+          <label className={styles.field}>
+            <span className={styles.label}>교구 지시사항</span>
+            <textarea
+              className={styles.textarea}
+              rows={3}
+              value={report.dioceseInstructions}
+              onChange={(e) => patch({ dioceseInstructions: e.target.value })}
+            />
+          </label>
+          <output className={styles.autoLine}>{activityLines.diocese}</output>
+          <label className={styles.field}>
+            <span className={styles.label}>본당 지시사항</span>
+            <textarea
+              className={styles.textarea}
+              rows={3}
+              value={report.parishInstructions}
+              onChange={(e) => patch({ parishInstructions: e.target.value })}
+            />
+          </label>
+          <output className={styles.autoLine}>{activityLines.parish}</output>
+          <label className={styles.field}>
+            <span className={styles.label}>평의회 지시사항</span>
+            <textarea
+              className={styles.textarea}
+              rows={3}
+              value={report.councilInstructions}
+              onChange={(e) => patch({ councilInstructions: e.target.value })}
+            />
+          </label>
+        </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>쁘레시디움 활동사항</h2>
-        <label className={styles.field}>
-          <span className={styles.label}>활동사항</span>
-          <textarea
-            className={styles.textarea}
-            rows={4}
-            placeholder="이번 달 쁘레시디움 활동을 자유롭게 적어 주세요."
-            value={report.activitySummary}
-            onChange={(e) => patch({ activitySummary: e.target.value })}
-          />
-        </label>
-        <output className={styles.autoLine}>{activityLines.praesidium}</output>
-        <h3 className={styles.sectionTitle}>선교실적 누계 (실적/목표)</h3>
-        {EVANGELIZATION_FIELDS.map(({ key, label }) => (
-          <div key={key} className={styles.memberCountRow}>
-            <span className={styles.label}>{label}</span>
-            <div className={styles.row}>
-              {(["result", "target"] as const).map((slot) => (
-                <label key={slot} className={styles.field}>
-                  <span className={styles.smallLabel}>
-                    {slot === "result" ? "실적" : "목표"}
-                  </span>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    className={styles.input}
-                    value={report.evangelization[key][slot]}
-                    onFocus={selectOnFocus}
-                    onChange={(e) =>
-                      patch({
-                        evangelization: {
-                          ...report.evangelization,
-                          [key]: { ...report.evangelization[key], [slot]: toNumber(e.target.value) },
-                        },
-                      })
-                    }
-                  />
-                </label>
-              ))}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>쁘레시디움 활동사항</h2>
+          <label className={styles.field}>
+            <span className={styles.label}>활동사항</span>
+            <textarea
+              className={styles.textarea}
+              rows={4}
+              placeholder="이번 달 쁘레시디움 활동을 자유롭게 적어 주세요."
+              value={report.activitySummary}
+              onChange={(e) => patch({ activitySummary: e.target.value })}
+            />
+          </label>
+          <output className={styles.autoLine}>{activityLines.praesidium}</output>
+          <h3 className={styles.sectionTitle}>선교실적 누계 (실적/목표)</h3>
+          {EVANGELIZATION_FIELDS.map(({ key, label }) => (
+            <div key={key} className={styles.memberCountRow}>
+              <span className={styles.label}>{label}</span>
+              <div className={styles.row}>
+                {(["result", "target"] as const).map((slot) => (
+                  <label key={slot} className={styles.field}>
+                    <span className={styles.smallLabel}>
+                      {slot === "result" ? "실적" : "목표"}
+                    </span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      className={styles.input}
+                      value={report.evangelization[key][slot]}
+                      onFocus={selectOnFocus}
+                      onChange={(e) =>
+                        patch({
+                          evangelization: {
+                            ...report.evangelization,
+                            [key]: { ...report.evangelization[key], [slot]: toNumber(e.target.value) },
+                          },
+                        })
+                      }
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-        <label className={styles.field}>
-          <span className={styles.label}>선교실적 누계</span>
-          <textarea
-            className={styles.textarea}
-            rows={2}
-            value={report.cumulativeEvangelization}
-            onChange={(e) => patch({ cumulativeEvangelization: e.target.value })}
-          />
-        </label>
-        <label className={styles.field}>
-          <span className={styles.label}>기타</span>
-          <textarea
-            className={styles.textarea}
-            rows={3}
-            value={report.otherNotes}
-            onChange={(e) => patch({ otherNotes: e.target.value })}
-          />
-        </label>
-      </section>
+          ))}
+          <label className={styles.field}>
+            <span className={styles.label}>선교실적 누계</span>
+            <textarea
+              className={styles.textarea}
+              rows={2}
+              value={report.cumulativeEvangelization}
+              onChange={(e) => patch({ cumulativeEvangelization: e.target.value })}
+            />
+          </label>
+          <label className={styles.field}>
+            <span className={styles.label}>기타</span>
+            <textarea
+              className={styles.textarea}
+              rows={3}
+              value={report.otherNotes}
+              onChange={(e) => patch({ otherNotes: e.target.value })}
+            />
+          </label>
+        </section>
+        </>
+      )}
 
       <ActivityEntryDialog
         open={activityTarget !== null}
         personLabel={activityTarget ? findPersonInReport(report, activityTarget).name : ""}
         sessionNumber={activeSession}
         items={activityItems}
+        formVersion={report.formVersion}
         entries={(report.activityEntries ?? []).filter(
           (e) => e.personId === activityTarget && e.sessionNumber === activeSession
         )}
@@ -1177,6 +1209,21 @@ function ReportPageContent() {
         onSave={(expenses) =>
           expenseTarget !== null && saveSessionExpenses(expenseTarget, expenses)
         }
+      />
+
+      <ReportFormMigrationDialog
+        open={migrationOpen}
+        report={report}
+        items={activityItems}
+        onCancel={() => setMigrationOpen(false)}
+        onBackup={() => {
+          void handleExportJson();
+        }}
+        onApply={(converted) => {
+          patch(converted);
+          setMigrationOpen(false);
+          showToast("새 양식으로 변환했습니다.");
+        }}
       />
 
       <PrayerSubmissionImportDialog

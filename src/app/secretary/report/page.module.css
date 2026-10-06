@@ -430,3 +430,33 @@ a.secondaryButton {
   size: A4 portrait;
   margin: 10mm;
 }
+
+/* Each category of the 2026 Pr. grid on its own line inside .autoLine. */
+.autoLineRow {
+  display: block;
+}
+
+/* Legacy-form notice and the "칸이 없는 활동" warning. Bordered and bold, not
+   colour alone. */
+.formBanner,
+.warningBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  border: 3px solid var(--color-accent-secondary);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+.formBanner p,
+.warningBox p {
+  flex: 1 1 16rem;
+}
+
+.warningBox {
+  border-color: var(--color-danger);
+}

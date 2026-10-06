@@ -1,6 +1,7 @@
 import { EMPTY_COUNTS, PRAYER_ITEMS } from "./constants";
 import { generateId } from "./id";
 import { normalizeName, type ParsedSubmission } from "./prayerSubmission";
+import { FORM_2026, SENATUS_ITEMS, createEmptySenatusCounts } from "./reportForm2026";
 import type {
   AttendanceRecord,
   MemberCounts,
@@ -733,6 +734,8 @@ export function createMonthlyReport(
   const prayerRoll = buildPrayerRoll(roster, range.start, range.end);
   return {
     id: generateId(),
+    // 새로 만드는 보고서는 언제나 현행 양식. 이전 양식 보고서는 변환 버튼으로만 넘어온다.
+    formVersion: FORM_2026,
     yearMonth,
     sessionRangeStart: range.start,
     sessionRangeEnd: range.end,
@@ -761,6 +764,7 @@ export function createMonthlyReport(
       activeMember: { result: 0, target: 0 },
       praetorium: { result: 0, target: 0 },
     },
+    senatusCounts: createEmptySenatusCounts(),
     agendaItems: [],
     treasury: { broughtForward, income: 0, expense: 0, balance: broughtForward, expenseBreakdown: "" },
     // Filled in lazily — computeTreasuryLedger() derives a row per session from
@@ -803,6 +807,19 @@ export function formatMonthlyShareText(report: MonthlyReport): string {
   const { officersPresent, officersTotal, membersPresent, membersTotal } = report.attendance;
   const attendanceLine = `출석: 간부 ${officersPresent}/${officersTotal}, 단원 ${membersPresent}/${membersTotal}`;
   const treasuryLine = `잔액: ${report.treasury.balance}`;
+  if (report.formVersion === FORM_2026) {
+    // 2026 양식에는 활동사항 자유문이 없다. 세나뚜스 숫자와 기타만 덧붙인다.
+    const senatus = SENATUS_ITEMS.filter((item) =>
+      item.keys.some((key) => (report.senatusCounts?.[key] ?? 0) > 0)
+    ).map(
+      (item) => `${item.label}(${item.keys.map((key) => report.senatusCounts[key]).join("/")})`
+    );
+    const extra = [
+      ...(senatus.length > 0 ? ["", `세나뚜스 지시사항: ${senatus.join(", ")}`] : []),
+      ...(report.otherNotes.trim() ? ["", `기타: ${report.otherNotes.trim()}`] : []),
+    ];
+    return [title, "", attendanceLine, ...prayerLines, treasuryLine, ...extra].join("\n");
+  }
   const noteLines = report.activitySummary.trim()
     ? ["", `활동사항: ${report.activitySummary.trim()}`]
     : [];

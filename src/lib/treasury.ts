@@ -125,6 +125,26 @@ export function formatExpenseBreakdown(breakdown: TreasuryBreakdownLine[]): stri
   return breakdown.map((line) => `(${line.label}) ${formatWon(line.amount)}원`).join("  ");
 }
 
+export interface NotableExpenses {
+  donation: number;
+  flowers: number;
+  other: number;
+}
+
+/**
+ * 2026 양식의 "중요 지출 내역 : (의연금) (꽃값) (기타)" 세 칸. 장부의 항목 이름이
+ * 정확히 "의연금"/"꽃값"인 것만 그 칸으로 가고, 나머지는 전부 기타에 합친다.
+ */
+export function splitNotableExpenses(breakdown: TreasuryBreakdownLine[]): NotableExpenses {
+  const result: NotableExpenses = { donation: 0, flowers: 0, other: 0 };
+  for (const line of breakdown) {
+    if (line.label === "의연금") result.donation += line.amount;
+    else if (line.label === "꽃값") result.flowers += line.amount;
+    else result.other += line.amount;
+  }
+  return result;
+}
+
 /** The derived half of `treasury`, ready to store next to the ledger. */
 export function deriveTreasury(
   report: MonthlyReport,

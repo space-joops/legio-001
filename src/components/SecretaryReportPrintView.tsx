@@ -12,6 +12,7 @@ import type {
   MemberCounts,
   MonthlyReport,
 } from "@/lib/types";
+import { Report2026PrintView } from "./Report2026PrintView";
 import styles from "./SecretaryReportPrintView.module.css";
 
 /**
@@ -66,12 +67,31 @@ function joinLines(...parts: string[]): string {
   return parts.filter((p) => p && p.trim()).join("\n");
 }
 
+/**
+ * 보고서가 따르는 양식에 맞는 화면을 고른다. 이전 양식 보고서는 제출했던
+ * 모습 그대로 다시 볼 수 있어야 하므로 옛 화면을 지우지 않고 남겨 둔다.
+ */
 export function SecretaryReportPrintView({
   report,
   compact,
 }: {
   report: MonthlyReport;
   /** One-page A4 tuning shared by print, the PDF button, and the image button. */
+  compact?: boolean;
+}) {
+  return report.formVersion === "2026-cu" ? (
+    <Report2026PrintView report={report} compact={compact} />
+  ) : (
+    <LegacyReportPrintView report={report} compact={compact} />
+  );
+}
+
+/** 서울 무염시태 세나뚜스 양식 제6호(2024년 12월 개정) — 이전 양식. */
+function LegacyReportPrintView({
+  report,
+  compact,
+}: {
+  report: MonthlyReport;
   compact?: boolean;
 }) {
   const president = report.roster.officers.find((officer) => officer.role === "president");
